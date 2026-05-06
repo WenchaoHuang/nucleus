@@ -23,6 +23,7 @@
 
 #include "fwd.h"
 #include "vector_types.h"
+#include <utility>
 #include <type_traits>
 
 #if NS_HAS_CXX_20
