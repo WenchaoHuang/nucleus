@@ -55,7 +55,8 @@ namespace NS_NAMESPACE
 	 *	@brief	Concept that matches types with exactly three same-typed components x, y and z.
 	 *	@note	Satisfied by types such as float3, int3, double3, etc. Types with a
 	 *			w member (e.g. float4) are explicitly excluded, and sizeof(T) must equal
-	 *			3 * sizeof(scalar component) to exclude structs with extra fields.
+	 *			3 * or 4 * sizeof(scalar component) to also cover 16-byte-aligned variants
+	 *			such as float3_16a while still excluding structs with too many fields.
 	 */
 	template<typename T> concept vec3_like = requires(T v) {
 		v.x;
@@ -63,7 +64,7 @@ namespace NS_NAMESPACE
 		v.z;
 		requires std::is_same_v<decltype(v.x), decltype(v.y)>;
 		requires std::is_same_v<decltype(v.x), decltype(v.z)>;
-		requires sizeof(T) == 3 * sizeof(decltype(v.x));
+		requires sizeof(T) == 3 * sizeof(decltype(v.x)) || sizeof(T) == 4 * sizeof(decltype(v.x));
 	} && !requires(T v) { v.w; };
 
 	/**

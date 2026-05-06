@@ -96,8 +96,11 @@ static_assert(!ns::vec2_like<ExtraField2>);
 
 //	--- vec3_like: positive cases ---
 static_assert(ns::vec3_like<ns::int3>);
+static_assert(ns::vec3_like<ns::int3_16a>);
 static_assert(ns::vec3_like<ns::uint3>);
+static_assert(ns::vec3_like<ns::uint3_16a>);
 static_assert(ns::vec3_like<ns::float3>);
+static_assert(ns::vec3_like<ns::float3_16a>);
 static_assert(ns::vec3_like<ns::double3>);
 static_assert(ns::vec3_like<ns::char3>);
 static_assert(ns::vec3_like<ns::uchar3>);
@@ -111,7 +114,7 @@ static_assert(!ns::vec3_like<float>);
 static_assert(!ns::vec3_like<int>);
 
 //	--- vec3_like: struct with extra fields must not match ---
-struct ExtraField3 { float x, y, z, extra; };
+struct ExtraField3 { float x, y, z, a, b; };
 static_assert(!ns::vec3_like<ExtraField3>);
 
 //	--- vec4_like: positive cases ---
