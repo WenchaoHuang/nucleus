@@ -62,7 +62,9 @@ int main()
 	shared_handle_test();
 	logger_test();
 
+#ifdef _WIN32
 	system("pause");
+#endif
 
 	return 0;
 }
