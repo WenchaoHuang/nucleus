@@ -70,7 +70,11 @@
 #else
 	#define	NS_INLINE						inline
 	#define NS_ALIGN(n)						alignas(n)
-	#define NS_FORCE_INLINE					__forceinline
+	#if defined(_MSC_VER)
+		#define NS_FORCE_INLINE				__forceinline
+	#else
+		#define NS_FORCE_INLINE				__attribute__((always_inline)) inline
+	#endif
 	#define	NS_CUDA_CALLABLE
 	#define	NS_CUDA_CALLABLE_INLINE			inline
 
@@ -89,8 +93,12 @@
 **********************************    Utils    ***********************************
 *********************************************************************************/
 
-#define NS_NODISCARD						_NODISCARD
-#define NS_NOVTABLE							__declspec(novtable)
+#define NS_NODISCARD						[[nodiscard]]
+#if defined(_MSC_VER)
+	#define NS_NOVTABLE						__declspec(novtable)
+#else
+	#define NS_NOVTABLE
+#endif
 
 #if defined(DEBUG) || defined(_DEBUG)
 	#define NS_DEBUG
