@@ -43,8 +43,7 @@ namespace NS_NAMESPACE
 	 *			z member (e.g. float3) are explicitly excluded.
 	 */
 	template<typename T>
-	concept vec2_like = requires(T v)
-	{
+	concept vec2_like = requires(T v) {
 		v.x;
 		v.y;
 		requires std::is_same_v<decltype(v.x), decltype(v.y)>;
@@ -56,8 +55,7 @@ namespace NS_NAMESPACE
 	 *			w member (e.g. float4) are explicitly excluded.
 	 */
 	template<typename T>
-	concept vec3_like = requires(T v)
-	{
+	concept vec3_like = requires(T v) {
 		v.x;
 		v.y;
 		v.z;
@@ -70,8 +68,7 @@ namespace NS_NAMESPACE
 	 *	@note	Satisfied by types such as float4, int4, double4, etc.
 	 */
 	template<typename T>
-	concept vec4_like = requires(T v)
-	{
+	concept vec4_like = requires(T v) {
 		v.x;
 		v.y;
 		v.z;
