@@ -66,6 +66,7 @@
 #include "host_types.h"
 #include "array_proxy.h"
 #include "vector_types.h"
+#include "vector_traits.h"
 
 #ifdef __CUDACC__
 	#include "launch_utils.cuh"
