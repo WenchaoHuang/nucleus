@@ -84,38 +84,38 @@ namespace NS_NAMESPACE
 #endif	//	NS_HAS_CXX_20
 
 	/*****************************************************************************
-	****************************    component_type    ****************************
+	******************************    scalar_type    *****************************
 	*****************************************************************************/
 
 	namespace details
 	{
 		/**
-		 *	@brief	Primary template: treats the type itself as its own component type.
+		 *	@brief	Primary template: treats the type itself as its own scalar type.
 		 *	@note	Used as the fallback for scalar (non-vector) types.
 		 */
 		template<typename T, typename = void>
-		struct VecComponentType { using type = T; };
+		struct VecScalarType { using type = T; };
 
 		/**
 		 *	@brief	Specialization for types that expose an x member (vector types).
-		 *	@note	Extracts the component type as the decayed type of the x member,
+		 *	@note	Extracts the scalar type as the decayed type of the x member,
 		 *			covering Vec2, Vec3, Vec4, and compatible CUDA vector types.
 		 */
 		template<typename T>
-		struct VecComponentType<T, std::void_t<decltype(std::declval<T>().x)>>
+		struct VecScalarType<T, std::void_t<decltype(std::declval<T>().x)>>
 		{
 			using type = std::decay_t<decltype(std::declval<T>().x)>;
 		};
 	}
 
 	/**
-	 *	@brief	Extracts the scalar component type from a vector or scalar type.
-	 *	@note	For scalar types (e.g. float, int), component_type_t<T> is T itself.
+	 *	@brief	Extracts the scalar type from a vector or scalar type.
+	 *	@note	For scalar types (e.g. float, int), scalar_type_t<T> is T itself.
 	 *			For vector types with an x member (e.g. float2, int3, double4),
-	 *			component_type_t<T> is the type of that member (e.g. float, int, double).
+	 *			scalar_type_t<T> is the type of that member (e.g. float, int, double).
 	 *			CV-qualifiers and references on T are stripped before deduction.
 	 */
 	template<typename T>
-	using component_type_t = typename details::VecComponentType<
+	using scalar_type_t = typename details::VecScalarType<
 		std::remove_cv_t<std::remove_reference_t<T>>>::type;
 }
