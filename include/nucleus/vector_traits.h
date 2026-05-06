@@ -42,8 +42,7 @@ namespace NS_NAMESPACE
 	 *	@note	Satisfied by types such as float2, int2, double2, etc. Types with a
 	 *			z member (e.g. float3) are explicitly excluded.
 	 */
-	template<typename T>
-	concept vec2_like = requires(T v) {
+	template<typename T> concept vec2_like = requires(T v) {
 		v.x;
 		v.y;
 		requires std::is_same_v<decltype(v.x), decltype(v.y)>;
@@ -54,8 +53,7 @@ namespace NS_NAMESPACE
 	 *	@note	Satisfied by types such as float3, int3, double3, etc. Types with a
 	 *			w member (e.g. float4) are explicitly excluded.
 	 */
-	template<typename T>
-	concept vec3_like = requires(T v) {
+	template<typename T> concept vec3_like = requires(T v) {
 		v.x;
 		v.y;
 		v.z;
@@ -67,8 +65,7 @@ namespace NS_NAMESPACE
 	 *	@brief	Concept that matches types with exactly four same-typed components x, y, z and w.
 	 *	@note	Satisfied by types such as float4, int4, double4, etc.
 	 */
-	template<typename T>
-	concept vec4_like = requires(T v) {
+	template<typename T> concept vec4_like = requires(T v) {
 		v.x;
 		v.y;
 		v.z;
