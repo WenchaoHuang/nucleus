@@ -23,7 +23,6 @@
 
 #include "fwd.h"
 #include "vector_types.h"
-#include <utility>
 #include <type_traits>
 
 #if NS_HAS_CXX_20
@@ -94,19 +93,10 @@ namespace NS_NAMESPACE
 
 	namespace details
 	{
-		template<typename T, typename = void>
-		struct VecScalarType;
-
-		/**
-		 *	@brief	Specialization for types that expose an x member (vector types).
-		 *	@note	Extracts the scalar type as the decayed type of the x member,
-		 *			covering Vec2, Vec3, Vec4, and compatible CUDA vector types.
-		 */
-		template<typename T>
-		struct VecScalarType<T, std::void_t<decltype(std::declval<T>().x)>>
-		{
-			using type = std::decay_t<decltype(std::declval<T>().x)>;
-		};
+		template<typename T>                       struct VecScalarType;
+		template<typename T, int Align>            struct VecScalarType<Vec2<T, Align>> { using type = T; };
+		template<typename T, int Align>            struct VecScalarType<Vec3<T, Align>> { using type = T; };
+		template<typename T, int Align>            struct VecScalarType<Vec4<T, Align>> { using type = T; };
 	}
 
 	/**
