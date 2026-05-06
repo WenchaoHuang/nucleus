@@ -38,9 +38,10 @@ namespace NS_NAMESPACE
 #if NS_HAS_CXX_20
 
 	/**
-	 *	@brief	Concept that matches types with exactly two same-typed components x and y.
+	 *	@brief	Concept that matches types with same-typed x and y components and no z member.
 	 *	@note	Satisfied by types such as float2, int2, double2, etc. Types with a
-	 *			z member (e.g. float3) are explicitly excluded.
+	 *			z member (e.g. float3) are explicitly excluded, but this concept does
+	 *			not require the absence of other members such as w.
 	 */
 	template<typename T> concept vec2_like = requires(T v) {
 		v.x;
