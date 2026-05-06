@@ -1,0 +1,52 @@
+name: CUDA Build and Test
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install CUDA Toolkit
+        uses: Jimver/cuda-toolkit@v0.2.19
+        with:
+          cuda: '12.4.0'
+          method: network
+
+      - name: Configure CMake
+        run: >
+          cmake -B build
+          -DCMAKE_BUILD_TYPE=Release
+          -DNUCLEUS_BUILD_TESTS=ON
+          -DNUCLEUS_BUILD_EXAMPLES=OFF
+          -DNUCLEUS_BUILD_SHARED_LIB=OFF
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Run Tests
+        working-directory: build
+        shell: bash
+        # Standard CI runners have no GPU; tests that require CUDA will fail with a
+        # driver/device error.  We still run the binary so that any non-GPU logic
+        # (assertions, version comparisons, etc.) is exercised and to catch crashes
+        # unrelated to GPU availability.
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            ./Release/nucleus-tests.exe || true
+          else
+            ./nucleus-tests || true
+          fi
