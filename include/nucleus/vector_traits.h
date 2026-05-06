@@ -27,6 +27,7 @@
 
 #if NS_HAS_CXX_20
 	#include <concepts>
+	#include <utility>
 #endif
 
 namespace NS_NAMESPACE
@@ -91,12 +92,14 @@ namespace NS_NAMESPACE
 	******************************    scalar_type    *****************************
 	*****************************************************************************/
 
+#if NS_HAS_CXX_20
+
 	namespace details
 	{
-		template<typename T>                       struct VecScalarType;
-		template<typename T, int Align>            struct VecScalarType<Vec2<T, Align>> { using type = T; };
-		template<typename T, int Align>            struct VecScalarType<Vec3<T, Align>> { using type = T; };
-		template<typename T, int Align>            struct VecScalarType<Vec4<T, Align>> { using type = T; };
+		template<typename Type>                            struct VecScalarType;
+		template<typename Type> requires vec2_like<Type>  struct VecScalarType<Type> { using type = std::remove_cvref_t<decltype(std::declval<Type>().x)>; };
+		template<typename Type> requires vec3_like<Type>  struct VecScalarType<Type> { using type = std::remove_cvref_t<decltype(std::declval<Type>().x)>; };
+		template<typename Type> requires vec4_like<Type>  struct VecScalarType<Type> { using type = std::remove_cvref_t<decltype(std::declval<Type>().x)>; };
 	}
 
 	/**
@@ -106,6 +109,7 @@ namespace NS_NAMESPACE
 	 *			CV-qualifiers and references on T are stripped before deduction.
 	 */
 	template<typename T>
-	using scalar_type_t = typename details::VecScalarType<
-		std::remove_cv_t<std::remove_reference_t<T>>>::type;
+	using scalar_type_t = typename details::VecScalarType<std::remove_cvref_t<T>>::type;
+
+#endif	//	NS_HAS_CXX_20
 }

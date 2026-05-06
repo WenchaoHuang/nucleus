@@ -26,6 +26,8 @@
 ***************************    vector_traits_test    *****************************
 *********************************************************************************/
 
+#if NS_HAS_CXX_20
+
 //	--- scalar_type_t ---
 static_assert(std::is_same_v<ns::scalar_type_t<ns::int2>,     int>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::int3>,     int>);
@@ -62,8 +64,6 @@ static_assert(std::is_same_v<ns::scalar_type_t<ns::ushort4>,  unsigned short>);
 //	--- scalar_type_t: cv-qualifiers and references are stripped ---
 static_assert(std::is_same_v<ns::scalar_type_t<const ns::float2>,    float>);
 static_assert(std::is_same_v<ns::scalar_type_t<const ns::float2 &>,  float>);
-
-#if NS_HAS_CXX_20
 
 //	--- vec2_like: positive cases ---
 static_assert(ns::vec2_like<ns::int2>);
