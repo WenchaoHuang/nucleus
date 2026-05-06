@@ -97,11 +97,14 @@ namespace NS_NAMESPACE
 	namespace details
 	{
 		template<typename Type>                            struct VecScalarType;
-		template<typename Type> requires vec2_like<Type>
+		template<typename Type>
+		requires vec2_like<Type>
 		struct VecScalarType<Type>                         { using type = std::remove_cvref_t<decltype(std::declval<Type>().x)>; };
-		template<typename Type> requires vec3_like<Type>
+		template<typename Type>
+		requires vec3_like<Type>
 		struct VecScalarType<Type>                         { using type = std::remove_cvref_t<decltype(std::declval<Type>().x)>; };
-		template<typename Type> requires vec4_like<Type>
+		template<typename Type>
+		requires vec4_like<Type>
 		struct VecScalarType<Type>                         { using type = std::remove_cvref_t<decltype(std::declval<Type>().x)>; };
 	}
 
