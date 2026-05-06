@@ -27,50 +27,41 @@
 *********************************************************************************/
 
 //	--- scalar_type_t ---
-static_assert(std::is_same_v<ns::scalar_type_t<int>,          int>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::int2>,     int>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::int3>,     int>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::int4>,     int>);
 
-static_assert(std::is_same_v<ns::scalar_type_t<unsigned int>,      unsigned int>);
-static_assert(std::is_same_v<ns::scalar_type_t<ns::uint2>,         unsigned int>);
-static_assert(std::is_same_v<ns::scalar_type_t<ns::uint3>,         unsigned int>);
-static_assert(std::is_same_v<ns::scalar_type_t<ns::uint4>,         unsigned int>);
+static_assert(std::is_same_v<ns::scalar_type_t<ns::uint2>,    unsigned int>);
+static_assert(std::is_same_v<ns::scalar_type_t<ns::uint3>,    unsigned int>);
+static_assert(std::is_same_v<ns::scalar_type_t<ns::uint4>,    unsigned int>);
 
-static_assert(std::is_same_v<ns::scalar_type_t<float>,        float>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::float2>,   float>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::float3>,   float>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::float4>,   float>);
 
-static_assert(std::is_same_v<ns::scalar_type_t<double>,       double>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::double2>,  double>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::double3>,  double>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::double4>,  double>);
 
-static_assert(std::is_same_v<ns::scalar_type_t<char>,         char>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::char2>,    char>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::char3>,    char>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::char4>,    char>);
 
-static_assert(std::is_same_v<ns::scalar_type_t<unsigned char>,     unsigned char>);
-static_assert(std::is_same_v<ns::scalar_type_t<ns::uchar2>,        unsigned char>);
-static_assert(std::is_same_v<ns::scalar_type_t<ns::uchar3>,        unsigned char>);
-static_assert(std::is_same_v<ns::scalar_type_t<ns::uchar4>,        unsigned char>);
+static_assert(std::is_same_v<ns::scalar_type_t<ns::uchar2>,   unsigned char>);
+static_assert(std::is_same_v<ns::scalar_type_t<ns::uchar3>,   unsigned char>);
+static_assert(std::is_same_v<ns::scalar_type_t<ns::uchar4>,   unsigned char>);
 
-static_assert(std::is_same_v<ns::scalar_type_t<short>,        short>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::short2>,   short>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::short3>,   short>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::short4>,   short>);
 
-static_assert(std::is_same_v<ns::scalar_type_t<unsigned short>,    unsigned short>);
-static_assert(std::is_same_v<ns::scalar_type_t<ns::ushort2>,       unsigned short>);
-static_assert(std::is_same_v<ns::scalar_type_t<ns::ushort3>,       unsigned short>);
-static_assert(std::is_same_v<ns::scalar_type_t<ns::ushort4>,       unsigned short>);
+static_assert(std::is_same_v<ns::scalar_type_t<ns::ushort2>,  unsigned short>);
+static_assert(std::is_same_v<ns::scalar_type_t<ns::ushort3>,  unsigned short>);
+static_assert(std::is_same_v<ns::scalar_type_t<ns::ushort4>,  unsigned short>);
 
 //	--- scalar_type_t: cv-qualifiers and references are stripped ---
 static_assert(std::is_same_v<ns::scalar_type_t<const ns::float2>,    float>);
 static_assert(std::is_same_v<ns::scalar_type_t<const ns::float2 &>,  float>);
-static_assert(std::is_same_v<ns::scalar_type_t<const float>,         float>);
 
 #if NS_HAS_CXX_20
 

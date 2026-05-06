@@ -41,40 +41,40 @@ namespace NS_NAMESPACE
 	/**
 	 *	@brief	Concept that matches types with exactly two same-typed x and y components.
 	 *	@note	Satisfied by types such as float2, int2, double2, etc. Types with a
-	 *			z member (e.g. float3) are explicitly excluded, and sizeof(T) must equal
+	 *			z member (e.g. float3) are explicitly excluded, and sizeof(Type) must equal
 	 *			2 * sizeof(scalar component) to exclude structs with extra fields.
 	 */
-	template<typename T> concept vec2_like = requires(T v)
+	template<typename Type> concept vec2_like = requires(Type v)
 	{
 		v.x;
 		v.y;
 		requires std::is_same_v<decltype(v.x), decltype(v.y)>;
-		requires sizeof(T) == 2 * sizeof(decltype(v.x));
-	} && !requires(T v) { v.z; };
+		requires sizeof(Type) == 2 * sizeof(decltype(v.x));
+	} && !requires(Type v) { v.z; };
 
 	/**
 	 *	@brief	Concept that matches types with exactly three same-typed components x, y and z.
 	 *	@note	Satisfied by types such as float3, int3, double3, etc. Types with a
-	 *			w member (e.g. float4) are explicitly excluded, and sizeof(T) must equal
+	 *			w member (e.g. float4) are explicitly excluded, and sizeof(Type) must equal
 	 *			3 * or 4 * sizeof(scalar component) to also cover 16-byte-aligned variants
 	 *			such as float3_16a while still excluding structs with too many fields.
 	 */
-	template<typename T> concept vec3_like = requires(T v)
+	template<typename Type> concept vec3_like = requires(Type v)
 	{
 		v.x;
 		v.y;
 		v.z;
 		requires std::is_same_v<decltype(v.x), decltype(v.y)>;
 		requires std::is_same_v<decltype(v.x), decltype(v.z)>;
-		requires sizeof(T) == 3 * sizeof(decltype(v.x)) || sizeof(T) == 4 * sizeof(decltype(v.x));
-	} && !requires(T v) { v.w; };
+		requires sizeof(Type) == 3 * sizeof(decltype(v.x)) || sizeof(Type) == 4 * sizeof(decltype(v.x));
+	} && !requires(Type v) { v.w; };
 
 	/**
 	 *	@brief	Concept that matches types with exactly four same-typed components x, y, z and w.
-	 *	@note	Satisfied by types such as float4, int4, double4, etc. sizeof(T) must equal
+	 *	@note	Satisfied by types such as float4, int4, double4, etc. sizeof(Type) must equal
 	 *			4 * sizeof(scalar component) to exclude structs with extra fields.
 	 */
-	template<typename T> concept vec4_like = requires(T v)
+	template<typename Type> concept vec4_like = requires(Type v)
 	{
 		v.x;
 		v.y;
@@ -83,7 +83,7 @@ namespace NS_NAMESPACE
 		requires std::is_same_v<decltype(v.x), decltype(v.y)>;
 		requires std::is_same_v<decltype(v.x), decltype(v.z)>;
 		requires std::is_same_v<decltype(v.x), decltype(v.w)>;
-		requires sizeof(T) == 4 * sizeof(decltype(v.x));
+		requires sizeof(Type) == 4 * sizeof(decltype(v.x));
 	};
 
 #endif	//	NS_HAS_CXX_20
@@ -94,12 +94,8 @@ namespace NS_NAMESPACE
 
 	namespace details
 	{
-		/**
-		 *	@brief	Primary template: treats the type itself as its own scalar type.
-		 *	@note	Used as the fallback for scalar (non-vector) types.
-		 */
 		template<typename T, typename = void>
-		struct VecScalarType { using type = T; };
+		struct VecScalarType;
 
 		/**
 		 *	@brief	Specialization for types that expose an x member (vector types).
@@ -114,9 +110,8 @@ namespace NS_NAMESPACE
 	}
 
 	/**
-	 *	@brief	Extracts the scalar type from a vector or scalar type.
-	 *	@note	For scalar types (e.g. float, int), scalar_type_t<T> is T itself.
-	 *			For vector types with an x member (e.g. float2, int3, double4),
+	 *	@brief	Extracts the scalar type from a vector type.
+	 *	@note	For vector types with an x member (e.g. float2, int3, double4),
 	 *			scalar_type_t<T> is the type of that member (e.g. float, int, double).
 	 *			CV-qualifiers and references on T are stripped before deduction.
 	 */
