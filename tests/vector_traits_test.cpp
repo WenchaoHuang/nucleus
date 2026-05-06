@@ -90,6 +90,10 @@ static_assert(!ns::vec2_like<ns::float4>);
 static_assert(!ns::vec2_like<float>);
 static_assert(!ns::vec2_like<int>);
 
+//	--- vec2_like: struct with extra fields must not match ---
+struct ExtraField2 { float x, y, extra; };
+static_assert(!ns::vec2_like<ExtraField2>);
+
 //	--- vec3_like: positive cases ---
 static_assert(ns::vec3_like<ns::int3>);
 static_assert(ns::vec3_like<ns::uint3>);
@@ -106,6 +110,10 @@ static_assert(!ns::vec3_like<ns::float4>);
 static_assert(!ns::vec3_like<float>);
 static_assert(!ns::vec3_like<int>);
 
+//	--- vec3_like: struct with extra fields must not match ---
+struct ExtraField3 { float x, y, z, extra; };
+static_assert(!ns::vec3_like<ExtraField3>);
+
 //	--- vec4_like: positive cases ---
 static_assert(ns::vec4_like<ns::int4>);
 static_assert(ns::vec4_like<ns::uint4>);
@@ -121,5 +129,9 @@ static_assert(!ns::vec4_like<ns::float2>);
 static_assert(!ns::vec4_like<ns::float3>);
 static_assert(!ns::vec4_like<float>);
 static_assert(!ns::vec4_like<int>);
+
+//	--- vec4_like: struct with extra fields must not match ---
+struct ExtraField4 { float x, y, z, w, extra; };
+static_assert(!ns::vec4_like<ExtraField4>);
 
 #endif	//	NS_HAS_CXX_20

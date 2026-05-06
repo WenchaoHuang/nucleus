@@ -39,21 +39,23 @@ namespace NS_NAMESPACE
 #if NS_HAS_CXX_20
 
 	/**
-	 *	@brief	Concept that matches types with same-typed x and y components and no z member.
+	 *	@brief	Concept that matches types with exactly two same-typed x and y components.
 	 *	@note	Satisfied by types such as float2, int2, double2, etc. Types with a
-	 *			z member (e.g. float3) are explicitly excluded, but this concept does
-	 *			not require the absence of other members such as w.
+	 *			z member (e.g. float3) are explicitly excluded, and sizeof(T) must equal
+	 *			2 * sizeof(scalar component) to exclude structs with extra fields.
 	 */
 	template<typename T> concept vec2_like = requires(T v) {
 		v.x;
 		v.y;
 		requires std::is_same_v<decltype(v.x), decltype(v.y)>;
+		requires sizeof(T) == 2 * sizeof(decltype(v.x));
 	} && !requires(T v) { v.z; };
 
 	/**
 	 *	@brief	Concept that matches types with exactly three same-typed components x, y and z.
 	 *	@note	Satisfied by types such as float3, int3, double3, etc. Types with a
-	 *			w member (e.g. float4) are explicitly excluded.
+	 *			w member (e.g. float4) are explicitly excluded, and sizeof(T) must equal
+	 *			3 * sizeof(scalar component) to exclude structs with extra fields.
 	 */
 	template<typename T> concept vec3_like = requires(T v) {
 		v.x;
@@ -61,11 +63,13 @@ namespace NS_NAMESPACE
 		v.z;
 		requires std::is_same_v<decltype(v.x), decltype(v.y)>;
 		requires std::is_same_v<decltype(v.x), decltype(v.z)>;
+		requires sizeof(T) == 3 * sizeof(decltype(v.x));
 	} && !requires(T v) { v.w; };
 
 	/**
 	 *	@brief	Concept that matches types with exactly four same-typed components x, y, z and w.
-	 *	@note	Satisfied by types such as float4, int4, double4, etc.
+	 *	@note	Satisfied by types such as float4, int4, double4, etc. sizeof(T) must equal
+	 *			4 * sizeof(scalar component) to exclude structs with extra fields.
 	 */
 	template<typename T> concept vec4_like = requires(T v) {
 		v.x;
@@ -75,6 +79,7 @@ namespace NS_NAMESPACE
 		requires std::is_same_v<decltype(v.x), decltype(v.y)>;
 		requires std::is_same_v<decltype(v.x), decltype(v.z)>;
 		requires std::is_same_v<decltype(v.x), decltype(v.w)>;
+		requires sizeof(T) == 4 * sizeof(decltype(v.x));
 	};
 
 #endif	//	NS_HAS_CXX_20
