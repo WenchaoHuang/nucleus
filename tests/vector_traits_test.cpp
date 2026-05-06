@@ -1,0 +1,124 @@
+/**
+ *	Copyright (c) 2025 Wenchao Huang <physhuangwenchao@gmail.com>
+ *
+ *	Permission is hereby granted, free of charge, to any person obtaining a copy
+ *	of this software and associated documentation files (the "Software"), to deal
+ *	in the Software without restriction, including without limitation the rights
+ *	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *	copies of the Software, and to permit persons to whom the Software is
+ *	furnished to do so, subject to the following conditions:
+ *
+ *	The above copyright notice and this permission notice shall be included in all
+ *	copies or substantial portions of the Software.
+ *
+ *	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *	SOFTWARE.
+ */
+
+#include <nucleus/vector_traits.h>
+
+/*********************************************************************************
+***************************    vector_traits_test    *****************************
+*********************************************************************************/
+
+//	--- component_type_t: scalar passthrough ---
+static_assert(std::is_same_v<ns::component_type_t<int>,    int>);
+static_assert(std::is_same_v<ns::component_type_t<float>,  float>);
+static_assert(std::is_same_v<ns::component_type_t<double>, double>);
+
+//	--- component_type_t: two-component vectors ---
+static_assert(std::is_same_v<ns::component_type_t<ns::int2>,      int>);
+static_assert(std::is_same_v<ns::component_type_t<ns::uint2>,     unsigned int>);
+static_assert(std::is_same_v<ns::component_type_t<ns::float2>,    float>);
+static_assert(std::is_same_v<ns::component_type_t<ns::double2>,   double>);
+static_assert(std::is_same_v<ns::component_type_t<ns::char2>,     char>);
+static_assert(std::is_same_v<ns::component_type_t<ns::uchar2>,    unsigned char>);
+static_assert(std::is_same_v<ns::component_type_t<ns::short2>,    short>);
+static_assert(std::is_same_v<ns::component_type_t<ns::ushort2>,   unsigned short>);
+
+//	--- component_type_t: three-component vectors ---
+static_assert(std::is_same_v<ns::component_type_t<ns::int3>,      int>);
+static_assert(std::is_same_v<ns::component_type_t<ns::uint3>,     unsigned int>);
+static_assert(std::is_same_v<ns::component_type_t<ns::float3>,    float>);
+static_assert(std::is_same_v<ns::component_type_t<ns::double3>,   double>);
+static_assert(std::is_same_v<ns::component_type_t<ns::char3>,     char>);
+static_assert(std::is_same_v<ns::component_type_t<ns::uchar3>,    unsigned char>);
+static_assert(std::is_same_v<ns::component_type_t<ns::short3>,    short>);
+static_assert(std::is_same_v<ns::component_type_t<ns::ushort3>,   unsigned short>);
+
+//	--- component_type_t: four-component vectors ---
+static_assert(std::is_same_v<ns::component_type_t<ns::int4>,      int>);
+static_assert(std::is_same_v<ns::component_type_t<ns::uint4>,     unsigned int>);
+static_assert(std::is_same_v<ns::component_type_t<ns::float4>,    float>);
+static_assert(std::is_same_v<ns::component_type_t<ns::double4>,   double>);
+static_assert(std::is_same_v<ns::component_type_t<ns::char4>,     char>);
+static_assert(std::is_same_v<ns::component_type_t<ns::uchar4>,    unsigned char>);
+static_assert(std::is_same_v<ns::component_type_t<ns::short4>,    short>);
+static_assert(std::is_same_v<ns::component_type_t<ns::ushort4>,   unsigned short>);
+
+//	--- component_type_t: cv-qualifiers and references are stripped ---
+static_assert(std::is_same_v<ns::component_type_t<const ns::float2>,    float>);
+static_assert(std::is_same_v<ns::component_type_t<const ns::float2 &>,  float>);
+static_assert(std::is_same_v<ns::component_type_t<const float>,         float>);
+
+#if NS_HAS_CXX_20
+
+//	--- vec2_like: positive cases ---
+static_assert(ns::vec2_like<ns::int2>);
+static_assert(ns::vec2_like<ns::uint2>);
+static_assert(ns::vec2_like<ns::float2>);
+static_assert(ns::vec2_like<ns::double2>);
+static_assert(ns::vec2_like<ns::char2>);
+static_assert(ns::vec2_like<ns::uchar2>);
+static_assert(ns::vec2_like<ns::short2>);
+static_assert(ns::vec2_like<ns::ushort2>);
+
+//	--- vec2_like: negative cases ---
+static_assert(!ns::vec2_like<ns::float3>);
+static_assert(!ns::vec2_like<ns::float4>);
+static_assert(!ns::vec2_like<float>);
+static_assert(!ns::vec2_like<int>);
+
+//	--- vec3_like: positive cases ---
+static_assert(ns::vec3_like<ns::int3>);
+static_assert(ns::vec3_like<ns::uint3>);
+static_assert(ns::vec3_like<ns::float3>);
+static_assert(ns::vec3_like<ns::double3>);
+static_assert(ns::vec3_like<ns::char3>);
+static_assert(ns::vec3_like<ns::uchar3>);
+static_assert(ns::vec3_like<ns::short3>);
+static_assert(ns::vec3_like<ns::ushort3>);
+
+//	--- vec3_like: negative cases ---
+static_assert(!ns::vec3_like<ns::float2>);
+static_assert(!ns::vec3_like<ns::float4>);
+static_assert(!ns::vec3_like<float>);
+static_assert(!ns::vec3_like<int>);
+
+//	--- vec4_like: positive cases ---
+static_assert(ns::vec4_like<ns::int4>);
+static_assert(ns::vec4_like<ns::uint4>);
+static_assert(ns::vec4_like<ns::float4>);
+static_assert(ns::vec4_like<ns::double4>);
+static_assert(ns::vec4_like<ns::char4>);
+static_assert(ns::vec4_like<ns::uchar4>);
+static_assert(ns::vec4_like<ns::short4>);
+static_assert(ns::vec4_like<ns::ushort4>);
+
+//	--- vec4_like: negative cases ---
+static_assert(!ns::vec4_like<ns::float2>);
+static_assert(!ns::vec4_like<ns::float3>);
+static_assert(!ns::vec4_like<float>);
+static_assert(!ns::vec4_like<int>);
+
+#endif	//	NS_HAS_CXX_20
+
+void vector_traits_test()
+{
+	//	All checks are compile-time static_asserts above; nothing to do at runtime.
+}

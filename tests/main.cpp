@@ -42,6 +42,7 @@ extern void allocator_test();
 extern void array_proxy_test();
 extern void buffer_view_test();
 extern void shared_handle_test();
+extern void vector_traits_test();
 
 int main()
 {
@@ -60,6 +61,7 @@ int main()
 	buffer_view_test();
 	array_proxy_test();
 	shared_handle_test();
+	vector_traits_test();
 	logger_test();
 
 	system("pause");
