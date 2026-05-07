@@ -144,7 +144,7 @@ namespace NS_NAMESPACE
 
 	namespace details
 	{
-		template<typename Type>	 struct VecScalarType;
+		template<typename Type>	 struct VecScalarType {};
 		template<vec2_like Type> struct VecScalarType<Type> { using type = std::remove_cvref_t<decltype(std::declval<Type>().x)>; };
 		template<vec3_like Type> struct VecScalarType<Type> { using type = std::remove_cvref_t<decltype(std::declval<Type>().x)>; };
 		template<vec4_like Type> struct VecScalarType<Type> { using type = std::remove_cvref_t<decltype(std::declval<Type>().x)>; };
@@ -155,9 +155,9 @@ namespace NS_NAMESPACE
 	 *	@note	For vector types with an `x` member (e.g. `float2`, `int3`, `double4`),
 	 *			scalar_type_t<T> is the type of that member (e.g. `float`, `int`, `double`).
 	 *			CV-qualifiers and references on T are stripped before deduction.
-	 *			T must satisfy `vec_like`; instantiation with a non-vector type is ill-formed.
+	 *			Instantiation with a non-vector type is ill-formed (no nested `type` member).
 	 */
-	template<typename T> requires vec_like<std::remove_cvref_t<T>>
+	template<typename T>
 	using scalar_type_t = typename details::VecScalarType<std::remove_cvref_t<T>>::type;
 
 #endif	//	NS_HAS_CXX_20

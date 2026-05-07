@@ -213,9 +213,10 @@ static_assert(std::is_same_v<ns::scalar_type_t<ns::float4>,  float>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::int2>,    int>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::double4>, double>);
 
-//	--- scalar_type_t: constraint enforced for non-vector types ---
-static_assert(!requires { typename ns::scalar_type_t<int>; });
-static_assert(!requires { typename ns::scalar_type_t<float>; });
-static_assert(!requires { typename ns::scalar_type_t<double>; });
+//	--- scalar_type_t: ill-formed for non-vector types ---
+template<typename T> concept has_scalar_type = requires { typename ns::scalar_type_t<T>; };
+static_assert(!has_scalar_type<int>);
+static_assert(!has_scalar_type<float>);
+static_assert(!has_scalar_type<double>);
 
 #endif	//	NS_HAS_CXX_20
