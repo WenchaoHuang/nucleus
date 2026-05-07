@@ -205,4 +205,16 @@ static_assert(ns::ushort3_like<ns::ushort3>);
 static_assert(ns::ushort4_like<ns::ushort4>);
 static_assert(!ns::ushort2_like<ns::short2>);
 
+//	--- scalar_type_t: positive cases ---
+static_assert(std::is_same_v<ns::scalar_type_t<ns::float2>,  float>);
+static_assert(std::is_same_v<ns::scalar_type_t<ns::float3>,  float>);
+static_assert(std::is_same_v<ns::scalar_type_t<ns::float4>,  float>);
+static_assert(std::is_same_v<ns::scalar_type_t<ns::int2>,    int>);
+static_assert(std::is_same_v<ns::scalar_type_t<ns::double4>, double>);
+
+//	--- scalar_type_t: constraint enforced for non-vector types ---
+static_assert(!requires { typename ns::scalar_type_t<int>; });
+static_assert(!requires { typename ns::scalar_type_t<float>; });
+static_assert(!requires { typename ns::scalar_type_t<double>; });
+
 #endif	//	NS_HAS_CXX_20
