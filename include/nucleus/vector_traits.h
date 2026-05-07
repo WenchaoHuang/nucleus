@@ -22,7 +22,6 @@
 #pragma once
 
 #include "fwd.h"
-#include "vector_types.h"
 #include <type_traits>
 
 #if NS_HAS_CXX_20

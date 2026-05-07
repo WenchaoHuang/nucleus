@@ -20,6 +20,7 @@
  *	SOFTWARE.
  */
 
+#include <nucleus/vector_types.h>
 #include <nucleus/vector_traits.h>
 
 /*********************************************************************************
