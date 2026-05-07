@@ -94,6 +94,13 @@ namespace NS_NAMESPACE
 	};
 
 
+	/**
+	 *	@brief	Concept that matches any 2-, 3-, or 4-component vector type.
+	 *	@note	Satisfied by any type that satisfies `vec2_like`, `vec3_like`, or `vec4_like`.
+	 */
+	template<typename Type> concept vec_like = vec2_like<Type> || vec3_like<Type> || vec4_like<Type>;
+
+
 	//	--- Common scalar-typed aliases ---
 
 	template<typename Type> concept char2_like    = vec2_like<Type, char>;
@@ -149,8 +156,10 @@ namespace NS_NAMESPACE
 	 *	@note	For vector types with an `x` member (e.g. `float2`, `int3`, `double4`),
 	 *			scalar_type_t<T> is the type of that member (e.g. `float`, `int`, `double`).
 	 *			CV-qualifiers and references on T are stripped before deduction.
+	 *			T must satisfy `vec_like`; instantiation with a non-vector type is ill-formed.
 	 */
-	template<typename T> using scalar_type_t = typename details::VecScalarType<std::remove_cvref_t<T>>::type;
+	template<typename T> requires vec_like<std::remove_cvref_t<T>>
+	using scalar_type_t = typename details::VecScalarType<std::remove_cvref_t<T>>::type;
 
 #endif	//	NS_HAS_CXX_20
 }

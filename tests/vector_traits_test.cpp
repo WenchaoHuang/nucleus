@@ -128,6 +128,21 @@ static_assert(!ns::vec4_like<int>);
 struct ExtraField4 { float x, y, z, w, extra; };
 static_assert(!ns::vec4_like<ExtraField4>);
 
+//	--- vec_like: positive cases ---
+static_assert(ns::vec_like<ns::float2>);
+static_assert(ns::vec_like<ns::float3>);
+static_assert(ns::vec_like<ns::float4>);
+static_assert(ns::vec_like<ns::int2>);
+static_assert(ns::vec_like<ns::int3>);
+static_assert(ns::vec_like<ns::int4>);
+static_assert(ns::vec_like<ns::double2>);
+static_assert(ns::vec_like<ns::double3>);
+static_assert(ns::vec_like<ns::double4>);
+
+//	--- vec_like: negative cases ---
+static_assert(!ns::vec_like<float>);
+static_assert(!ns::vec_like<int>);
+
 //	--- vec2_like<Type, Scalar>: typed concept ---
 static_assert(ns::vec2_like<ns::int2,    int>);
 static_assert(ns::vec2_like<ns::float2,  float>);
