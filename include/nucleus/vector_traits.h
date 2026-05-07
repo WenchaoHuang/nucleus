@@ -96,21 +96,37 @@ namespace NS_NAMESPACE
 
 	//	--- Common scalar-typed aliases ---
 
-	template<typename Type> concept int2_like    = vec2_like<Type, int>;
-	template<typename Type> concept int3_like    = vec3_like<Type, int>;
-	template<typename Type> concept int4_like    = vec4_like<Type, int>;
+	template<typename Type> concept char2_like    = vec2_like<Type, char>;
+	template<typename Type> concept char3_like    = vec3_like<Type, char>;
+	template<typename Type> concept char4_like    = vec4_like<Type, char>;
 
-	template<typename Type> concept uint2_like   = vec2_like<Type, unsigned int>;
-	template<typename Type> concept uint3_like   = vec3_like<Type, unsigned int>;
-	template<typename Type> concept uint4_like   = vec4_like<Type, unsigned int>;
+	template<typename Type> concept uchar2_like   = vec2_like<Type, unsigned char>;
+	template<typename Type> concept uchar3_like   = vec3_like<Type, unsigned char>;
+	template<typename Type> concept uchar4_like   = vec4_like<Type, unsigned char>;
 
-	template<typename Type> concept float2_like  = vec2_like<Type, float>;
-	template<typename Type> concept float3_like  = vec3_like<Type, float>;
-	template<typename Type> concept float4_like  = vec4_like<Type, float>;
+	template<typename Type> concept short2_like   = vec2_like<Type, short>;
+	template<typename Type> concept short3_like   = vec3_like<Type, short>;
+	template<typename Type> concept short4_like   = vec4_like<Type, short>;
 
-	template<typename Type> concept double2_like = vec2_like<Type, double>;
-	template<typename Type> concept double3_like = vec3_like<Type, double>;
-	template<typename Type> concept double4_like = vec4_like<Type, double>;
+	template<typename Type> concept ushort2_like  = vec2_like<Type, unsigned short>;
+	template<typename Type> concept ushort3_like  = vec3_like<Type, unsigned short>;
+	template<typename Type> concept ushort4_like  = vec4_like<Type, unsigned short>;
+
+	template<typename Type> concept int2_like     = vec2_like<Type, int>;
+	template<typename Type> concept int3_like     = vec3_like<Type, int>;
+	template<typename Type> concept int4_like     = vec4_like<Type, int>;
+
+	template<typename Type> concept uint2_like    = vec2_like<Type, unsigned int>;
+	template<typename Type> concept uint3_like    = vec3_like<Type, unsigned int>;
+	template<typename Type> concept uint4_like    = vec4_like<Type, unsigned int>;
+
+	template<typename Type> concept float2_like   = vec2_like<Type, float>;
+	template<typename Type> concept float3_like   = vec3_like<Type, float>;
+	template<typename Type> concept float4_like   = vec4_like<Type, float>;
+
+	template<typename Type> concept double2_like  = vec2_like<Type, double>;
+	template<typename Type> concept double3_like  = vec3_like<Type, double>;
+	template<typename Type> concept double4_like  = vec4_like<Type, double>;
 
 #endif	//	NS_HAS_CXX_20
 

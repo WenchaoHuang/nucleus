@@ -170,4 +170,24 @@ static_assert(ns::double3_like<ns::double3>);
 static_assert(ns::double4_like<ns::double4>);
 static_assert(!ns::double2_like<ns::float2>);
 
+static_assert(ns::char2_like<ns::char2>);
+static_assert(ns::char3_like<ns::char3>);
+static_assert(ns::char4_like<ns::char4>);
+static_assert(!ns::char2_like<ns::uchar2>);
+
+static_assert(ns::uchar2_like<ns::uchar2>);
+static_assert(ns::uchar3_like<ns::uchar3>);
+static_assert(ns::uchar4_like<ns::uchar4>);
+static_assert(!ns::uchar2_like<ns::char2>);
+
+static_assert(ns::short2_like<ns::short2>);
+static_assert(ns::short3_like<ns::short3>);
+static_assert(ns::short4_like<ns::short4>);
+static_assert(!ns::short2_like<ns::ushort2>);
+
+static_assert(ns::ushort2_like<ns::ushort2>);
+static_assert(ns::ushort3_like<ns::ushort3>);
+static_assert(ns::ushort4_like<ns::ushort4>);
+static_assert(!ns::ushort2_like<ns::short2>);
+
 #endif	//	NS_HAS_CXX_20
