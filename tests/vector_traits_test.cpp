@@ -128,4 +128,46 @@ static_assert(!ns::vec4_like<int>);
 struct ExtraField4 { float x, y, z, w, extra; };
 static_assert(!ns::vec4_like<ExtraField4>);
 
+//	--- vec2_like<Type, Scalar>: typed concept ---
+static_assert(ns::vec2_like<ns::int2,    int>);
+static_assert(ns::vec2_like<ns::float2,  float>);
+static_assert(ns::vec2_like<ns::double2, double>);
+static_assert(!ns::vec2_like<ns::int2,   float>);
+static_assert(!ns::vec2_like<ns::float2, int>);
+
+//	--- vec3_like<Type, Scalar>: typed concept ---
+static_assert(ns::vec3_like<ns::int3,    int>);
+static_assert(ns::vec3_like<ns::float3,  float>);
+static_assert(ns::vec3_like<ns::double3, double>);
+static_assert(!ns::vec3_like<ns::int3,   float>);
+static_assert(!ns::vec3_like<ns::float3, int>);
+
+//	--- vec4_like<Type, Scalar>: typed concept ---
+static_assert(ns::vec4_like<ns::int4,    int>);
+static_assert(ns::vec4_like<ns::float4,  float>);
+static_assert(ns::vec4_like<ns::double4, double>);
+static_assert(!ns::vec4_like<ns::int4,   float>);
+static_assert(!ns::vec4_like<ns::float4, int>);
+
+//	--- common scalar-typed aliases ---
+static_assert(ns::int2_like<ns::int2>);
+static_assert(ns::int3_like<ns::int3>);
+static_assert(ns::int4_like<ns::int4>);
+static_assert(!ns::int2_like<ns::float2>);
+
+static_assert(ns::uint2_like<ns::uint2>);
+static_assert(ns::uint3_like<ns::uint3>);
+static_assert(ns::uint4_like<ns::uint4>);
+static_assert(!ns::uint2_like<ns::int2>);
+
+static_assert(ns::float2_like<ns::float2>);
+static_assert(ns::float3_like<ns::float3>);
+static_assert(ns::float4_like<ns::float4>);
+static_assert(!ns::float2_like<ns::double2>);
+
+static_assert(ns::double2_like<ns::double2>);
+static_assert(ns::double3_like<ns::double3>);
+static_assert(ns::double4_like<ns::double4>);
+static_assert(!ns::double2_like<ns::float2>);
+
 #endif	//	NS_HAS_CXX_20

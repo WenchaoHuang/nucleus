@@ -42,13 +42,15 @@ namespace NS_NAMESPACE
 	 *	@brief	Concept that matches types with exactly two same-typed `x` and `y` components.
 	 *	@note	Satisfied by types such as `float2`, `int2`, `double2`, etc.
 	 *			sizeof(Type) must equal 2 * sizeof(scalar component) to exclude structs with extra fields.
+	 *			When Scalar is not void, also requires that the component type equals Scalar.
 	 */
-	template<typename Type> concept vec2_like = requires(Type v)
+	template<typename Type, typename Scalar = void> concept vec2_like = requires(Type v)
 	{
 		v.x;
 		v.y;
 		requires std::is_same_v<decltype(v.x), decltype(v.y)>;
 		requires sizeof(Type) == 2 * sizeof(decltype(v.x));
+		requires std::is_void_v<Scalar> || std::is_same_v<std::remove_cvref_t<decltype(v.x)>, Scalar>;
 	};
 
 
@@ -58,8 +60,9 @@ namespace NS_NAMESPACE
 	 *			w member (e.g. `float4`) are explicitly excluded, and sizeof(Type) must equal
 	 *			3 * or 4 * sizeof(scalar component) to also cover 16-byte-aligned variants
 	 *			such as `float3_16a` while still excluding structs with too many fields.
+	 *			When Scalar is not void, also requires that the component type equals Scalar.
 	 */
-	template<typename Type> concept vec3_like = requires(Type v)
+	template<typename Type, typename Scalar = void> concept vec3_like = requires(Type v)
 	{
 		v.x;
 		v.y;
@@ -67,6 +70,7 @@ namespace NS_NAMESPACE
 		requires std::is_same_v<decltype(v.x), decltype(v.y)>;
 		requires std::is_same_v<decltype(v.x), decltype(v.z)>;
 		requires sizeof(Type) == 3 * sizeof(decltype(v.x)) || sizeof(Type) == 4 * sizeof(decltype(v.x));
+		requires std::is_void_v<Scalar> || std::is_same_v<std::remove_cvref_t<decltype(v.x)>, Scalar>;
 	} && !requires(Type v) { v.w; };
 
 
@@ -74,8 +78,9 @@ namespace NS_NAMESPACE
 	 *	@brief	Concept that matches types with exactly four same-typed components `x`, `y`, `z` and `w`.
 	 *	@note	Satisfied by types such as `float4`, `int4`, `double4`, etc. sizeof(Type) must equal
 	 *			4 * sizeof(scalar component) to exclude structs with extra fields.
+	 *			When Scalar is not void, also requires that the component type equals Scalar.
 	 */
-	template<typename Type> concept vec4_like = requires(Type v)
+	template<typename Type, typename Scalar = void> concept vec4_like = requires(Type v)
 	{
 		v.x;
 		v.y;
@@ -85,7 +90,27 @@ namespace NS_NAMESPACE
 		requires std::is_same_v<decltype(v.x), decltype(v.z)>;
 		requires std::is_same_v<decltype(v.x), decltype(v.w)>;
 		requires sizeof(Type) == 4 * sizeof(decltype(v.x));
+		requires std::is_void_v<Scalar> || std::is_same_v<std::remove_cvref_t<decltype(v.x)>, Scalar>;
 	};
+
+
+	//	--- Common scalar-typed aliases ---
+
+	template<typename Type> concept int2_like    = vec2_like<Type, int>;
+	template<typename Type> concept int3_like    = vec3_like<Type, int>;
+	template<typename Type> concept int4_like    = vec4_like<Type, int>;
+
+	template<typename Type> concept uint2_like   = vec2_like<Type, unsigned int>;
+	template<typename Type> concept uint3_like   = vec3_like<Type, unsigned int>;
+	template<typename Type> concept uint4_like   = vec4_like<Type, unsigned int>;
+
+	template<typename Type> concept float2_like  = vec2_like<Type, float>;
+	template<typename Type> concept float3_like  = vec3_like<Type, float>;
+	template<typename Type> concept float4_like  = vec4_like<Type, float>;
+
+	template<typename Type> concept double2_like = vec2_like<Type, double>;
+	template<typename Type> concept double3_like = vec3_like<Type, double>;
+	template<typename Type> concept double4_like = vec4_like<Type, double>;
 
 #endif	//	NS_HAS_CXX_20
 
