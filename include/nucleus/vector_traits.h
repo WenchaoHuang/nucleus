@@ -22,7 +22,6 @@
 #pragma once
 
 #include "fwd.h"
-#include "vector_types.h"
 #include <type_traits>
 
 #if NS_HAS_CXX_20
@@ -42,11 +41,13 @@ namespace NS_NAMESPACE
 	 *	@brief	Concept that matches types with exactly two same-typed `x` and `y` components.
 	 *	@note	Satisfied by types such as `float2`, `int2`, `double2`, etc.
 	 *			sizeof(Type) must equal 2 * sizeof(scalar component) to exclude structs with extra fields.
+	 *			When Scalar is not void, also requires that the component type equals Scalar.
 	 */
-	template<typename Type> concept vec2_like = requires(Type v)
+	template<typename Type, typename Scalar = void> concept vec2_like = requires(Type v)
 	{
 		v.x;
 		v.y;
+		requires std::is_void_v<Scalar> || std::is_same_v<std::remove_cvref_t<decltype(v.x)>, Scalar>;
 		requires std::is_same_v<decltype(v.x), decltype(v.y)>;
 		requires sizeof(Type) == 2 * sizeof(decltype(v.x));
 	};
@@ -58,15 +59,17 @@ namespace NS_NAMESPACE
 	 *			w member (e.g. `float4`) are explicitly excluded, and sizeof(Type) must equal
 	 *			3 * or 4 * sizeof(scalar component) to also cover 16-byte-aligned variants
 	 *			such as `float3_16a` while still excluding structs with too many fields.
+	 *			When Scalar is not void, also requires that the component type equals Scalar.
 	 */
-	template<typename Type> concept vec3_like = requires(Type v)
+	template<typename Type, typename Scalar = void> concept vec3_like = requires(Type v)
 	{
 		v.x;
 		v.y;
 		v.z;
-		requires std::is_same_v<decltype(v.x), decltype(v.y)>;
-		requires std::is_same_v<decltype(v.x), decltype(v.z)>;
 		requires sizeof(Type) == 3 * sizeof(decltype(v.x)) || sizeof(Type) == 4 * sizeof(decltype(v.x));
+		requires std::is_void_v<Scalar> || std::is_same_v<std::remove_cvref_t<decltype(v.x)>, Scalar>;
+		requires std::is_same_v<decltype(v.x), decltype(v.z)>;
+		requires std::is_same_v<decltype(v.x), decltype(v.y)>;
 	} && !requires(Type v) { v.w; };
 
 
@@ -74,42 +77,71 @@ namespace NS_NAMESPACE
 	 *	@brief	Concept that matches types with exactly four same-typed components `x`, `y`, `z` and `w`.
 	 *	@note	Satisfied by types such as `float4`, `int4`, `double4`, etc. sizeof(Type) must equal
 	 *			4 * sizeof(scalar component) to exclude structs with extra fields.
+	 *			When Scalar is not void, also requires that the component type equals Scalar.
 	 */
-	template<typename Type> concept vec4_like = requires(Type v)
+	template<typename Type, typename Scalar = void> concept vec4_like = requires(Type v)
 	{
 		v.x;
 		v.y;
 		v.z;
 		v.w;
+		requires std::is_void_v<Scalar> || std::is_same_v<std::remove_cvref_t<decltype(v.x)>, Scalar>;
 		requires std::is_same_v<decltype(v.x), decltype(v.y)>;
 		requires std::is_same_v<decltype(v.x), decltype(v.z)>;
 		requires std::is_same_v<decltype(v.x), decltype(v.w)>;
 		requires sizeof(Type) == 4 * sizeof(decltype(v.x));
 	};
 
-#endif	//	NS_HAS_CXX_20
 
-	/*****************************************************************************
-	******************************    scalar_type    *****************************
-	*****************************************************************************/
+	/**
+	 *	@brief	Concept that matches any 2-, 3-, or 4-component vector type.
+	 *	@note	Satisfied by any type that satisfies `vec2_like`, `vec3_like`, or `vec4_like`.
+	 */
+	template<typename Type> concept vec_like = vec2_like<Type> || vec3_like<Type> || vec4_like<Type>;
 
-#if NS_HAS_CXX_20
-
-	namespace details
-	{
-		template<typename Type>	 struct VecScalarType;
-		template<vec2_like Type> struct VecScalarType<Type> { using type = std::remove_cvref_t<decltype(std::declval<Type>().x)>; };
-		template<vec3_like Type> struct VecScalarType<Type> { using type = std::remove_cvref_t<decltype(std::declval<Type>().x)>; };
-		template<vec4_like Type> struct VecScalarType<Type> { using type = std::remove_cvref_t<decltype(std::declval<Type>().x)>; };
-	}
 
 	/**
 	 *	@brief	Extracts the scalar type from a vector type.
 	 *	@note	For vector types with an `x` member (e.g. `float2`, `int3`, `double4`),
 	 *			scalar_type_t<T> is the type of that member (e.g. `float`, `int`, `double`).
-	 *			CV-qualifiers and references on T are stripped before deduction.
+	 *			CV-qualifiers and references on `Type` are stripped before deduction.
+	 *			Instantiation with a non-vector type is ill-formed (no nested `type` member).
 	 */
-	template<typename T> using scalar_type_t = typename details::VecScalarType<std::remove_cvref_t<T>>::type;
+	template<vec_like Type> using scalar_type_t = std::remove_cvref_t<decltype(std::declval<Type>().x)>;
+
+
+	//	--- Common scalar-typed aliases ---
+	template<typename Type> concept int2_like = vec2_like<Type, int>;
+	template<typename Type> concept int3_like = vec3_like<Type, int>;
+	template<typename Type> concept int4_like = vec4_like<Type, int>;
+
+	template<typename Type> concept char2_like = vec2_like<Type, char>;
+	template<typename Type> concept char3_like = vec3_like<Type, char>;
+	template<typename Type> concept char4_like = vec4_like<Type, char>;
+
+	template<typename Type> concept short2_like = vec2_like<Type, short>;
+	template<typename Type> concept short3_like = vec3_like<Type, short>;
+	template<typename Type> concept short4_like = vec4_like<Type, short>;
+
+	template<typename Type> concept float2_like = vec2_like<Type, float>;
+	template<typename Type> concept float3_like = vec3_like<Type, float>;
+	template<typename Type> concept float4_like = vec4_like<Type, float>;
+
+	template<typename Type> concept double2_like = vec2_like<Type, double>;
+	template<typename Type> concept double3_like = vec3_like<Type, double>;
+	template<typename Type> concept double4_like = vec4_like<Type, double>;
+
+	template<typename Type> concept uint2_like = vec2_like<Type, unsigned int>;
+	template<typename Type> concept uint3_like = vec3_like<Type, unsigned int>;
+	template<typename Type> concept uint4_like = vec4_like<Type, unsigned int>;
+
+	template<typename Type> concept uchar2_like = vec2_like<Type, unsigned char>;
+	template<typename Type> concept uchar3_like = vec3_like<Type, unsigned char>;
+	template<typename Type> concept uchar4_like = vec4_like<Type, unsigned char>;
+
+	template<typename Type> concept ushort2_like = vec2_like<Type, unsigned short>;
+	template<typename Type> concept ushort3_like = vec3_like<Type, unsigned short>;
+	template<typename Type> concept ushort4_like = vec4_like<Type, unsigned short>;
 
 #endif	//	NS_HAS_CXX_20
 }

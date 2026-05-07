@@ -20,6 +20,7 @@
  *	SOFTWARE.
  */
 
+#include <nucleus/vector_types.h>
 #include <nucleus/vector_traits.h>
 
 /*********************************************************************************
@@ -76,10 +77,10 @@ static_assert(ns::vec2_like<ns::ushort2>);
 static_assert(ns::vec2_like<ns::double2>);
 
 //	--- vec2_like: negative cases ---
+static_assert(!ns::vec2_like<int>);
+static_assert(!ns::vec2_like<float>);
 static_assert(!ns::vec2_like<ns::float3>);
 static_assert(!ns::vec2_like<ns::float4>);
-static_assert(!ns::vec2_like<float>);
-static_assert(!ns::vec2_like<int>);
 
 //	--- vec2_like: struct with extra fields must not match ---
 struct ExtraField2 { float x, y, extra; };
@@ -99,10 +100,10 @@ static_assert(ns::vec3_like<ns::uint3_16a>);
 static_assert(ns::vec3_like<ns::float3_16a>);
 
 //	--- vec3_like: negative cases ---
+static_assert(!ns::vec3_like<int>);
+static_assert(!ns::vec3_like<float>);
 static_assert(!ns::vec3_like<ns::float2>);
 static_assert(!ns::vec3_like<ns::float4>);
-static_assert(!ns::vec3_like<float>);
-static_assert(!ns::vec3_like<int>);
 
 //	--- vec3_like: struct with extra fields must not match ---
 struct ExtraField3 { float x, y, z, a, b; };
@@ -119,13 +120,97 @@ static_assert(ns::vec4_like<ns::ushort4>);
 static_assert(ns::vec4_like<ns::double4>);
 
 //	--- vec4_like: negative cases ---
+static_assert(!ns::vec4_like<int>);
+static_assert(!ns::vec4_like<float>);
 static_assert(!ns::vec4_like<ns::float2>);
 static_assert(!ns::vec4_like<ns::float3>);
-static_assert(!ns::vec4_like<float>);
-static_assert(!ns::vec4_like<int>);
 
 //	--- vec4_like: struct with extra fields must not match ---
 struct ExtraField4 { float x, y, z, w, extra; };
 static_assert(!ns::vec4_like<ExtraField4>);
+
+//	--- vec_like: positive cases ---
+static_assert(ns::vec_like<ns::int2>);
+static_assert(ns::vec_like<ns::int3>);
+static_assert(ns::vec_like<ns::int4>);
+static_assert(ns::vec_like<ns::float2>);
+static_assert(ns::vec_like<ns::float3>);
+static_assert(ns::vec_like<ns::float4>);
+static_assert(ns::vec_like<ns::double2>);
+static_assert(ns::vec_like<ns::double3>);
+static_assert(ns::vec_like<ns::double4>);
+
+//	--- vec_like: negative cases ---
+static_assert(!ns::vec_like<int>);
+static_assert(!ns::vec_like<float>);
+
+//	--- vec2_like<Type, Scalar>: typed concept ---
+static_assert(ns::vec2_like<ns::int2, int>);
+static_assert(ns::vec2_like<ns::float2, float>);
+static_assert(ns::vec2_like<ns::double2, double>);
+static_assert(!ns::vec2_like<ns::int2, float>);
+static_assert(!ns::vec2_like<ns::float2, int>);
+
+//	--- vec3_like<Type, Scalar>: typed concept ---
+static_assert(ns::vec3_like<ns::int3, int>);
+static_assert(ns::vec3_like<ns::float3, float>);
+static_assert(ns::vec3_like<ns::double3, double>);
+static_assert(!ns::vec3_like<ns::int3, float>);
+static_assert(!ns::vec3_like<ns::float3, int>);
+
+//	--- vec4_like<Type, Scalar>: typed concept ---
+static_assert(ns::vec4_like<ns::int4, int>);
+static_assert(ns::vec4_like<ns::float4, float>);
+static_assert(ns::vec4_like<ns::double4, double>);
+static_assert(!ns::vec4_like<ns::int4, float>);
+static_assert(!ns::vec4_like<ns::float4, int>);
+
+//	--- common scalar-typed aliases ---
+static_assert(ns::int2_like<ns::int2>);
+static_assert(ns::int3_like<ns::int3>);
+static_assert(ns::int4_like<ns::int4>);
+static_assert(!ns::int2_like<ns::float2>);
+
+static_assert(ns::uint2_like<ns::uint2>);
+static_assert(ns::uint3_like<ns::uint3>);
+static_assert(ns::uint4_like<ns::uint4>);
+static_assert(!ns::uint2_like<ns::int2>);
+
+static_assert(ns::float2_like<ns::float2>);
+static_assert(ns::float3_like<ns::float3>);
+static_assert(ns::float4_like<ns::float4>);
+static_assert(!ns::float2_like<ns::double2>);
+
+static_assert(ns::double2_like<ns::double2>);
+static_assert(ns::double3_like<ns::double3>);
+static_assert(ns::double4_like<ns::double4>);
+static_assert(!ns::double2_like<ns::float2>);
+
+static_assert(ns::char2_like<ns::char2>);
+static_assert(ns::char3_like<ns::char3>);
+static_assert(ns::char4_like<ns::char4>);
+static_assert(!ns::char2_like<ns::uchar2>);
+
+static_assert(ns::uchar2_like<ns::uchar2>);
+static_assert(ns::uchar3_like<ns::uchar3>);
+static_assert(ns::uchar4_like<ns::uchar4>);
+static_assert(!ns::uchar2_like<ns::char2>);
+
+static_assert(ns::short2_like<ns::short2>);
+static_assert(ns::short3_like<ns::short3>);
+static_assert(ns::short4_like<ns::short4>);
+static_assert(!ns::short2_like<ns::ushort2>);
+
+static_assert(ns::ushort2_like<ns::ushort2>);
+static_assert(ns::ushort3_like<ns::ushort3>);
+static_assert(ns::ushort4_like<ns::ushort4>);
+static_assert(!ns::ushort2_like<ns::short2>);
+
+//	--- scalar_type_t: positive cases ---
+static_assert(std::is_same_v<ns::scalar_type_t<ns::int2>, int>);
+static_assert(std::is_same_v<ns::scalar_type_t<ns::float2>, float>);
+static_assert(std::is_same_v<ns::scalar_type_t<ns::float3>, float>);
+static_assert(std::is_same_v<ns::scalar_type_t<ns::float4>, float>);
+static_assert(std::is_same_v<ns::scalar_type_t<ns::double4>, double>);
 
 #endif	//	NS_HAS_CXX_20
