@@ -27,30 +27,41 @@ on:
     branches: ["**"]
 
 jobs:
-  build:
-    name: ${{ matrix.name }}
-    runs-on: ${{ matrix.os }}
+  build-linux:
+    name: Linux (GCC + CUDA 12.4)
+    runs-on: ubuntu-22.04
+    container:
+      image: nvidia/cuda:12.4.0-devel-ubuntu22.04
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: Linux (GCC + CUDA 12.4)
-            os: ubuntu-22.04
-            cuda: "12.4.0"
+    steps:
+      - name: Install CMake
+        run: apt-get update && apt-get install -y cmake
 
-          - name: Windows (MSVC + CUDA 12.4)
-            os: windows-latest
-            cuda: "12.4.0"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: >
+          cmake -B build
+          -DCMAKE_BUILD_TYPE=Release
+          -DNUCLEUS_BUILD_TESTS=ON
+          -DNUCLEUS_BUILD_EXAMPLES=OFF
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+  build-windows:
+    name: Windows (MSVC + CUDA 12.4)
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install CUDA Toolkit ${{ matrix.cuda }}
+      - name: Install CUDA Toolkit 12.4.0
         uses: Jimver/cuda-toolkit@v0.2.19
         with:
-          cuda: ${{ matrix.cuda }}
+          cuda: "12.4.0"
           method: network
 
       - name: Configure CMake
