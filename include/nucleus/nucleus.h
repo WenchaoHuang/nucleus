@@ -29,7 +29,7 @@
  *	@brief	Master header for the nucleus library.
  *	@note	This file aggregates all public headers of the nucleus library,
  *			including core runtime components (event, graph, logger, stream, device, context, allocator),
- *			utilities (scoped_timer, host_types, array_proxy, vector_types),
+ *			utilities (scoped_timer, host_types, array_proxy, vector_types, vector_traits),
  *			and data abstractions (buffer, array, image, surface, texture, sampler).
  *
  *	@note	It is NOT recommended to include this file directly in large or complex projects.
@@ -66,6 +66,7 @@
 #include "host_types.h"
 #include "array_proxy.h"
 #include "vector_types.h"
+#include "vector_traits.h"
 
 #ifdef __CUDACC__
 	#include "launch_utils.cuh"
