@@ -57,8 +57,11 @@ namespace NS_NAMESPACE
 		template<Format format> struct FormatTraits;
 		template<typename Type> struct FormatMapping;
 	#else
-		template<Format format> struct FormatTraits	 { static_assert(false, "Invalid format!"); };
-		template<typename Type> struct FormatMapping { static_assert(false, "No FormatMapping specialization found for this type!"); };
+		template<Format>    struct _format_false : std::false_type {};
+		template<typename>  struct _type_false   : std::false_type {};
+
+		template<Format format> struct FormatTraits	 { static_assert(_format_false<format>::value, "Invalid format!"); };
+		template<typename Type> struct FormatMapping { static_assert(_type_false<Type>::value, "No FormatMapping specialization found for this type!"); };
 	#endif
 
 		//	Maps C++ types to corresponding Format enum values.

@@ -39,7 +39,7 @@ Device::Device(int id, const cudaDeviceProp & devProp) : m_id(id), m_devProp(std
 }
 
 
-cudaError_t Device::init() noexcept
+Error_t Device::init() noexcept
 {
 	this->setCurrent();
 

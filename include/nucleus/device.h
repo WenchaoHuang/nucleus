@@ -50,7 +50,7 @@ namespace NS_NAMESPACE
 		 *	@brief		Trigger initialization of the CUDA context.
 		 *	@retval		cudaSuccess - If device's context was initialized successfully.
 		 */
-		NS_API cudaError_t init() noexcept;
+		NS_API Error_t init() noexcept;
 
 
 		/**

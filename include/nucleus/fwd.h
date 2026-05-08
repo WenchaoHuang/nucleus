@@ -31,7 +31,6 @@
 #ifndef __CUDACC__
 	struct dim3;
 	struct cudaDeviceProp;
-	typedef enum cudaError : int				cudaError_t;
 	typedef struct cudaArray *					cudaArray_t;
 	typedef struct CUevent_st *					cudaEvent_t;
 	typedef struct CUgraph_st *					cudaGraph_t;
@@ -41,7 +40,7 @@
 	typedef struct cudaMipmappedArray *			cudaMipmappedArray_t;
 	typedef unsigned long long					cudaTextureObject_t;
 	typedef unsigned long long					cudaSurfaceObject_t;
-#endif
+#endif	//	__CUDACC__
 
 namespace NS_NAMESPACE
 {
@@ -56,6 +55,7 @@ namespace NS_NAMESPACE
 	class ScopedTimer;
 	class HostAllocator;
 	class DeviceAllocator;
+	using Error_t = int;
 
 	struct Version;
 	struct Sampler;

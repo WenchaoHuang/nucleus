@@ -23,9 +23,7 @@
 
 #include "format.h"
 
-#ifndef __CUDACC__
-	enum cudaSurfaceBoundaryMode : int;
-#else
+#ifdef __CUDACC__
 	#include <surface_indirect_functions.h>
 #endif
 
@@ -94,7 +92,7 @@ namespace NS_NAMESPACE::dev
 
 		//	Read method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ Type read(int x, cudaSurfaceBoundaryMode boundaryMode = 2) const;
+		__device__ Type read(int x, int boundaryMode = 2) const;
 	#else
 		__device__ Type read(int x, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
@@ -134,7 +132,7 @@ namespace NS_NAMESPACE::dev
 		
 		//	Write method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ void write(Type value, int x, cudaSurfaceBoundaryMode boundaryMode = 2) const;
+		__device__ void write(Type value, int x, int boundaryMode = 2) const;
 	#else
 		__device__ void write(Type value, int x, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
@@ -172,7 +170,7 @@ namespace NS_NAMESPACE::dev
 
 		//	Read method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ Type read(int x, int y, cudaSurfaceBoundaryMode boundaryMode = 2) const;
+		__device__ Type read(int x, int y, int boundaryMode = 2) const;
 	#else
 		__device__ Type read(int x, int y, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
@@ -213,7 +211,7 @@ namespace NS_NAMESPACE::dev
 
 		//	Write method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ void write(Type value, int x, int y, cudaSurfaceBoundaryMode boundaryMode = 2) const;
+		__device__ void write(Type value, int x, int y, int boundaryMode = 2) const;
 	#else
 		__device__ void write(Type value, int x, int y, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
@@ -254,7 +252,7 @@ namespace NS_NAMESPACE::dev
 
 		//	Read method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ Type read(int x, int y, int z, cudaSurfaceBoundaryMode boundaryMode = 2) const;
+		__device__ Type read(int x, int y, int z, int boundaryMode = 2) const;
 	#else
 		__device__ Type read(int x, int y, int z, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
@@ -296,7 +294,7 @@ namespace NS_NAMESPACE::dev
 
 		//	Write method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ void write(Type value, int x, int y, int z, cudaSurfaceBoundaryMode boundaryMode = 2) const;
+		__device__ void write(Type value, int x, int y, int z, int boundaryMode = 2) const;
 	#else
 		__device__ void write(Type value, int x, int y, int z, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
@@ -334,7 +332,7 @@ namespace NS_NAMESPACE::dev
 
 		//	Read method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ Type read(int x, int layer, cudaSurfaceBoundaryMode boundaryMode = 2) const;
+		__device__ Type read(int x, int layer, int boundaryMode = 2) const;
 	#else
 		__device__ Type read(int x, int layer, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
@@ -375,7 +373,7 @@ namespace NS_NAMESPACE::dev
 
 		//	Write method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ void write(Type value, int x, int layer, cudaSurfaceBoundaryMode boundaryMode = 2) const;
+		__device__ void write(Type value, int x, int layer, int boundaryMode = 2) const;
 	#else
 		__device__ void write(Type value, int x, int layer, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
@@ -416,7 +414,7 @@ namespace NS_NAMESPACE::dev
 
 		//	Read method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ Type read(int x, int y, int layer, cudaSurfaceBoundaryMode boundaryMode = 2) const;
+		__device__ Type read(int x, int y, int layer, int boundaryMode = 2) const;
 	#else
 		__device__ Type read(int x, int y, int layer, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
@@ -458,7 +456,7 @@ namespace NS_NAMESPACE::dev
 
 		//	Write method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ void write(Type value, int x, int y, int layer, cudaSurfaceBoundaryMode boundaryMode = 2) const;
+		__device__ void write(Type value, int x, int y, int layer, int boundaryMode = 2) const;
 	#else
 		__device__ void write(Type value, int x, int y, int layer, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
@@ -493,7 +491,7 @@ namespace NS_NAMESPACE::dev
 
 		//	Read method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ Type read(int x, int y, int face, cudaSurfaceBoundaryMode boundaryMode = 2) const;
+		__device__ Type read(int x, int y, int face, int boundaryMode = 2) const;
 	#else
 		__device__ Type read(int x, int y, int face, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
@@ -533,7 +531,7 @@ namespace NS_NAMESPACE::dev
 
 		//	Write method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ void write(Type value, int x, int y, int face, cudaSurfaceBoundaryMode boundaryMode = 2) const;
+		__device__ void write(Type value, int x, int y, int face, int boundaryMode = 2) const;
 	#else
 		__device__ void write(Type value, int x, int y, int face, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
@@ -571,7 +569,7 @@ namespace NS_NAMESPACE::dev
 
 		//	Read method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ Type read(int x, int y, int face, int layer, cudaSurfaceBoundaryMode boundaryMode = 2) const;
+		__device__ Type read(int x, int y, int face, int layer, int boundaryMode = 2) const;
 	#else
 		__device__ Type read(int x, int y, int face, int layer, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
@@ -612,7 +610,7 @@ namespace NS_NAMESPACE::dev
 
 		//	Write method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ void write(Type value, int x, int y, int face, int layer, cudaSurfaceBoundaryMode boundaryMode = 2) const;
+		__device__ void write(Type value, int x, int y, int face, int layer, int boundaryMode = 2) const;
 	#else
 		__device__ void write(Type value, int x, int y, int face, int layer, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{

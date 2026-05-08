@@ -65,21 +65,21 @@ namespace NS_NAMESPACE
 		 *	@note		Return the last error that has been produced by any of the runtime calls
 		 *				in the same host thread and reset it to Error::eSuccess.
 		 */
-		NS_API static cudaError_t getLastError() noexcept;
+		NS_API static Error_t getLastError() noexcept;
 
 
 		/**
 		 *	@brief		Return a string containing the name of an error code in the enum.
 		 *	@note		If the error code is not recognized, "unrecognized error code" is returned.
 		 */
-		NS_API static const char * getErrorName(cudaError_t eValue) noexcept;
+		NS_API static const char * getErrorName(Error_t eValue) noexcept;
 
 
 		/**
 		 *	@brief		Return the description string for an error code.
 		 *	@note		If the error code is not recognized, "unrecognized error code" is returned.
 		 */
-		NS_API static const char * getErrorString(cudaError_t eValue) noexcept;
+		NS_API static const char * getErrorString(Error_t eValue) noexcept;
 
 	public:
 

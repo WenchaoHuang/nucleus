@@ -25,7 +25,9 @@
 #include <assert.h>
 #include "nucleus_export.h"
 
-#pragma warning(disable: 4201)		//!	Nonstandard extension used: nameless struct/union.
+#ifdef _MSC_VER
+	#pragma warning(disable: 4201)		//!	Nonstandard extension used: nameless struct/union.
+#endif
 
 /*********************************************************************************
 *******************************    C++ Version     *******************************
@@ -70,9 +72,14 @@
 #else
 	#define	NS_INLINE						inline
 	#define NS_ALIGN(n)						alignas(n)
-	#define NS_FORCE_INLINE					__forceinline
 	#define	NS_CUDA_CALLABLE
 	#define	NS_CUDA_CALLABLE_INLINE			inline
+
+	#if defined(_MSC_VER)
+		#define NS_FORCE_INLINE				__forceinline
+	#else
+		#define NS_FORCE_INLINE				__attribute__((always_inline)) inline
+	#endif
 
 	#ifndef __device__
 		#define __device__
@@ -89,8 +96,12 @@
 **********************************    Utils    ***********************************
 *********************************************************************************/
 
-#define NS_NODISCARD						_NODISCARD
-#define NS_NOVTABLE							__declspec(novtable)
+#define NS_NODISCARD						[[nodiscard]]
+#if defined(_MSC_VER)
+	#define NS_NOVTABLE						__declspec(novtable)
+#else
+	#define NS_NOVTABLE
+#endif
 
 #if defined(DEBUG) || defined(_DEBUG)
 	#define NS_DEBUG

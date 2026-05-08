@@ -134,24 +134,10 @@ namespace NS_NAMESPACE
 		 *	@warning	Only available in *.cu files.
 		 */
 	private:
-		template<typename... Args> ExecDep launchKernel(KernelFunc<Args...> func, ArrayProxy<ExecDep> dependencies, dim3 gridDim, dim3 blockDim, unsigned int sharedMem, Args... args);
+		template<typename... Args> ExecDep launchKernel(KernelFunc<Args...> func, ArrayProxy<ExecDep> dependencies, const dim3 & gridDim, const dim3 & blockDim, unsigned int sharedMem, Args... args);
 	public:
-		template<typename... Args> NS_NODISCARD auto launch(KernelFunc<Args...> func, ArrayProxy<ExecDep> dependencies, dim3 gridDim, dim3 blockDim, unsigned int sharedMem = 0)
-		{
-		#if NS_HAS_CXX_20
-			return [=, this](Args... args) -> ExecDep { return this->launchKernel(func, dependencies, gridDim, blockDim, sharedMem, args...); };
-		#else
-			return [=](Args... args) -> ExecDep { return this->launchKernel(func, dependencies, gridDim, blockDim, sharedMem, args...); };
-		#endif
-		}
-		template<typename... Args> NS_NODISCARD auto launch(KernelFunc<Args...> func, dim3 gridDim, dim3 blockDim, unsigned int sharedMem = 0)
-		{
-		#if NS_HAS_CXX_20
-			return [=, this](Args... args) -> ExecDep { return this->launchKernel(func, nullptr, gridDim, blockDim, sharedMem, args...); };
-		#else
-			return [=](Args... args) -> ExecDep { return this->launchKernel(func, nullptr, gridDim, blockDim, sharedMem, args...); };
-		#endif
-		}
+		template<typename... Args> NS_NODISCARD auto launch(KernelFunc<Args...> func, ArrayProxy<ExecDep> dependencies, const dim3 & gridDim, const dim3 & blockDim, unsigned int sharedMem = 0);
+		template<typename... Args> NS_NODISCARD auto launch(KernelFunc<Args...> func, const dim3 & gridDim, const dim3 & blockDim, unsigned int sharedMem = 0);
 
 	private:
 

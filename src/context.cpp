@@ -86,19 +86,19 @@ Context::Context()
 }
 
 
-const char * Context::getErrorString(cudaError_t eValue) noexcept
+const char * Context::getErrorString(Error_t eValue) noexcept
 {
-	return cudaGetErrorString(eValue);
+	return cudaGetErrorString(static_cast<cudaError_t>(eValue));
 }
 
 
-const char * Context::getErrorName(cudaError_t eValue) noexcept
+const char * Context::getErrorName(Error_t eValue) noexcept
 {
-	return cudaGetErrorName(eValue);
+	return cudaGetErrorName(static_cast<cudaError_t>(eValue));
 }
 
 
-cudaError_t Context::getLastError() noexcept
+Error_t Context::getLastError() noexcept
 {
 	return cudaGetLastError();
 }

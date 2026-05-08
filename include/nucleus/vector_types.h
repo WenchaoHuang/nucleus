@@ -24,8 +24,10 @@
 #include "fwd.h"
 #include <type_traits>
 
-#pragma warning(push)
-#pragma warning(disable : 4324)		// structure was padded due to alignment specifier
+#ifdef _MSC_VER
+	#pragma warning(push)
+	#pragma warning(disable : 4324)		// structure was padded due to alignment specifier
+#endif
 
 namespace NS_NAMESPACE
 {
@@ -176,4 +178,6 @@ namespace NS_NAMESPACE
 #endif
 }
 
-#pragma warning(pop)	// warning: 4324
+#ifdef _MSC_VER
+	#pragma warning(pop)	// warning: 4324
+#endif

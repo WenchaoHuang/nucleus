@@ -26,8 +26,10 @@
 #include "image_3d.h"
 #include "allocator.h"
 #include "image_cube.h"
-#include <cuda_runtime_api.h>
+
+#include <cmath>
 #include <algorithm>
+#include <cuda_runtime_api.h>
 
 NS_USING_NAMESPACE
 
