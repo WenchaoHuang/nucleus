@@ -20,11 +20,11 @@
  *	SOFTWARE.
  */
 
+#include <cuda_runtime_api.h>
 #include "logger.h"
 #include "device.h"
 #include "stream.h"
 #include "allocator.h"
-#include <cuda_runtime_api.h>
 
 NS_USING_NAMESPACE
 

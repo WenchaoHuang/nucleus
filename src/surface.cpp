@@ -20,10 +20,10 @@
  *	SOFTWARE.
  */
 
+#include <cuda_runtime_api.h>
 #include "image.h"
 #include "logger.h"
 #include "surface.h"
-#include <cuda_runtime_api.h>
 
 NS_USING_NAMESPACE
 

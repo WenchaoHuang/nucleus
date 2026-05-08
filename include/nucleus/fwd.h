@@ -29,10 +29,10 @@
 *********************************************************************************/
 
 #ifndef __CUDACC__
+#ifndef __DRIVER_TYPES_H__
 	struct dim3;
 	struct cudaDeviceProp;
-	enum cudaError : int;
-	typedef cudaError							cudaError_t;
+	typedef int									cudaError_t;
 	typedef struct cudaArray *					cudaArray_t;
 	typedef struct CUevent_st *					cudaEvent_t;
 	typedef struct CUgraph_st *					cudaGraph_t;
@@ -42,7 +42,8 @@
 	typedef struct cudaMipmappedArray *			cudaMipmappedArray_t;
 	typedef unsigned long long					cudaTextureObject_t;
 	typedef unsigned long long					cudaSurfaceObject_t;
-#endif
+#endif	//	__DRIVER_TYPES_H__
+#endif	//	__CUDACC__
 
 namespace NS_NAMESPACE
 {

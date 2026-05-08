@@ -20,14 +20,14 @@
  *	SOFTWARE.
  */
 
+#include <cuda_runtime_api.h>
+#include <algorithm>
 #include "logger.h"
 #include "image_1d.h"
 #include "image_2d.h"
 #include "image_3d.h"
 #include "allocator.h"
 #include "image_cube.h"
-#include <cuda_runtime_api.h>
-#include <algorithm>
 
 NS_USING_NAMESPACE
 
