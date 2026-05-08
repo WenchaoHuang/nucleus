@@ -27,6 +27,7 @@
 #include "logger.h"
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
+#include <cstring>
 
 #ifndef __CUDACC__
 	// This is a no-op for actual compilation,
@@ -169,9 +170,9 @@ namespace NS_NAMESPACE
 	template<typename... Args> auto Stream::launch(KernelFunc<Args...> func, const dim3 & gridDim, const dim3 & blockDim, size_t sharedMem)
 	{
 	#if NS_HAS_CXX_20
-		return [=, this](Args... args) -> Stream& { void * params[] = { &args... };		return this->launchKernelImpl(func, gridDim, blockDim, sharedMem, params); };
+		return [=, this](Args... args) -> Stream& { void * params[] = { &args... };		return this->launchKernelImpl(reinterpret_cast<const void*>(func), gridDim, blockDim, sharedMem, params); };
 	#else
-		return [=](Args... args) -> Stream& { void * params[] = { &args... };	return this->launchKernelImpl(func, gridDim, blockDim, sharedMem, params); };
+		return [=](Args... args) -> Stream& { void * params[] = { &args... };	return this->launchKernelImpl(reinterpret_cast<const void*>(func), gridDim, blockDim, sharedMem, params); };
 	#endif
 	}
 
@@ -179,9 +180,9 @@ namespace NS_NAMESPACE
 	template<> inline auto Stream::launch(KernelFunc<> func, const dim3 & gridDim, const dim3 & blockDim, size_t sharedMem)
 	{
 	#if NS_HAS_CXX_20
-		return [=, this]() -> Stream& { return this->launchKernelImpl(func, gridDim, blockDim, sharedMem, nullptr); };
+		return [=, this]() -> Stream& { return this->launchKernelImpl(reinterpret_cast<const void*>(func), gridDim, blockDim, sharedMem, nullptr); };
 	#else
-		return [=]() -> Stream& { return this->launchKernelImpl(func, gridDim, blockDim, sharedMem, nullptr); };
+		return [=]() -> Stream& { return this->launchKernelImpl(reinterpret_cast<const void*>(func), gridDim, blockDim, sharedMem, nullptr); };
 	#endif
 	}
 
@@ -240,7 +241,7 @@ namespace NS_NAMESPACE
 
 			if (m_indicator < m_nodes.size())	//	in validating state
 			{
-				if ((m_nodes[m_indicator].func != (void*)func) || (m_nodes[m_indicator].depHash != depHash))	//	dependencies changes
+				if ((m_nodes[m_indicator].func != reinterpret_cast<void*>(func)) || (m_nodes[m_indicator].depHash != depHash))	//	dependencies changes
 				{
 					m_nodes.resize(m_indicator);
 				}
@@ -249,7 +250,7 @@ namespace NS_NAMESPACE
 					void * params[] = { ((void*)&args)... };
 
 					cudaKernelNodeParams			launchParams = {};
-					launchParams.func				= func;
+					launchParams.func				= reinterpret_cast<void*>(func);
 					launchParams.extra				= nullptr;
 					launchParams.kernelParams		= params;
 					launchParams.sharedMemBytes		= sharedMem;
@@ -274,7 +275,7 @@ namespace NS_NAMESPACE
 
 					cudaGraphNode_t					hGraphNode = nullptr;
 					cudaKernelNodeParams			launchParams = {};
-					launchParams.func				= func;
+					launchParams.func				= reinterpret_cast<void*>(func);
 					launchParams.extra				= nullptr;
 					launchParams.kernelParams		= params;
 					launchParams.sharedMemBytes		= sharedMem;
@@ -292,7 +293,7 @@ namespace NS_NAMESPACE
 
 				std::memcpy(m_paramBinaries.data() + m_paramOffset, paramCache, paramBytes);
 
-				m_nodes.emplace_back(func, depHash, paramBytes, m_depIndicesCache, createFunc);
+				m_nodes.emplace_back(reinterpret_cast<void*>(func), depHash, paramBytes, m_depIndicesCache, createFunc);
 
 				m_isTopoChg = true;
 			}
@@ -328,14 +329,14 @@ namespace NS_NAMESPACE
 
 			if (m_indicator < m_nodes.size())	//	in validating state
 			{
-				if ((m_nodes[m_indicator].func != (void*)func) || (m_nodes[m_indicator].depHash != depHash))	//	dependencies changes
+				if ((m_nodes[m_indicator].func != reinterpret_cast<void*>(func)) || (m_nodes[m_indicator].depHash != depHash))	//	dependencies changes
 				{
 					m_nodes.resize(m_indicator);
 				}
 				else if (std::memcmp(m_paramBinaries.data() + m_paramOffset, paramCache, paramBytes) != 0)	//	parameters changes
 				{
 					cudaKernelNodeParams			launchParams = {};
-					launchParams.func				= func;
+					launchParams.func				= reinterpret_cast<void*>(func);
 					launchParams.extra				= nullptr;
 					launchParams.kernelParams		= nullptr;
 					launchParams.sharedMemBytes		= sharedMem;
@@ -358,7 +359,7 @@ namespace NS_NAMESPACE
 				{
 					cudaGraphNode_t					hGraphNode = nullptr;
 					cudaKernelNodeParams			launchParams = {};
-					launchParams.func				= func;
+					launchParams.func				= reinterpret_cast<void*>(func);
 					launchParams.extra				= nullptr;
 					launchParams.kernelParams		= nullptr;
 					launchParams.sharedMemBytes		= sharedMem;
@@ -376,7 +377,7 @@ namespace NS_NAMESPACE
 
 				std::memcpy(m_paramBinaries.data() + m_paramOffset, paramCache, paramBytes);
 
-				m_nodes.emplace_back(func, depHash, paramBytes, m_depIndicesCache, createFunc);
+				m_nodes.emplace_back(reinterpret_cast<void*>(func), depHash, paramBytes, m_depIndicesCache, createFunc);
 
 				m_isTopoChg = true;
 			}
