@@ -18,38 +18,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-name: Build Check
+name: Build (Windows)
 
 on:
   push:
-    branches: ["**"]
+    branches: ["main"]
   pull_request:
     branches: ["**"]
 
 jobs:
-  build-linux:
-    name: Linux (GCC + CUDA 12.4)
-    runs-on: ubuntu-22.04
-    container:
-      image: nvidia/cuda:12.4.0-devel-ubuntu22.04
-
-    steps:
-      - name: Install CMake
-        run: apt-get update && apt-get install -y python3-pip && pip3 install cmake
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Configure CMake
-        run: >
-          cmake -B build
-          -DCMAKE_BUILD_TYPE=Release
-          -DNUCLEUS_BUILD_TESTS=ON
-          -DNUCLEUS_BUILD_EXAMPLES=OFF
-
-      - name: Build
-        run: cmake --build build --config Release --parallel
-
   build-windows:
     name: Windows (MSVC + CUDA 12.4)
     runs-on: windows-latest
