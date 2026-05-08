@@ -22,6 +22,7 @@
 
 #include <cuda_runtime_api.h>
 #include <algorithm>
+#include <cmath>
 #include "logger.h"
 #include "image_1d.h"
 #include "image_2d.h"

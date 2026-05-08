@@ -21,6 +21,7 @@
  */
 
 #include <cuda_runtime_api.h>
+#include <cstring>
 #include "graph.h"
 #include "logger.h"
 #include "stream.h"
@@ -53,7 +54,7 @@ ExecDep Graph::barrier(ArrayProxy<ExecDep> dependencies)
 
 		if (m_indicator < m_nodes.size())	//	in validating state
 		{
-			if ((m_nodes[m_indicator].func != IsEmptyNode) || (m_nodes[m_indicator].depHash != depHash))	//	dependencies changes
+			if ((m_nodes[m_indicator].func != reinterpret_cast<void*>(IsEmptyNode)) || (m_nodes[m_indicator].depHash != depHash))	//	dependencies changes
 			{
 				m_nodes.resize(m_indicator);
 			}
@@ -72,7 +73,7 @@ ExecDep Graph::barrier(ArrayProxy<ExecDep> dependencies)
 				return hGraphNode;
 			};
 
-			m_nodes.emplace_back(IsEmptyNode, depHash, 0, m_depIndicesCache, createFunc);
+			m_nodes.emplace_back(reinterpret_cast<void*>(IsEmptyNode), depHash, 0, m_depIndicesCache, createFunc);
 
 			m_isTopoChg = true;
 		}
@@ -100,7 +101,7 @@ ExecDep Graph::memcpy_void(void * dst, const void * src, size_t bytes, ArrayProx
 
 		if (m_indicator < m_nodes.size())	//	in validating state
 		{
-			if ((m_nodes[m_indicator].func != IsMemcpyNode) || (m_nodes[m_indicator].depHash != depHash))	//	dependencies changes
+			if ((m_nodes[m_indicator].func != reinterpret_cast<void*>(IsMemcpyNode)) || (m_nodes[m_indicator].depHash != depHash))	//	dependencies changes
 			{
 				m_nodes.resize(m_indicator);
 			}
@@ -133,7 +134,7 @@ ExecDep Graph::memcpy_void(void * dst, const void * src, size_t bytes, ArrayProx
 
 			std::memcpy(m_paramBinaries.data() + m_paramOffset, paramCache, paramBytes);
 
-			m_nodes.emplace_back(IsMemcpyNode, depHash, paramBytes, m_depIndicesCache, createFunc);
+			m_nodes.emplace_back(reinterpret_cast<void*>(IsMemcpyNode), depHash, paramBytes, m_depIndicesCache, createFunc);
 
 			m_isTopoChg = true;
 		}

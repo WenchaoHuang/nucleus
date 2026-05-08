@@ -25,7 +25,7 @@
 
 #ifndef __CUDACC__
 #ifndef __SURFACE_TYPES_H__
-	typedef int								cudaSurfaceBoundaryMode;
+	enum cudaSurfaceBoundaryMode : int;
 #endif
 #else
 	#include <surface_indirect_functions.h>
