@@ -23,6 +23,9 @@ cmake_minimum_required(VERSION 3.18)
 # Project name: Nucleus
 project(Nucleus LANGUAGES CXX CUDA)
 
+# Find CUDA Toolkit (needed to expose include dirs to C++ compilation units)
+find_package(CUDAToolkit REQUIRED)
+
 # Organize targets into folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -58,7 +61,7 @@ if(NUCLEUS_BUILD_SHARED_LIB)
     add_library(${TARGET_NAME} SHARED ${NUCLEUS_SOURCES})
 
     # Link directories
-    target_link_libraries(${TARGET_NAME} PUBLIC cudart)
+    target_link_libraries(${TARGET_NAME} PUBLIC CUDA::cudart)
 
     # Export macro
     target_compile_definitions(${TARGET_NAME} PRIVATE NS_API_BUILD)
