@@ -31,7 +31,8 @@
 #ifndef __CUDACC__
 	struct dim3;
 	struct cudaDeviceProp;
-	typedef enum cudaError : int				cudaError_t;
+	enum cudaError : int;
+	typedef cudaError							cudaError_t;
 	typedef struct cudaArray *					cudaArray_t;
 	typedef struct CUevent_st *					cudaEvent_t;
 	typedef struct CUgraph_st *					cudaGraph_t;

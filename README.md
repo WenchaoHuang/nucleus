@@ -1,6 +1,8 @@
 # Nucleus: C++ Bindings for CUDA Resources
 
 [![License](https://img.shields.io/github/license/WenchaoHuang/Nucleus)](LICENSE)
+[![Build (Linux)](https://github.com/WenchaoHuang/Nucleus/actions/workflows/build.yml/badge.svg?job=Linux+%28GCC+%2B+CUDA+12.4%29)](https://github.com/WenchaoHuang/Nucleus/actions/workflows/build.yml)
+[![Build (Windows)](https://github.com/WenchaoHuang/Nucleus/actions/workflows/build.yml/badge.svg?job=Windows+%28MSVC+%2B+CUDA+12.4%29)](https://github.com/WenchaoHuang/Nucleus/actions/workflows/build.yml)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/y/WenchaoHuang/Nucleus/main)](https://github.com/WenchaoHuang/Nucleus/commits/main)
 
 > [!WARNING]
