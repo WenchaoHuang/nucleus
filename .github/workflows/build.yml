@@ -35,7 +35,7 @@ jobs:
 
     steps:
       - name: Install CMake
-        run: apt-get update && apt-get install -y cmake
+        run: apt-get update && apt-get install -y python3-pip && pip3 install cmake
 
       - name: Checkout repository
         uses: actions/checkout@v4
