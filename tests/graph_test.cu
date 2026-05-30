@@ -20,6 +20,7 @@
  *	SOFTWARE.
  */
 
+#include <gtest/gtest.h>
 #include <nucleus/graph.h>
 #include <nucleus/device.h>
 #include <nucleus/stream.h>
@@ -40,7 +41,7 @@ __global__ void Test0()
 	CUDA_for(i, 1);
 }
 
-void graph_test()
+TEST(GraphTest, BasicOperations)
 {
 	auto device = ns::Context::getInstance()->device(0);
 	auto stream = &device->defaultStream();

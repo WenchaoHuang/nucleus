@@ -20,6 +20,7 @@
  *	SOFTWARE.
  */
 
+#include <gtest/gtest.h>
 #include <nucleus/buffer.h>
 #include <nucleus/device.h>
 #include <nucleus/context.h>
@@ -28,7 +29,7 @@
 ****************************    shared_handle_test    ****************************
 *********************************************************************************/
 
-void shared_handle_test()
+TEST(SharedHandleTest, BasicOperations)
 {
 	auto device = ns::Context::getInstance()->device(0);
 	auto allocator = device->defaultAllocator();
@@ -37,20 +38,20 @@ void shared_handle_test()
 	ns::SharedBuffer sharedBuffer1 = nullptr;
 	ns::SharedBuffer sharedBuffer2(allocator, 100);
 
-	assert(sharedBuffer2->capacity() == 100);
+	EXPECT_EQ(sharedBuffer2->capacity(), 100u);
 	ns::SharedBuffer sharedBuffer3 = std::move(sharedBuffer2);
-	assert(sharedBuffer3->capacity() == 100);
+	EXPECT_EQ(sharedBuffer3->capacity(), 100u);
 
 	ns::SharedBuffer sharedBuffer4 = ns::SharedBuffer{ allocator, 200 };
-	assert(sharedBuffer4->capacity() == 200);
+	EXPECT_EQ(sharedBuffer4->capacity(), 200u);
 
 	ns::SharedBuffer sharedBuffer5 = std::make_unique<ns::Buffer>(allocator, 300);
-	assert(sharedBuffer5->capacity() == 300);
+	EXPECT_EQ(sharedBuffer5->capacity(), 300u);
 
 	ns::SharedBuffer sharedBuffer6 = std::make_shared<ns::Buffer>(allocator, 400);
-	assert(sharedBuffer6->capacity() == 400);
-	assert(sharedBuffer6);
+	EXPECT_EQ(sharedBuffer6->capacity(), 400u);
+	EXPECT_TRUE(static_cast<bool>(sharedBuffer6));
 
 	sharedBuffer6.reset();
-	assert(sharedBuffer6 == nullptr);
+	EXPECT_EQ(sharedBuffer6, nullptr);
 }

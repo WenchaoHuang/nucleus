@@ -20,62 +20,76 @@
  *	SOFTWARE.
  */
 
+#include <gtest/gtest.h>
 #include <nucleus/array_proxy.h>
 
 /*********************************************************************************
 *****************************    array_proxy_test    *****************************
 *********************************************************************************/
 
-void array_proxy_test()
+TEST(ArrayProxyTest, CArray)
 {
 	int a[3] = { 1, 2, 3 };
-	std::array<int, 5> b = { 0,1,2,3,4 };
-	std::vector<int> c = { 0,1 };
-
 	ns::ArrayProxy<int> x0(a);
+
+	EXPECT_EQ(x0[0], a[0]);
+	EXPECT_EQ(x0[1], a[1]);
+	EXPECT_EQ(x0[2], a[2]);
+	EXPECT_EQ(x0.data(), a);
+	EXPECT_EQ(x0.size(), 3u);
+	EXPECT_FALSE(x0.empty());
+}
+
+TEST(ArrayProxyTest, StdArray)
+{
+	std::array<int, 5> b = { 0,1,2,3,4 };
 	ns::ArrayProxy<int> x1(b);
+
+	EXPECT_EQ(x1[0], b[0]);
+	EXPECT_EQ(x1[1], b[1]);
+	EXPECT_EQ(x1[2], b[2]);
+	EXPECT_EQ(x1[3], b[3]);
+	EXPECT_EQ(x1[4], b[4]);
+	EXPECT_EQ(x1.data(), b.data());
+	EXPECT_EQ(x1.size(), b.size());
+	EXPECT_FALSE(x1.empty());
+}
+
+TEST(ArrayProxyTest, StdVector)
+{
+	std::vector<int> c = { 0,1 };
 	ns::ArrayProxy<int> x2(c);
+
+	EXPECT_EQ(x2[0], c[0]);
+	EXPECT_EQ(x2[1], c[1]);
+	EXPECT_EQ(x2.data(), c.data());
+	EXPECT_EQ(x2.size(), c.size());
+	EXPECT_FALSE(x2.empty());
+}
+
+TEST(ArrayProxyTest, Nullptr)
+{
 	ns::ArrayProxy<int> x3 = nullptr;
+
+	EXPECT_EQ(x3.size(), 0u);
+	EXPECT_EQ(x3.data(), nullptr);
+	EXPECT_TRUE(x3.empty());
+}
+
+TEST(ArrayProxyTest, InitializerList)
+{
 	ns::ArrayProxy<int> x4({ 1,2,3 });
 
-	assert(x0[0] == a[0]);
-	assert(x0[1] == a[1]);
-	assert(x0[2] == a[2]);
-	assert(x0.data() == a);
-	assert(x0.size() == 3);
-	assert(x0.empty() == false);
-
-	assert(x1[0] == b[0]);
-	assert(x1[1] == b[1]);
-	assert(x1[2] == b[2]);
-	assert(x1[3] == b[3]);
-	assert(x1[4] == b[4]);
-	assert(x1.data() == b.data());
-	assert(x1.size() == b.size());
-	assert(x1.empty() == false);
-
-	assert(x2[0] == c[0]);
-	assert(x2[1] == c[1]);
-	assert(x2.data() == c.data());
-	assert(x2.size() == c.size());
-	assert(x2.empty() == false);
-
-	assert(x3.size() == 0);
-	assert(x3.data() == nullptr);
-	assert(x3.empty() == true);
-
-	if (!x4.empty())
-	{
-		auto x5 = x4.end();
-		auto x6 = x4.data();
-		auto x7 = x4.begin();
-		auto x8 = x4.front();
-		auto x9 = x4.back();
-		assert(x4.size() == 3);
-		assert(x4[0] == 1);
-		assert(x4[1] == 2);
-		assert(x4[2] == 3);
-	}
+	ASSERT_FALSE(x4.empty());
+	auto x5 = x4.end();
+	auto x6 = x4.data();
+	auto x7 = x4.begin();
+	auto x8 = x4.front();
+	auto x9 = x4.back();
+	EXPECT_EQ(x4.size(), 3u);
+	EXPECT_EQ(x4[0], 1);
+	EXPECT_EQ(x4[1], 2);
+	EXPECT_EQ(x4[2], 3);
 
 	for (auto val : x4)
 	{

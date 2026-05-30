@@ -20,6 +20,7 @@
  *	SOFTWARE.
  */
 
+#include <gtest/gtest.h>
 #include <nucleus/stream.h>
 #include <nucleus/device.h>
 #include <nucleus/context.h>
@@ -108,7 +109,7 @@ __global__ void test_device_texture(dev::Tex1D<int> tex0, dev::Tex1DLod<int> tex
 }
 
 
-void texture_test()
+TEST(TextureTest, BasicOperations)
 {
 	auto device = ns::Context::getInstance()->device(0);
 	auto allocator = device->defaultAllocator();
@@ -116,53 +117,53 @@ void texture_test()
 
 	//	1D
 	ns::Texture1D<int>	texture0(ns::SharedImage1D<int>(allocator, 10));
-	assert(texture0.image() != nullptr);
+	EXPECT_NE(texture0.image(), nullptr);
 	
 	ns::Texture1DLod<int>	texture1(ns::SharedImage1DLod<int>(allocator, 10, 2));
-	assert(texture1.image() != nullptr);
+	EXPECT_NE(texture1.image(), nullptr);
 
 	ns::Texture1DLayered<int>	texture2(ns::SharedImage1DLayered<int>(allocator, 10, 2));
-	assert(texture2.image() != nullptr);
+	EXPECT_NE(texture2.image(), nullptr);
 
 	ns::Texture1DLayeredLod<int>	texture3(ns::SharedImage1DLayeredLod<int>(allocator, 10, 2, 2));
-	assert(texture3.image() != nullptr);
+	EXPECT_NE(texture3.image(), nullptr);
 
 	//	2D
 	ns::Texture2D<float>	texture4(ns::SharedImage2D<char>(allocator, 10, 10));
-	assert(texture4.image() != nullptr);
+	EXPECT_NE(texture4.image(), nullptr);
 
 	ns::Texture2DLod<int>	texture5(ns::SharedImage2DLod<int>(allocator, 10, 10, 2));
-	assert(texture5.image() != nullptr);
+	EXPECT_NE(texture5.image(), nullptr);
 
 	ns::Texture2DLayered<int>	texture6(ns::SharedImage2DLayered<int>(allocator, 10, 10, 2));
-	assert(texture6.image() != nullptr);
+	EXPECT_NE(texture6.image(), nullptr);
 
 	ns::Texture2DLayeredLod<int>	texture7(ns::SharedImage2DLayeredLod<int>(allocator, 10, 10, 2, 2));
-	assert(texture7.image() != nullptr);
+	EXPECT_NE(texture7.image(), nullptr);
 
 	//	3D
 	ns::Texture3D<int>	texture8(ns::SharedImage3D<int>(allocator, 10, 10, 10));
-	assert(texture8.image() != nullptr);
+	EXPECT_NE(texture8.image(), nullptr);
 
 	ns::Texture3DLod<int>	texture9(ns::SharedImage3DLod<int>(allocator, 10, 10, 10, 2));
-	assert(texture9.image() != nullptr);
+	EXPECT_NE(texture9.image(), nullptr);
 
 	//	Cube
 	ns::TextureCube<int>	texture10(ns::SharedImageCube<int>(allocator, 10));
-	assert(texture10.image() != nullptr);
+	EXPECT_NE(texture10.image(), nullptr);
 
 	ns::TextureCubeLod<int>	texture11(ns::SharedImageCubeLod<int>(allocator, 10, 2));
-	assert(texture11.image() != nullptr);
+	EXPECT_NE(texture11.image(), nullptr);
 
 	ns::TextureCubeLayered<int>	texture12(ns::SharedImageCubeLayered<int>(allocator, 10, 2));
-	assert(texture12.image() != nullptr);
+	EXPECT_NE(texture12.image(), nullptr);
 
 	ns::TextureCubeLayeredLod<int>	texture13(ns::SharedImageCubeLayeredLod<int>(allocator, 10, 2, 2));
-	assert(texture13.image() != nullptr);
+	EXPECT_NE(texture13.image(), nullptr);
 
 	// Read mode: normalized float
 	ns::Texture2D<float>	texture14(ns::SharedImage2D<char>(allocator, 10, 10));
-	assert(texture14.image() != nullptr);
+	EXPECT_NE(texture14.image(), nullptr);
 
 	stream.launch(test_device_texture, 1, 1)(texture0, texture1, texture2, texture3,
 											 texture4, texture5, texture6, texture7,

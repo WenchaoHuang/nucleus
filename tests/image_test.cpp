@@ -20,6 +20,7 @@
  *	SOFTWARE.
  */
 
+#include <gtest/gtest.h>
 #include <nucleus/device.h>
 #include <nucleus/context.h>
 #include <nucleus/image_1d.h>
@@ -31,166 +32,176 @@
 ********************************    image_test    ********************************
 *********************************************************************************/
 
-void image_test()
+TEST(ImageTest, Image1D)
 {
 	auto device = ns::Context::getInstance()->device(0);
 	auto allocator = device->defaultAllocator();
 
-	//=========================    1D    =========================
-
 	ns::Image1D<int> image1(allocator, 128);
 	static_assert(image1.format() == ns::Format::Int);
-	assert(image1.isSurfaceLoadStoreSupported() == false);
-	assert(image1.allocator() == allocator);
-	assert(image1.data() != nullptr);
-	assert(image1.width() == 128);
+	EXPECT_FALSE(image1.isSurfaceLoadStoreSupported());
+	EXPECT_EQ(image1.allocator(), allocator);
+	EXPECT_NE(image1.data(), nullptr);
+	EXPECT_EQ(image1.width(), 128u);
 
 	ns::Image1DLayered<float> image2(allocator, 1024, 5, true);
 	static_assert(image2.format() == ns::Format::Float);
-	assert(image2.isSurfaceLoadStoreSupported() == true);
-	assert(image2.allocator() == allocator);
-	assert(image2.data() != nullptr);
-	assert(image2.numLayers() == 5);
-	assert(image2.width() == 1024);
+	EXPECT_TRUE(image2.isSurfaceLoadStoreSupported());
+	EXPECT_EQ(image2.allocator(), allocator);
+	EXPECT_NE(image2.data(), nullptr);
+	EXPECT_EQ(image2.numLayers(), 5u);
+	EXPECT_EQ(image2.width(), 1024u);
 
 	ns::Image1DLod<short> image3(allocator, 1024, 3);
 	static_assert(image3.format() == ns::Format::Short);
-	assert(image3.getLevel(0).width() == 1024);
-	assert(image3.getLevel(1).width() == 512);
-	assert(image3.getLevel(2).width() == 256);
-	assert(image3.allocator() == allocator);
-	assert(image3.handle() != nullptr);
-	assert(image3.numLevels() == 3);
-	assert(image3.width() == 1024);
+	EXPECT_EQ(image3.getLevel(0).width(), 1024u);
+	EXPECT_EQ(image3.getLevel(1).width(), 512u);
+	EXPECT_EQ(image3.getLevel(2).width(), 256u);
+	EXPECT_EQ(image3.allocator(), allocator);
+	EXPECT_NE(image3.handle(), nullptr);
+	EXPECT_EQ(image3.numLevels(), 3u);
+	EXPECT_EQ(image3.width(), 1024u);
 
 	ns::Image1DLayeredLod<char> image4(allocator, 1024, 10, 5);
 	static_assert(image4.format() == ns::Format::Char);
-	assert(image4.getLevel(0).width() == 1024);
-	assert(image4.getLevel(1).width() == 512);
-	assert(image4.getLevel(2).width() == 256);
-	assert(image4.getLevel(3).width() == 128);
-	assert(image4.getLevel(4).width() == 64);
-	assert(image4.allocator() == allocator);
-	assert(image4.handle() != nullptr);
-	assert(image4.numLayers() == 10);
-	assert(image4.numLevels() == 5);
-	assert(image4.width() == 1024);
+	EXPECT_EQ(image4.getLevel(0).width(), 1024u);
+	EXPECT_EQ(image4.getLevel(1).width(), 512u);
+	EXPECT_EQ(image4.getLevel(2).width(), 256u);
+	EXPECT_EQ(image4.getLevel(3).width(), 128u);
+	EXPECT_EQ(image4.getLevel(4).width(), 64u);
+	EXPECT_EQ(image4.allocator(), allocator);
+	EXPECT_NE(image4.handle(), nullptr);
+	EXPECT_EQ(image4.numLayers(), 10u);
+	EXPECT_EQ(image4.numLevels(), 5u);
+	EXPECT_EQ(image4.width(), 1024u);
+}
 
-	//=========================    2D    =========================
+TEST(ImageTest, Image2D)
+{
+	auto device = ns::Context::getInstance()->device(0);
+	auto allocator = device->defaultAllocator();
 
 	ns::Image2D<int> image5(allocator, 128, 128);
 	static_assert(image5.format() == ns::Format::Int);
-	assert(image5.isSurfaceLoadStoreSupported() == false);
-	assert(image5.allocator() == allocator);
-	assert(image5.data() != nullptr);
-	assert(image5.height() == 128);
-	assert(image5.width() == 128);
+	EXPECT_FALSE(image5.isSurfaceLoadStoreSupported());
+	EXPECT_EQ(image5.allocator(), allocator);
+	EXPECT_NE(image5.data(), nullptr);
+	EXPECT_EQ(image5.height(), 128u);
+	EXPECT_EQ(image5.width(), 128u);
 
 	ns::Image2DLayered<float> image6(allocator, 1024, 256, 5, true);
 	static_assert(image6.format() == ns::Format::Float);
-	assert(image6.isSurfaceLoadStoreSupported() == true);
-	assert(image6.allocator() == allocator);
-	assert(image6.data() != nullptr);
-	assert(image6.numLayers() == 5);
-	assert(image6.width() == 1024);
-	assert(image6.height() == 256);
+	EXPECT_TRUE(image6.isSurfaceLoadStoreSupported());
+	EXPECT_EQ(image6.allocator(), allocator);
+	EXPECT_NE(image6.data(), nullptr);
+	EXPECT_EQ(image6.numLayers(), 5u);
+	EXPECT_EQ(image6.width(), 1024u);
+	EXPECT_EQ(image6.height(), 256u);
 
 	ns::Image2DLod<short> image7(allocator, 1024, 128, 3);
 	static_assert(image7.format() == ns::Format::Short);
-	assert(image7.getLevel(0).width() == 1024);
-	assert(image7.getLevel(1).width() == 512);
-	assert(image7.getLevel(2).width() == 256);
-	assert(image7.getLevel(0).height() == 128);
-	assert(image7.getLevel(1).height() == 64);
-	assert(image7.getLevel(2).height() == 32);
-	assert(image7.allocator() == allocator);
-	assert(image7.handle() != nullptr);
-	assert(image7.numLevels() == 3);
-	assert(image7.width() == 1024);
-	assert(image7.height() == 128);
+	EXPECT_EQ(image7.getLevel(0).width(), 1024u);
+	EXPECT_EQ(image7.getLevel(1).width(), 512u);
+	EXPECT_EQ(image7.getLevel(2).width(), 256u);
+	EXPECT_EQ(image7.getLevel(0).height(), 128u);
+	EXPECT_EQ(image7.getLevel(1).height(), 64u);
+	EXPECT_EQ(image7.getLevel(2).height(), 32u);
+	EXPECT_EQ(image7.allocator(), allocator);
+	EXPECT_NE(image7.handle(), nullptr);
+	EXPECT_EQ(image7.numLevels(), 3u);
+	EXPECT_EQ(image7.width(), 1024u);
+	EXPECT_EQ(image7.height(), 128u);
 
 	ns::Image2DLayeredLod<char> image8(allocator, 1024, 64, 10, 5);
 	static_assert(image8.format() == ns::Format::Char);
-	assert(image8.getLevel(0).width() == 1024);
-	assert(image8.getLevel(1).width() == 512);
-	assert(image8.getLevel(2).width() == 256);
-	assert(image8.getLevel(3).width() == 128);
-	assert(image8.getLevel(4).width() == 64);
-	assert(image8.getLevel(0).height() == 64);
-	assert(image8.getLevel(1).height() == 32);
-	assert(image8.getLevel(2).height() == 16);
-	assert(image8.getLevel(3).height() == 8);
-	assert(image8.getLevel(4).height() == 4);
-	assert(image8.allocator() == allocator);
-	assert(image8.handle() != nullptr);
-	assert(image8.numLayers() == 10);
-	assert(image8.numLevels() == 5);
-	assert(image8.width() == 1024);
-	assert(image8.height() == 64);
+	EXPECT_EQ(image8.getLevel(0).width(), 1024u);
+	EXPECT_EQ(image8.getLevel(1).width(), 512u);
+	EXPECT_EQ(image8.getLevel(2).width(), 256u);
+	EXPECT_EQ(image8.getLevel(3).width(), 128u);
+	EXPECT_EQ(image8.getLevel(4).width(), 64u);
+	EXPECT_EQ(image8.getLevel(0).height(), 64u);
+	EXPECT_EQ(image8.getLevel(1).height(), 32u);
+	EXPECT_EQ(image8.getLevel(2).height(), 16u);
+	EXPECT_EQ(image8.getLevel(3).height(), 8u);
+	EXPECT_EQ(image8.getLevel(4).height(), 4u);
+	EXPECT_EQ(image8.allocator(), allocator);
+	EXPECT_NE(image8.handle(), nullptr);
+	EXPECT_EQ(image8.numLayers(), 10u);
+	EXPECT_EQ(image8.numLevels(), 5u);
+	EXPECT_EQ(image8.width(), 1024u);
+	EXPECT_EQ(image8.height(), 64u);
+}
 
-	//=========================    3D    =========================
+TEST(ImageTest, Image3D)
+{
+	auto device = ns::Context::getInstance()->device(0);
+	auto allocator = device->defaultAllocator();
 
 	ns::Image3D<int> image9(allocator, 128, 128, 128);
 	static_assert(image9.format() == ns::Format::Int);
-	assert(image9.isSurfaceLoadStoreSupported() == false);
-	assert(image9.allocator() == allocator);
-	assert(image9.data() != nullptr);
-	assert(image9.height() == 128);
-	assert(image9.width() == 128);
-	assert(image9.depth() == 128);
+	EXPECT_FALSE(image9.isSurfaceLoadStoreSupported());
+	EXPECT_EQ(image9.allocator(), allocator);
+	EXPECT_NE(image9.data(), nullptr);
+	EXPECT_EQ(image9.height(), 128u);
+	EXPECT_EQ(image9.width(), 128u);
+	EXPECT_EQ(image9.depth(), 128u);
 
 	ns::Image3DLod<short> image10(allocator, 1024, 128, 256, 3);
 	static_assert(image10.format() == ns::Format::Short);
-	assert(image10.getLevel(0).width() == 1024);
-	assert(image10.getLevel(1).width() == 512);
-	assert(image10.getLevel(2).width() == 256);
-	assert(image10.getLevel(0).height() == 128);
-	assert(image10.getLevel(1).height() == 64);
-	assert(image10.getLevel(2).height() == 32);
-	assert(image10.getLevel(0).depth() == 256);
-	assert(image10.getLevel(1).depth() == 128);
-	assert(image10.getLevel(2).depth() == 64);
-	assert(image10.allocator() == allocator);
-	assert(image10.handle() != nullptr);
-	assert(image10.numLevels() == 3);
-	assert(image10.height() == 128);
-	assert(image10.width() == 1024);
-	assert(image10.depth() == 256);
+	EXPECT_EQ(image10.getLevel(0).width(), 1024u);
+	EXPECT_EQ(image10.getLevel(1).width(), 512u);
+	EXPECT_EQ(image10.getLevel(2).width(), 256u);
+	EXPECT_EQ(image10.getLevel(0).height(), 128u);
+	EXPECT_EQ(image10.getLevel(1).height(), 64u);
+	EXPECT_EQ(image10.getLevel(2).height(), 32u);
+	EXPECT_EQ(image10.getLevel(0).depth(), 256u);
+	EXPECT_EQ(image10.getLevel(1).depth(), 128u);
+	EXPECT_EQ(image10.getLevel(2).depth(), 64u);
+	EXPECT_EQ(image10.allocator(), allocator);
+	EXPECT_NE(image10.handle(), nullptr);
+	EXPECT_EQ(image10.numLevels(), 3u);
+	EXPECT_EQ(image10.height(), 128u);
+	EXPECT_EQ(image10.width(), 1024u);
+	EXPECT_EQ(image10.depth(), 256u);
+}
 
-	//=========================    Cube    =========================
+TEST(ImageTest, ImageCube)
+{
+	auto device = ns::Context::getInstance()->device(0);
+	auto allocator = device->defaultAllocator();
 
 	ns::ImageCube<int> image11(allocator, 128);
 	static_assert(image11.format() == ns::Format::Int);
-	assert(image11.isSurfaceLoadStoreSupported() == false);
-	assert(image11.allocator() == allocator);
-	assert(image11.data() != nullptr);
-	assert(image11.width() == 128);
+	EXPECT_FALSE(image11.isSurfaceLoadStoreSupported());
+	EXPECT_EQ(image11.allocator(), allocator);
+	EXPECT_NE(image11.data(), nullptr);
+	EXPECT_EQ(image11.width(), 128u);
 
 	ns::ImageCubeLayered<float> image12(allocator, 1024, 5, true);
-	assert(image12.isSurfaceLoadStoreSupported() == true);
-	assert(image12.format() == ns::Format::Float);
-	assert(image12.allocator() == allocator);
-	assert(image12.data() != nullptr);
-	assert(image12.numLayers() == 5);
-	assert(image12.width() == 1024);
+	static_assert(image12.format() == ns::Format::Float);
+	EXPECT_TRUE(image12.isSurfaceLoadStoreSupported());
+	EXPECT_EQ(image12.allocator(), allocator);
+	EXPECT_NE(image12.data(), nullptr);
+	EXPECT_EQ(image12.numLayers(), 5u);
+	EXPECT_EQ(image12.width(), 1024u);
 
 	ns::ImageCubeLod<short> image13(allocator, 1024, 3);
 	static_assert(image13.format() == ns::Format::Short);
-	assert(image13.getLevel(0).width() == 1024);
-	assert(image13.getLevel(1).width() == 512);
-	assert(image13.getLevel(2).width() == 256);
-	assert(image13.allocator() == allocator);
-	assert(image13.handle() != nullptr);
-	assert(image13.numLevels() == 3);
-	assert(image13.width() == 1024);
+	EXPECT_EQ(image13.getLevel(0).width(), 1024u);
+	EXPECT_EQ(image13.getLevel(1).width(), 512u);
+	EXPECT_EQ(image13.getLevel(2).width(), 256u);
+	EXPECT_EQ(image13.allocator(), allocator);
+	EXPECT_NE(image13.handle(), nullptr);
+	EXPECT_EQ(image13.numLevels(), 3u);
+	EXPECT_EQ(image13.width(), 1024u);
 
 	ns::ImageCubeLayeredLod<char> image14(allocator, 1024, 64, 2);
 	static_assert(image14.format() == ns::Format::Char);
-	assert(image14.getLevel(0).width() == 1024);
-	assert(image14.getLevel(1).width() == 512);
-	assert(image14.allocator() == allocator);
-	assert(image14.handle() != nullptr);
-	assert(image14.numLayers() == 64);
-	assert(image14.numLevels() == 2);
-	assert(image14.width() == 1024);
+	EXPECT_EQ(image14.getLevel(0).width(), 1024u);
+	EXPECT_EQ(image14.getLevel(1).width(), 512u);
+	EXPECT_EQ(image14.allocator(), allocator);
+	EXPECT_NE(image14.handle(), nullptr);
+	EXPECT_EQ(image14.numLayers(), 64u);
+	EXPECT_EQ(image14.numLevels(), 2u);
+	EXPECT_EQ(image14.width(), 1024u);
 }

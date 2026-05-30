@@ -20,6 +20,7 @@
  *	SOFTWARE.
  */
 
+#include <gtest/gtest.h>
 #include <nucleus/logger.h>
 #include <nucleus/format.h>
 #include <nucleus/device.h>
@@ -47,7 +48,7 @@ class MyHostAllocator : public ns::HostAllocator
 };
 
 
-void allocator_test()
+TEST(AllocatorTest, BasicOperations)
 {
 	auto device = ns::Context::getInstance()->device(0);
 

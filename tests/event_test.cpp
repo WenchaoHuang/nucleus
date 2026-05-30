@@ -20,6 +20,7 @@
  *	SOFTWARE.
  */
 
+#include <gtest/gtest.h>
 #include <nucleus/event.h>
 #include <nucleus/device.h>
 #include <nucleus/stream.h>
@@ -30,7 +31,7 @@
 ********************************    event_test    ********************************
 *********************************************************************************/
 
-void event_test()
+TEST(EventTest, BasicOperations)
 {
 	auto device = ns::Context::getInstance()->device(0);
 	auto & stream = device->defaultStream();

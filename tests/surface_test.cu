@@ -20,6 +20,7 @@
  *	SOFTWARE.
  */
 
+#include <gtest/gtest.h>
 #include <nucleus/device.h>
 #include <nucleus/context.h>
 #include <nucleus/surface.h>
@@ -143,7 +144,7 @@ __global__ void test_device_surface(dev::Surf1D<int> surface0, dev::Surf1D<const
 }
 
 
-void surface_test()
+TEST(SurfaceTest, BasicOperations)
 {
 	auto device = ns::Context::getInstance()->device(0);
 	auto allocator = device->defaultAllocator();

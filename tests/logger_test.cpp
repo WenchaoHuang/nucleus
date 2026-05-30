@@ -20,13 +20,14 @@
  *	SOFTWARE.
  */
 
+#include <gtest/gtest.h>
 #include <nucleus/logger.h>
 
 /*********************************************************************************
 *******************************    logger_test    ********************************
 *********************************************************************************/
 
-void logger_test()
+TEST(LoggerTest, BasicLogging)
 {
 	NS_INFO_LOG("This is info log.");
 	NS_DEBUG_LOG("This is debug log.");

@@ -20,6 +20,7 @@
  *	SOFTWARE.
  */
 
+#include <gtest/gtest.h>
 #include <nucleus/vector_types.h>
 #include <nucleus/vector_traits.h>
 
@@ -212,5 +213,11 @@ static_assert(std::is_same_v<ns::scalar_type_t<ns::float2>, float>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::float3>, float>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::float4>, float>);
 static_assert(std::is_same_v<ns::scalar_type_t<ns::double4>, double>);
+
+TEST(VectorTraitsTest, CompileTimeChecks)
+{
+	// All checks are static_assert above; this test just confirms compilation
+	SUCCEED();
+}
 
 #endif	//	NS_HAS_CXX_20

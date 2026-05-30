@@ -20,45 +20,4 @@
  *	SOFTWARE.
  */
 
-/*********************************************************************************
-***********************************    main    ***********************************
-*********************************************************************************/
-
-extern void event_test();
-extern void array_test();
-extern void image_test();
-extern void graph_test();
-extern void logger_test();
-extern void device_test();
-extern void buffer_test();
-extern void stream_test();
-extern void context_test();
-extern void dev_ptr_test();
-extern void surface_test();
-extern void texture_test();
-extern void allocator_test();
-extern void array_proxy_test();
-extern void buffer_view_test();
-extern void shared_handle_test();
-
-int main()
-{
-	context_test();
-	device_test();
-	event_test();
-	graph_test();
-	allocator_test();
-	buffer_test();
-	dev_ptr_test();
-	array_test();
-	image_test();
-	stream_test();
-	surface_test();
-	texture_test();
-	buffer_view_test();
-	array_proxy_test();
-	shared_handle_test();
-	logger_test();
-
-	return 0;
-}
+#include <gtest/gtest.h>

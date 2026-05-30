@@ -20,6 +20,7 @@
  *	SOFTWARE.
  */
 
+#include <gtest/gtest.h>
 #include <nucleus/device.h>
 #include <nucleus/context.h>
 
@@ -27,7 +28,7 @@
 *******************************    device_test    ********************************
 *********************************************************************************/
 
-void device_test()
+TEST(DeviceTest, BasicOperations)
 {
 	auto device = ns::Context::getInstance()->device(0);
 

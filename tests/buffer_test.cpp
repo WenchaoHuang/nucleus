@@ -20,6 +20,7 @@
  *	SOFTWARE.
  */
 
+#include <gtest/gtest.h>
 #include <nucleus/buffer.h>
 #include <nucleus/device.h>
 #include <nucleus/context.h>
@@ -28,7 +29,7 @@
 *******************************    buffer_test    ********************************
 *********************************************************************************/
 
-void buffer_test()
+TEST(BufferTest, BasicOperations)
 {
 	auto device = ns::Context::getInstance()->device(0);
 	auto allocator = device->defaultAllocator();
