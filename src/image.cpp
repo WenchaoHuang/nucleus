@@ -88,7 +88,7 @@ ImageLod::ImageLod(std::shared_ptr<DeviceAllocator> allocator, Format format, si
 }
 
 
-ImageLod::~ImageLod()
+ImageLod::~ImageLod() noexcept
 {
 	if ((m_allocator != nullptr) && (m_hImageLod != nullptr))
 	{
