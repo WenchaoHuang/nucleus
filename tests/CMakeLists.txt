@@ -20,6 +20,17 @@
 
 cmake_minimum_required(VERSION 3.18)
 
+# Fetch GoogleTest
+include(FetchContent)
+FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG        v1.14.0
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
 # Target name
 set(TARGET_NAME nucleus-tests)
 
@@ -31,7 +42,7 @@ file(GLOB TEST_CUDA_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cu"
 add_executable(${TARGET_NAME} ${TEST_CPP_SOURCES} ${TEST_CUDA_SOURCES})
 
 # Link directories
-target_link_libraries(${TARGET_NAME} PRIVATE nucleus)
+target_link_libraries(${TARGET_NAME} PRIVATE nucleus GTest::gtest GTest::gtest_main)
 
 # MSVC settings
 if(MSVC)
@@ -45,3 +56,7 @@ set_target_properties(${TARGET_NAME} PROPERTIES
     CUDA_ARCHITECTURES "75"
     FOLDER "Tests"
 )
+
+# Enable CTest integration
+include(GoogleTest)
+gtest_discover_tests(${TARGET_NAME})

@@ -20,6 +20,7 @@
  *	SOFTWARE.
  */
 
+#include <gtest/gtest.h>
 #include <nucleus/device_pointer.h>
 #include <device_launch_parameters.h>
 
@@ -128,57 +129,70 @@ NS_CUDA_CALLABLE void test(dev::Ptr<int> arr0, dev::Ptr<const int> arr1,
 }
 
 
-void dev_ptr_test()
+TEST(DevPtrTest, Ptr1D)
 {
 	dev::Ptr<int> devPtr0;
 	dev::Ptr<int> devPtr1 = nullptr;
 	dev::Ptr<int> devPtr2(nullptr, 1024);
 	ns::ptr_cast<float>(devPtr0);
 
+	if (devPtr2.empty())
+	{
+		EXPECT_EQ(devPtr2.size(), 1024u);
+		EXPECT_TRUE(devPtr2.empty());
+		EXPECT_EQ(devPtr2.bytes(), 1024 * sizeof(int));
+		EXPECT_EQ(devPtr2.width(), 1024u);
+		EXPECT_EQ(devPtr2.pitch(), 1024 * sizeof(int));
+		EXPECT_EQ(devPtr2.data(), nullptr);
+		devPtr2 = nullptr;
+	}
+}
+
+TEST(DevPtrTest, Ptr2D)
+{
 	dev::Ptr2<short> devPtr3;
 	dev::Ptr2<short> devPtr4 = nullptr;
 	dev::Ptr2<short> devPtr5(nullptr, 100, 200);
 	ns::ptr_cast<short>(devPtr3);
 
+	if (devPtr3 != devPtr4)
+	{
+		EXPECT_EQ(devPtr4.size(), 0u);
+		EXPECT_EQ(devPtr4.bytes(), 0u);
+		EXPECT_EQ(devPtr4.width(), 0u);
+		EXPECT_EQ(devPtr4.pitch(), 0u);
+		EXPECT_EQ(devPtr4.height(), 0u);
+		EXPECT_TRUE(devPtr4.empty());
+		EXPECT_EQ(devPtr4.data(), nullptr);
+		devPtr4 = nullptr;
+	}
+}
+
+TEST(DevPtrTest, Ptr3D)
+{
 	dev::Ptr3<float> devPtr6;
 	dev::Ptr3<float> devPtr7 = nullptr;
 	dev::Ptr3<float> devPtr8(nullptr, 100, 200, 300);
 	ns::ptr_cast<float>(devPtr6);
 
-	if (devPtr2.empty())
-	{
-		assert(devPtr2.size() == 1024);
-		assert(devPtr2.empty() == true);
-		assert(devPtr2.bytes() == 1024 * sizeof(int));
-		assert(devPtr2.width() == 1024);
-		assert(devPtr2.pitch() == 1024 * sizeof(int));
-		assert(devPtr2.data() == nullptr);
-		devPtr2 = nullptr;
-	}
-
-	if (devPtr3 != devPtr4)
-	{
-		assert(devPtr4.size() == 0);
-		assert(devPtr4.bytes() == 0);
-		assert(devPtr4.width() == 0);
-		assert(devPtr4.pitch() == 0);
-		assert(devPtr4.height() == 0);
-		assert(devPtr4.empty() == true);
-		assert(devPtr4.data() == nullptr);
-		devPtr4 = nullptr;
-	}
-
 	if (devPtr8.empty())
 	{
-		assert(devPtr8.empty() == true);
-		assert(devPtr8.size() == 100 * 200 * 300);
-		assert(devPtr8.bytes() == 100 * 200 * 300 * sizeof(float));
-		assert(devPtr8.width() == 100);
-		assert(devPtr8.height() == 200);
-		assert(devPtr8.depth() == 300);
-		assert(devPtr8.data() == nullptr);
+		EXPECT_TRUE(devPtr8.empty());
+		EXPECT_EQ(devPtr8.size(), 100u * 200u * 300u);
+		EXPECT_EQ(devPtr8.bytes(), 100 * 200 * 300 * sizeof(float));
+		EXPECT_EQ(devPtr8.width(), 100u);
+		EXPECT_EQ(devPtr8.height(), 200u);
+		EXPECT_EQ(devPtr8.depth(), 300u);
+		EXPECT_EQ(devPtr8.data(), nullptr);
 		devPtr8 = nullptr;
 	}
+}
+
+TEST(DevPtrTest, CudaCallable)
+{
+	dev::Ptr<int> devPtr2(nullptr, 1024);
+	dev::Ptr2<short> devPtr4 = nullptr;
+	dev::Ptr3<float> devPtr8(nullptr, 100, 200, 300);
 
 	test(devPtr2, devPtr2, devPtr4, devPtr4, devPtr8, devPtr8);
 }

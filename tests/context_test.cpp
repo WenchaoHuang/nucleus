@@ -20,20 +20,24 @@
  *	SOFTWARE.
  */
 
+#include <gtest/gtest.h>
 #include <nucleus/context.h>
 
 /*********************************************************************************
 *******************************    context_test    *******************************
 *********************************************************************************/
 
-void context_test()
+TEST(ContextTest, VersionComparison)
 {
-	assert(ns::Version(10, 2) < ns::Version(10, 3));
-	assert(ns::Version(10, 4) > ns::Version(10, 3));
-	assert(ns::Version(10, 5) == ns::Version(10, 5));
-	assert(ns::Version(10, 5) >= ns::Version(10, 5));
-	assert(ns::Version(10, 5) <= ns::Version(10, 5));
+	EXPECT_LT(ns::Version(10, 2), ns::Version(10, 3));
+	EXPECT_GT(ns::Version(10, 4), ns::Version(10, 3));
+	EXPECT_EQ(ns::Version(10, 5), ns::Version(10, 5));
+	EXPECT_GE(ns::Version(10, 5), ns::Version(10, 5));
+	EXPECT_LE(ns::Version(10, 5), ns::Version(10, 5));
+}
 
+TEST(ContextTest, GetInstance)
+{
 	auto context = ns::Context::getInstance();
 	auto driverVersion = context->driverVersion();
 	auto runtimVersion = context->runtimeVersion();
