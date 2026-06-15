@@ -28,32 +28,32 @@
 namespace NS_NAMESPACE
 {
 	/*****************************************************************************
-	*******************************    Context    ********************************
+	*******************************    Runtime    ********************************
 	*****************************************************************************/
 
 	/**
-	 *	@brief		Wrapper for CUDA context object (singleton).
+	 *	@brief		Wrapper for CUDA runtime object (singleton).
 	 */
-	class Context
+	class Runtime
 	{
-		NS_NONCOPYABLE(Context)
+		NS_NONCOPYABLE(Runtime)
 
 	private:
 
-		//!	@brief		Create CUDA context wrapper.
-		NS_API Context();
+		//!	@brief		Create CUDA runtime wrapper.
+		NS_API Runtime();
 
-		//!	@brief		Destroy CUDA context wrapper.
-		NS_API ~Context();
+		//!	@brief		Destroy CUDA runtime wrapper.
+		NS_API ~Runtime();
 
 	public:
 
 		/**
-		 *	@brief		Return a raw pointer to the CUDA context wrapper (singleton).
+		 *	@brief		Return a raw pointer to the CUDA runtime wrapper (singleton).
 		 */
-		static Context * getInstance()
+		static Runtime * getInstance()
 		{
-			static Context s_instance;
+			static Runtime s_instance;
 
 			return &s_instance;
 		}
@@ -86,25 +86,25 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Return the latest version of CUDA supported by the driver.
 		 */
-		Version driverVersion() const { return m_driverVersion; }
+		static Version driverVersion() { return getInstance()->m_driverVersion; }
 
 
 		/**
 		 *	@brief		Return the version number of the current CUDA Runtime instance.
 		 */
-		Version runtimeVersion() const { return m_runtimeVersion; }
+		static Version runtimeVersion() { return getInstance()->m_runtimeVersion; }
 
 
 		/**
 		 *	@brief		Return pointer to physical device.
 		 */
-		Device * device(size_t index) const { return m_cudaDevices[index]; }
+		static Device * device(size_t index) { return getInstance()->m_cudaDevices[index]; }
 
 
 		/**
 		 *	@brief		Return physical device array.
 		 */
-		const std::vector<Device*> & getDevices() const { return m_cudaDevices; }
+		static const std::vector<Device*> & getDevices() { return getInstance()->m_cudaDevices; }
 
 	private:
 

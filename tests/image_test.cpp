@@ -21,7 +21,7 @@
  */
 
 #include <nucleus/device.h>
-#include <nucleus/context.h>
+#include <nucleus/runtime.h>
 #include <nucleus/image_1d.h>
 #include <nucleus/image_2d.h>
 #include <nucleus/image_3d.h>
@@ -33,7 +33,7 @@
 
 void image_test()
 {
-	auto device = ns::Context::getInstance()->device(0);
+	auto device = ns::Runtime::device(0);
 	auto allocator = device->defaultAllocator();
 
 	//=========================    1D    =========================

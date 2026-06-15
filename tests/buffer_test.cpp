@@ -22,7 +22,7 @@
 
 #include <nucleus/buffer.h>
 #include <nucleus/device.h>
-#include <nucleus/context.h>
+#include <nucleus/runtime.h>
 
 /*********************************************************************************
 *******************************    buffer_test    ********************************
@@ -30,7 +30,7 @@
 
 void buffer_test()
 {
-	auto device = ns::Context::getInstance()->device(0);
+	auto device = ns::Runtime::device(0);
 	auto allocator = device->defaultAllocator();
 
 	ns::Buffer buffer0;

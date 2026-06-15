@@ -21,7 +21,7 @@
  */
 
 #include <nucleus/device.h>
-#include <nucleus/context.h>
+#include <nucleus/runtime.h>
 #include <nucleus/buffer_view.h>
 
  /*********************************************************************************
@@ -30,7 +30,7 @@
 
 void buffer_view_test()
 {
-	auto device = ns::Context::getInstance()->device(0);
+	auto device = ns::Runtime::device(0);
 	auto allocator = device->defaultAllocator();
 	auto buffer = std::make_shared<ns::Buffer>(allocator, sizeof(int) * 1024);
 

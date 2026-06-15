@@ -21,7 +21,7 @@
  */
 
 #include <nucleus/device.h>
-#include <nucleus/context.h>
+#include <nucleus/runtime.h>
 #include <nucleus/surface.h>
 #include <nucleus/device_surface.h>
 #include <device_launch_parameters.h>
@@ -145,7 +145,7 @@ __global__ void test_device_surface(dev::Surf1D<int> surface0, dev::Surf1D<const
 
 void surface_test()
 {
-	auto device = ns::Context::getInstance()->device(0);
+	auto device = ns::Runtime::device(0);
 	auto allocator = device->defaultAllocator();
 
 	ns::Surface1D<int>	surface0(ns::SharedImage1D<int>(allocator, 128, true));

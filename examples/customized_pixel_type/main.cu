@@ -22,7 +22,7 @@
 
 #include <nucleus/device.h>
 #include <nucleus/stream.h>
-#include <nucleus/context.h>
+#include <nucleus/runtime.h>
 #include <nucleus/surface.h>
 #include <nucleus/array_2d.h>
 #include <nucleus/allocator.h>
@@ -79,7 +79,7 @@ __global__ void pixel_assign(dev::Surf2D<MyPixelType1> out1, dev::Surf2D<MyPixel
 
 int main()
 {
-	auto device = ns::Context::getInstance()->device(0);
+	auto device = ns::Runtime::device(0);
 	auto hostAlloc = std::make_shared<ns::HostAllocator>();
 	auto allocator = device->defaultAllocator();
 	auto & stream = device->defaultStream();

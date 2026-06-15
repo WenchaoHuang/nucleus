@@ -23,7 +23,7 @@
 #include <nucleus/logger.h>
 #include <nucleus/format.h>
 #include <nucleus/device.h>
-#include <nucleus/context.h>
+#include <nucleus/runtime.h>
 #include <nucleus/allocator.h>
 
 /*********************************************************************************
@@ -49,7 +49,7 @@ class MyHostAllocator : public ns::HostAllocator
 
 void allocator_test()
 {
-	auto device = ns::Context::getInstance()->device(0);
+	auto device = ns::Runtime::device(0);
 
 	MyHostAllocator hostAlloc;
 	auto hostPtr = hostAlloc.allocateMemory(110);

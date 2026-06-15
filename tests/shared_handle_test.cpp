@@ -22,7 +22,7 @@
 
 #include <nucleus/buffer.h>
 #include <nucleus/device.h>
-#include <nucleus/context.h>
+#include <nucleus/runtime.h>
 
 /*********************************************************************************
 ****************************    shared_handle_test    ****************************
@@ -30,7 +30,7 @@
 
 void shared_handle_test()
 {
-	auto device = ns::Context::getInstance()->device(0);
+	auto device = ns::Runtime::device(0);
 	auto allocator = device->defaultAllocator();
 
 	ns::SharedBuffer sharedBuffer0;

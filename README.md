@@ -24,7 +24,7 @@ For OptiX ray-tracing functionality, see the companion [Photon](https://github.c
 
 ## Features
 
-- Device enumeration and properties via `ns::Context` and `ns::Device`
+- Device enumeration and properties via `ns::Runtime` and `ns::Device`
 - CUDA stream management with a fluent API (`stream.launch(…)(args…)`, `stream.memcpy(…)`, `stream.sync()`)
 - Typed 1-D, 2-D, and 3-D device arrays (`ns::Array<T>`, `ns::Array2D<T>`, `ns::Array3D<T>`)
 - Pluggable allocator interface (`ns::Allocator`, `ns::DeviceAllocator`, `ns::HostAllocator`)
@@ -105,7 +105,7 @@ Or include individual headers as needed (see [Project Structure](#project-struct
 
 ```cu
 // vector_add.cu  —  must be compiled with nvcc
-#include <nucleus/context.h>
+#include <nucleus/runtime.h>
 #include <nucleus/array_1d.h>
 #include <nucleus/launch_utils.cuh>  // .cuh — only in .cu files
 
@@ -125,8 +125,8 @@ int main()
 {
     const int count = 1 << 20;
 
-    // Obtain device, allocator, and default stream from the context singleton.
-    auto * device    = ns::Context::getInstance()->device(0);
+    // Obtain device, allocator, and default stream from the runtime singleton.
+    auto * device    = ns::Runtime::device(0);
     auto   allocator = device->defaultAllocator();
     auto & stream    = device->defaultStream();
 
@@ -183,14 +183,13 @@ stream.setForceSync(true);
 
 ## Core Concepts
 
-### `ns::Context`
+### `ns::Runtime`
 
 A process-wide singleton that initializes the CUDA runtime and enumerates all available devices.
 
 ```cpp
-auto * ctx = ns::Context::getInstance();
-std::cout << ctx->getDevices().size() << " GPU(s) found\n";
-auto * device = ctx->device(0);
+std::cout << ns::Runtime::getDevices().size() << " GPU(s) found\n";
+auto * device = ns::Runtime::device(0);
 ```
 
 ### `ns::Device`
@@ -349,7 +348,7 @@ __global__ void my_kernel(dev::Tex2D<float4> tex, int width, int height)
 Nucleus/
 ├── include/nucleus/        # Public headers (add to your include path)
 │   ├── nucleus.h           # Convenience header — includes everything
-│   ├── context.h           # ns::Context  (device enumeration, singleton)
+│   ├── runtime.h           # ns::Runtime  (device enumeration, singleton)
 │   ├── device.h            # ns::Device   (GPU handle, properties, allocator)
 │   ├── stream.h            # ns::Stream   (async work, kernel launch, memcpy)
 │   ├── event.h             # ns::Event, ns::TimedEvent

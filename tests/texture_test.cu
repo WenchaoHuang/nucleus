@@ -22,7 +22,7 @@
 
 #include <nucleus/stream.h>
 #include <nucleus/device.h>
-#include <nucleus/context.h>
+#include <nucleus/runtime.h>
 #include <nucleus/texture.h>
 #include <nucleus/image_1d.h>
 #include <nucleus/image_2d.h>
@@ -110,7 +110,7 @@ __global__ void test_device_texture(dev::Tex1D<int> tex0, dev::Tex1DLod<int> tex
 
 void texture_test()
 {
-	auto device = ns::Context::getInstance()->device(0);
+	auto device = ns::Runtime::device(0);
 	auto allocator = device->defaultAllocator();
 	auto & stream = device->defaultStream();
 

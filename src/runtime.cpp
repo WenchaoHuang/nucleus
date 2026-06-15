@@ -22,16 +22,16 @@
 
 #include "logger.h"
 #include "device.h"
-#include "context.h"
+#include "runtime.h"
 #include <cuda_runtime_api.h>
 
 NS_USING_NAMESPACE
 
 /*********************************************************************************
-*********************************    Context    **********************************
+*********************************    Runtime    **********************************
 *********************************************************************************/
 
-Context::Context()
+Runtime::Runtime()
 {
 	cudaGetLastError();
 
@@ -86,25 +86,25 @@ Context::Context()
 }
 
 
-const char * Context::getErrorString(Error_t eValue) noexcept
+const char * Runtime::getErrorString(Error_t eValue) noexcept
 {
 	return cudaGetErrorString(static_cast<cudaError_t>(eValue));
 }
 
 
-const char * Context::getErrorName(Error_t eValue) noexcept
+const char * Runtime::getErrorName(Error_t eValue) noexcept
 {
 	return cudaGetErrorName(static_cast<cudaError_t>(eValue));
 }
 
 
-Error_t Context::getLastError() noexcept
+Error_t Runtime::getLastError() noexcept
 {
 	return cudaGetLastError();
 }
 
 
-Context::~Context()
+Runtime::~Runtime()
 {
 	for (size_t i = 0; i < m_cudaDevices.size(); i++)
 	{

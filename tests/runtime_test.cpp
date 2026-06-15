@@ -20,13 +20,13 @@
  *	SOFTWARE.
  */
 
-#include <nucleus/context.h>
+#include <nucleus/runtime.h>
 
 /*********************************************************************************
-*******************************    context_test    *******************************
+*******************************    runtime_test    *******************************
 *********************************************************************************/
 
-void context_test()
+void runtime_test()
 {
 	assert(ns::Version(10, 2) < ns::Version(10, 3));
 	assert(ns::Version(10, 4) > ns::Version(10, 3));
@@ -34,9 +34,9 @@ void context_test()
 	assert(ns::Version(10, 5) >= ns::Version(10, 5));
 	assert(ns::Version(10, 5) <= ns::Version(10, 5));
 
-	auto context = ns::Context::getInstance();
-	auto driverVersion = context->driverVersion();
-	auto runtimVersion = context->runtimeVersion();
-	auto devices = context->getDevices();
-	auto device = context->device(0);
+	auto runtime = ns::Runtime::getInstance();
+	auto driverVersion = ns::Runtime::driverVersion();
+	auto runtimeVersion = ns::Runtime::runtimeVersion();
+	auto devices = ns::Runtime::getDevices();
+	auto device = ns::Runtime::device(0);
 }

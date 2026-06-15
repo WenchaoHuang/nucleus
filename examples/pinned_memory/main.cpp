@@ -27,7 +27,7 @@
 
 #include <nucleus/device.h>
 #include <nucleus/stream.h>
-#include <nucleus/context.h>
+#include <nucleus/runtime.h>
 #include <nucleus/array_1d.h>
 #include <nucleus/allocator.h>
 #include <nucleus/scoped_timer.h>
@@ -47,7 +47,7 @@ template<typename Type> std::string to_string_aligned(Type value, int align)
 
 int main()
 {
-	auto device = ns::Context::getInstance()->device(0);
+	auto device = ns::Runtime::device(0);
 	auto hostAlloc = std::make_shared<ns::HostAllocator>();
 	auto devAlloc = device->defaultAllocator();
 

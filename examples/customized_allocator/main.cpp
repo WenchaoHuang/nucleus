@@ -21,7 +21,7 @@
  */
 
 #include <map>
-#include <nucleus/context.h>
+#include <nucleus/runtime.h>
 #include <nucleus/array_1d.h>
 #include <nucleus/allocator.h>
 
@@ -74,7 +74,7 @@ private:
 
 int main()
 {
-	auto device = ns::Context::getInstance()->device(0);
+	auto device = ns::Runtime::device(0);
 	auto devAlloc = std::make_shared<MyAllocator>(device);
 
 	printf("\n");

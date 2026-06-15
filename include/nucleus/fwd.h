@@ -49,7 +49,7 @@ namespace NS_NAMESPACE
 	class Buffer;
 	class Stream;
 	class Device;
-	class Context;
+	class Runtime;
 	class Allocator;
 	class TimedEvent;
 	class ScopedTimer;
