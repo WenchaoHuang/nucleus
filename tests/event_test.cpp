@@ -23,7 +23,7 @@
 #include <nucleus/event.h>
 #include <nucleus/device.h>
 #include <nucleus/stream.h>
-#include <nucleus/context.h>
+#include <nucleus/runtime.h>
 #include <nucleus/scoped_timer.h>
 
 /*********************************************************************************
@@ -32,7 +32,7 @@
 
 void event_test()
 {
-	auto device = ns::Context::getInstance()->device(0);
+	auto device = ns::Runtime::device(0);
 	auto & stream = device->defaultStream();
 
 	ns::Event		event0(device);

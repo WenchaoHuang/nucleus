@@ -28,7 +28,7 @@
 /**
  *	@brief	Master header for the nucleus library.
  *	@note	This file aggregates all public headers of the nucleus library,
- *			including core runtime components (event, graph, logger, stream, device, context, allocator),
+ *			including core runtime components (event, graph, logger, stream, device, runtime, allocator),
  *			utilities (scoped_timer, host_types, array_proxy, vector_types, vector_traits),
  *			and data abstractions (buffer, array, image, surface, texture, sampler).
  *
@@ -43,7 +43,7 @@
 #include "logger.h"
 #include "stream.h"
 #include "device.h"
-#include "context.h"
+#include "runtime.h"
 #include "allocator.h"
 #include "scoped_timer.h"
 

@@ -34,7 +34,7 @@ namespace NS_NAMESPACE
 	 */
 	class Device
 	{
-		friend class Context;
+		friend class Runtime;
 
 	private:
 

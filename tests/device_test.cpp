@@ -21,7 +21,7 @@
  */
 
 #include <nucleus/device.h>
-#include <nucleus/context.h>
+#include <nucleus/runtime.h>
 
 /*********************************************************************************
 *******************************    device_test    ********************************
@@ -29,7 +29,7 @@
 
 void device_test()
 {
-	auto device = ns::Context::getInstance()->device(0);
+	auto device = ns::Runtime::device(0);
 
 	device->init();
 	device->properties();

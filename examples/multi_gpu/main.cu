@@ -24,7 +24,7 @@
 
 #include <nucleus/device.h>
 #include <nucleus/stream.h>
-#include <nucleus/context.h>
+#include <nucleus/runtime.h>
 #include <nucleus/array_1d.h>
 #include <nucleus/launch_utils.cuh>
 
@@ -97,9 +97,7 @@ int main()
 
 	std::vector<ColorRGB>	h_pixels(width * height);
 
-	auto context = ns::Context::getInstance();
-
-	if (context->getDevices().size() < 2)
+	if (ns::Runtime::getDevices().size() < 2)
 	{
 		printf("This example requires at least two CUDA-enabled devices to run properly.\n");
 
@@ -108,14 +106,14 @@ int main()
 		return -1;
 	}
 
-	//	GUP 0 context
-	auto device0 = context->device(0);
+	//	GPU 0 runtime
+	auto device0 = ns::Runtime::device(0);
 	auto allocator0 = device0->defaultAllocator();
 	auto & stream0 = device0->defaultStream();
 	ns::Array<ColorRGB>		d_pixels0(allocator0, width * height);
 
-	// GPU 1 context
-	auto device1 = context->device(1);
+	// GPU 1 runtime
+	auto device1 = ns::Runtime::device(1);
 	auto allocator1 = device1->defaultAllocator();
 	auto & stream1 = device1->defaultStream();
 	ns::Array<ColorRGB>		d_pixels1(allocator1, width * height);

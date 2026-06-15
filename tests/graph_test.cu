@@ -23,7 +23,7 @@
 #include <nucleus/graph.h>
 #include <nucleus/device.h>
 #include <nucleus/stream.h>
-#include <nucleus/context.h>
+#include <nucleus/runtime.h>
 #include <nucleus/launch_utils.cuh>
 
 /*********************************************************************************
@@ -42,7 +42,7 @@ __global__ void Test0()
 
 void graph_test()
 {
-	auto device = ns::Context::getInstance()->device(0);
+	auto device = ns::Runtime::device(0);
 	auto stream = &device->defaultStream();
 
 	std::vector<int>	input(100, 5);

@@ -22,7 +22,7 @@
 
 #include <vector>
 #include <nucleus/device.h>
-#include <nucleus/context.h>
+#include <nucleus/runtime.h>
 #include <nucleus/array_1d.h>
 #include <nucleus/array_2d.h>
 #include <nucleus/array_3d.h>
@@ -39,7 +39,7 @@ static void test(dev::Ptr<int> a, dev::Ptr2<const float> b, dev::Ptr3<float> c)
 
 void array_test()
 {
-	auto device = ns::Context::getInstance()->device(0);
+	auto device = ns::Runtime::device(0);
 	auto allocator = device->defaultAllocator();
 
 	ns::Array<int>		array0;

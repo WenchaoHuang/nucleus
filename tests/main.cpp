@@ -32,7 +32,7 @@ extern void logger_test();
 extern void device_test();
 extern void buffer_test();
 extern void stream_test();
-extern void context_test();
+extern void runtime_test();
 extern void dev_ptr_test();
 extern void surface_test();
 extern void texture_test();
@@ -43,7 +43,7 @@ extern void shared_handle_test();
 
 int main()
 {
-	context_test();
+	runtime_test();
 	device_test();
 	event_test();
 	graph_test();

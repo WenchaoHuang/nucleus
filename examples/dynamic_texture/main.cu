@@ -26,7 +26,7 @@
 
 #include <nucleus/device.h>
 #include <nucleus/stream.h>
-#include <nucleus/context.h>
+#include <nucleus/runtime.h>
 #include <nucleus/surface.h>
 #include <nucleus/texture.h>
 #include <nucleus/array_1d.h>
@@ -198,7 +198,7 @@ int main()
 
 	/////////////////////////////////////////////////////////////////
 
-	auto device = ns::Context::getInstance()->device(0);
+	auto device = ns::Runtime::device(0);
 	auto allocator = device->defaultAllocator();
 	auto & stream = device->defaultStream();
 	
