@@ -106,7 +106,7 @@ int main()
 		return -1;
 	}
 
-	//	GUP 0 runtime
+	//	GPU 0 runtime
 	auto device0 = ns::Runtime::device(0);
 	auto allocator0 = device0->defaultAllocator();
 	auto & stream0 = device0->defaultStream();
