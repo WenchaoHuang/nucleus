@@ -28,10 +28,10 @@ on:
 
 jobs:
   build-linux:
-    name: Linux (GCC + CUDA 12.4)
+    name: Linux (GCC + CUDA 13.2)
     runs-on: ubuntu-22.04
     container:
-      image: nvidia/cuda:12.4.0-devel-ubuntu22.04
+      image: nvidia/cuda:13.2.0-devel-ubuntu22.04
 
     steps:
       - name: Install CMake
@@ -44,8 +44,8 @@ jobs:
         run: >
           cmake -B build
           -DCMAKE_BUILD_TYPE=Release
-          -DNUCLEUS_BUILD_TESTS=ON
           -DNUCLEUS_BUILD_EXAMPLES=OFF
+          -DNUCLEUS_BUILD_TESTS=ON
 
       - name: Build
         run: cmake --build build --config Release --parallel
