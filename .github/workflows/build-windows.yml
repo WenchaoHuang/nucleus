@@ -29,7 +29,7 @@ on:
 jobs:
   build-windows:
     name: Windows (MSVC + CUDA 12.4)
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
       - name: Checkout repository
@@ -44,6 +44,7 @@ jobs:
       - name: Configure CMake
         run: >
           cmake -B build
+          -G "Visual Studio 17 2022"
           -DCMAKE_BUILD_TYPE=Release
           -DNUCLEUS_BUILD_TESTS=ON
           -DNUCLEUS_BUILD_EXAMPLES=OFF
