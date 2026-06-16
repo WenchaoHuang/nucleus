@@ -26,6 +26,9 @@ on:
   pull_request:
     branches: ["**"]
 
+permissions:
+  contents: read
+
 jobs:
   build-windows:
     name: Windows (MSVC + CUDA 13.0)
