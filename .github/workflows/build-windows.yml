@@ -28,23 +28,25 @@ on:
 
 jobs:
   build-windows:
-    name: Windows (MSVC + CUDA 12.4)
-    runs-on: windows-2022
+    name: Windows (MSVC + CUDA 13.0)
+    runs-on: windows-2025
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install CUDA Toolkit 12.4.0
+      - name: Install CUDA Toolkit 13.0.0
         uses: Jimver/cuda-toolkit@v0.2.19
         with:
-          cuda: "12.4.0"
+          cuda: "13.0.0"
           method: network
 
       - name: Configure CMake
         run: >
           cmake -B build
-          -G "Visual Studio 17 2022"
+          -G "Visual Studio 18 2026"
+          -T cuda=13.0
+          -A x64
           -DCMAKE_BUILD_TYPE=Release
           -DNUCLEUS_BUILD_TESTS=ON
           -DNUCLEUS_BUILD_EXAMPLES=OFF
