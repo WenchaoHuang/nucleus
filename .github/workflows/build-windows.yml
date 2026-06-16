@@ -28,25 +28,25 @@ on:
 
 jobs:
   build-windows:
-    name: Windows (MSVC + CUDA 12.4)
+    name: Windows (MSVC + CUDA 13.2)
     runs-on: windows-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install CUDA Toolkit 12.4.0
-        uses: Jimver/cuda-toolkit@v0.2.19
+      - name: Install CUDA Toolkit 13.2.0
+        uses: Jimver/cuda-toolkit@v0.2.35
         with:
-          cuda: "12.4.0"
+          cuda: "13.2.0"
           method: network
 
       - name: Configure CMake
         run: >
           cmake -B build
           -DCMAKE_BUILD_TYPE=Release
-          -DNUCLEUS_BUILD_TESTS=ON
           -DNUCLEUS_BUILD_EXAMPLES=OFF
+          -DNUCLEUS_BUILD_TESTS=ON
 
       - name: Build
         run: cmake --build build --config Release --parallel
