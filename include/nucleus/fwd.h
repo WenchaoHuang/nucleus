@@ -64,6 +64,9 @@ namespace NS_NAMESPACE
 	enum class FilterMode;
 	enum class AddressMode;
 
+	//!	shortcuts for unsigned char and unsigned char pointer types (same as `std::byte`).
+	using byte = unsigned char;
+
 	//	For device objects.
 	namespace dev
 	{
