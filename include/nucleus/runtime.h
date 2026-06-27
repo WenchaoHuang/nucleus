@@ -84,15 +84,15 @@ namespace NS_NAMESPACE
 	public:
 
 		/**
-		 *	@brief		Return the latest version of CUDA supported by the driver.
+		 *	@brief		Return the version number of the current CUDA Runtime instance.
 		 */
-		static Version driverVersion() { return Runtime::getInstance()->m_driverVersion; }
+		static Version version() { return Runtime::getInstance()->m_runtimeVersion; }
 
 
 		/**
-		 *	@brief		Return the version number of the current CUDA Runtime instance.
+		 *	@brief		Return the latest version of CUDA supported by the driver.
 		 */
-		static Version runtimeVersion() { return Runtime::getInstance()->m_runtimeVersion; }
+		static Version driverVersion() { return Runtime::getInstance()->m_driverVersion; }
 
 
 		/**
@@ -104,7 +104,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Return physical device array.
 		 */
-		static const std::vector<Device*> & getDevices() { return Runtime::getInstance()->m_cudaDevices; }
+		static const std::vector<Device*> & devices() { return Runtime::getInstance()->m_cudaDevices; }
 
 	private:
 

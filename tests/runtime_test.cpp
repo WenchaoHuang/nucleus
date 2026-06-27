@@ -1,4 +1,4 @@
-/**
+﻿/**
  *	Copyright (c) 2025 Wenchao Huang <physhuangwenchao@gmail.com>
  *
  *	Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -36,7 +36,7 @@ void runtime_test()
 
 	auto runtime = ns::Runtime::getInstance();
 	auto driverVersion = ns::Runtime::driverVersion();
-	auto runtimeVersion = ns::Runtime::runtimeVersion();
-	auto devices = ns::Runtime::getDevices();
+	auto runtimeVersion = ns::Runtime::version();
+	auto devices = ns::Runtime::devices();
 	auto device = ns::Runtime::device(0);
 }

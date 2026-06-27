@@ -1,4 +1,4 @@
-/**
+﻿/**
  *	Copyright (c) 2025 Wenchao Huang <physhuangwenchao@gmail.com>
  *
  *	Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -97,7 +97,7 @@ int main()
 
 	std::vector<ColorRGB>	h_pixels(width * height);
 
-	if (ns::Runtime::getDevices().size() < 2)
+	if (ns::Runtime::devices().size() < 2)
 	{
 		printf("This example requires at least two CUDA-enabled devices to run properly.\n");
 

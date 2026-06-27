@@ -188,7 +188,7 @@ stream.setForceSync(true);
 A process-wide singleton that initializes the CUDA runtime and enumerates all available devices.
 
 ```cpp
-std::cout << ns::Runtime::getDevices().size() << " GPU(s) found\n";
+std::cout << ns::Runtime::devices().size() << " GPU(s) found\n";
 auto * device = ns::Runtime::device(0);
 ```
 
