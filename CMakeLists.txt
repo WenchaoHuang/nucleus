@@ -35,8 +35,8 @@ option(NUCLEUS_BUILD_EXAMPLES "Build examples for Nucleus library" OFF)
 option(NUCLEUS_BUILD_SHARED_LIB "Build Nucleus as shared library" ON)
 
 # C++ standard options (adjust as needed)
-set(NUCLEUS_CPP_STANDARD "20" CACHE STRING "C++ standard (17/20/23/26)")
-set_property(CACHE NUCLEUS_CPP_STANDARD PROPERTY STRINGS 17 20 23 26)
+set(NUCLEUS_CPP_STANDARD "20" CACHE STRING "C++ standard (20/23/26)")
+set_property(CACHE NUCLEUS_CPP_STANDARD PROPERTY STRINGS 20 23 26)
 
 # Target name
 set(TARGET_NAME nucleus)

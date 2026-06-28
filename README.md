@@ -32,6 +32,7 @@ For OptiX ray-tracing functionality, see the companion [Photon](https://github.c
 - CUDA graph support with automatic topology caching and parameter update (`ns::Graph`)
 - Texture and surface objects with full dimensionality support (1-D/2-D/3-D, cubemap, layered, mipmapped)
 - Kernel-launch helpers: `ns::ceil_div`, `ns::align_up`, `CUDA_for` / `NS_BOUNDS_CHECK` bounds-check macros
+- `ns::Span<T>` — lightweight non-owning view over a contiguous sequence (similar to `std::span`)
 - Logger (`ns::Logger`) for structured diagnostic messages
 
 ## Prerequisites
@@ -40,7 +41,7 @@ For OptiX ray-tracing functionality, see the companion [Photon](https://github.c
 |---|---|
 | CUDA Toolkit | 11.0 |
 | CMake | 3.18 |
-| C++ compiler | C++17 (C++20 recommended) |
+| C++ compiler | C++20 |
 
 Nucleus is currently developed and tested on Linux and Windows (MSVC). Other platforms are not officially supported.
 
@@ -76,7 +77,7 @@ target_link_libraries(my_app PRIVATE nucleus)
 | `NUCLEUS_BUILD_SHARED_LIB` | `ON` | Build as a shared library; set to `OFF` for a static library |
 | `NUCLEUS_BUILD_TESTS` | `OFF` | Build the test suite (`tests/`) |
 | `NUCLEUS_BUILD_EXAMPLES` | `OFF` | Build the bundled examples (`examples/`) |
-| `NUCLEUS_CPP_STANDARD` | `20` | C++ standard to use (`17`, `20`, `23`, or `26`) |
+| `NUCLEUS_CPP_STANDARD` | `20` | C++ standard to use (`20`, `23`, or `26`) |
 
 Example — build in static mode with tests and examples:
 
@@ -355,6 +356,7 @@ Nucleus/
 │   ├── graph.h             # ns::Graph    (CUDA graph with auto-caching)
 │   ├── allocator.h         # ns::Allocator, DeviceAllocator, HostAllocator
 │   ├── buffer.h            # ns::Buffer   (raw RAII memory block)
+│   ├── span.h              # ns::Span<T> (lightweight non-owning array view)
 │   ├── buffer_view.h       # ns::BufferView/BufferView2D/BufferView3D (non-owning views)
 │   ├── array_1d.h          # ns::Array<T>
 │   ├── array_2d.h          # ns::Array2D<T>

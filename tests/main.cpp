@@ -24,6 +24,7 @@
 ***********************************    main    ***********************************
 *********************************************************************************/
 
+extern void span_test();
 extern void event_test();
 extern void array_test();
 extern void image_test();
@@ -59,6 +60,7 @@ int main()
 	array_proxy_test();
 	shared_handle_test();
 	logger_test();
+	span_test();
 
 	return 0;
 }
