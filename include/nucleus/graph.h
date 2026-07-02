@@ -22,7 +22,7 @@
 #pragma once
 
 #include "fwd.h"
-#include "array_proxy.h"
+#include "span.h"
 #include <unordered_set>
 #include <functional>
 
@@ -91,7 +91,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	dependencies - An array of dependencies that must complete before proceeding.
 		 *	@return		ExecDep representing the dependency handle for the launched kernel.
 		 */
-		NS_API ExecDep barrier(ArrayProxy<ExecDep> dependencies = {});
+		NS_API ExecDep barrier(Span<const ExecDep> dependencies = {});
 
 
 		/**
@@ -102,7 +102,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	dependencies - Dependencies that must be resolved before this operation can start.
 		 *	@return		ExecDep representing the dependency handle for the launched kernel.
 		 */
-		template<typename Type> ExecDep memset(Type * pValues, Type value, size_t count, ArrayProxy<ExecDep> dependencies = {});
+		template<typename Type> ExecDep memset(Type * pValues, Type value, size_t count, Span<const ExecDep> dependencies = {});
 
 
 		/**
@@ -113,7 +113,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	dependencies - Dependencies that must be resolved before this operation can start.
 		 *	@return		ExecDep representing the dependency handle for the launched kernel.
 		 */
-		template<typename Type> ExecDep memcpy(Type * dst, const Type * src, size_t count, ArrayProxy<ExecDep> dependencies = {})
+		template<typename Type> ExecDep memcpy(Type * dst, const Type * src, size_t count, Span<const ExecDep> dependencies = {})
 		{
 			return this->memcpy_void(dst, src, sizeof(Type) * count, dependencies);
 		}
@@ -134,16 +134,16 @@ namespace NS_NAMESPACE
 		 *	@warning	Only available in *.cu files.
 		 */
 	private:
-		template<typename... Args> ExecDep launchKernel(KernelFunc<Args...> func, ArrayProxy<ExecDep> dependencies, const dim3 & gridDim, const dim3 & blockDim, unsigned int sharedMem, Args... args);
+		template<typename... Args> ExecDep launchKernel(KernelFunc<Args...> func, Span<const ExecDep> dependencies, const dim3 & gridDim, const dim3 & blockDim, unsigned int sharedMem, Args... args);
 	public:
-		template<typename... Args> NS_NODISCARD auto launch(KernelFunc<Args...> func, ArrayProxy<ExecDep> dependencies, const dim3 & gridDim, const dim3 & blockDim, unsigned int sharedMem = 0);
+		template<typename... Args> NS_NODISCARD auto launch(KernelFunc<Args...> func, Span<const ExecDep> dependencies, const dim3 & gridDim, const dim3 & blockDim, unsigned int sharedMem = 0);
 		template<typename... Args> NS_NODISCARD auto launch(KernelFunc<Args...> func, const dim3 & gridDim, const dim3 & blockDim, unsigned int sharedMem = 0);
 
 	private:
 
-		NS_API uint64_t cacheDependencies(ArrayProxy<ExecDep> dependencies);
+		NS_API uint64_t cacheDependencies(Span<const ExecDep> dependencies);
 		
-		NS_API ExecDep memcpy_void(void * dst, const void * src, size_t bytes, ArrayProxy<ExecDep> dependencies);
+		NS_API ExecDep memcpy_void(void * dst, const void * src, size_t bytes, Span<const ExecDep> dependencies);
 
 	private:
 

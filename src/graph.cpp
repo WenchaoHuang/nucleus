@@ -43,7 +43,7 @@ Graph::Graph() : m_ID(std::hash<void*>{}(this)), m_hGraph(nullptr), m_hGraphExec
 }
 
 
-ExecDep Graph::barrier(ArrayProxy<ExecDep> dependencies)
+ExecDep Graph::barrier(Span<const ExecDep> dependencies)
 {
 	if (m_pImmediateLaunchStream != nullptr)	//	in immediate launch mode
 	{
@@ -84,7 +84,7 @@ ExecDep Graph::barrier(ArrayProxy<ExecDep> dependencies)
 }
 
 
-ExecDep Graph::memcpy_void(void * dst, const void * src, size_t bytes, ArrayProxy<ExecDep> dependencies)
+ExecDep Graph::memcpy_void(void * dst, const void * src, size_t bytes, Span<const ExecDep> dependencies)
 {
 	if (m_pImmediateLaunchStream != nullptr)	//	in immediate launch mode
 	{
@@ -147,7 +147,7 @@ ExecDep Graph::memcpy_void(void * dst, const void * src, size_t bytes, ArrayProx
 }
 
 
-uint64_t Graph::cacheDependencies(ArrayProxy<ExecDep> dependencies)
+uint64_t Graph::cacheDependencies(Span<const ExecDep> dependencies)
 {
 	m_depIndicesCache.clear();
 

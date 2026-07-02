@@ -38,7 +38,6 @@ extern void dev_ptr_test();
 extern void surface_test();
 extern void texture_test();
 extern void allocator_test();
-extern void array_proxy_test();
 extern void buffer_view_test();
 extern void shared_handle_test();
 
@@ -57,7 +56,6 @@ int main()
 	surface_test();
 	texture_test();
 	buffer_view_test();
-	array_proxy_test();
 	shared_handle_test();
 	logger_test();
 	span_test();

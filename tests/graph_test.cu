@@ -51,10 +51,10 @@ void graph_test()
 	ns::Graph graph;
 	graph.restart();
 	auto d1 = graph.memcpy(output.data(), input.data(), input.size());
-	auto d2 = graph.barrier(d1);
-	auto d3 = graph.launch(Test, d2, 1, 128)(2, 10);
-	auto d4 = graph.launch(Test, d2, 1, 128)(2, 20);
-	auto d5 = graph.launch(Test, d3, 1, 128)(2, 30);
+	auto d2 = graph.barrier({ d1 });
+	auto d3 = graph.launch(Test, { d2 }, 1, 128)(2, 10);
+	auto d4 = graph.launch(Test, { d2 }, 1, 128)(2, 20);
+	auto d5 = graph.launch(Test, { d3 }, 1, 128)(2, 30);
 	auto d6 = graph.launch(Test0, { d2, d3 }, 1, 128)();
 	auto d7 = graph.memcpy(output.data(), input.data(), 1, { d6, d5 });
 
@@ -66,12 +66,12 @@ void graph_test()
 
 	graph.restart();
 	d1 = graph.memcpy(output.data(), input.data(), input.size());
-	d2 = graph.barrier(d1);
-	d3 = graph.launch(Test, d2, 1, 128)(2, 22);
-	d4 = graph.launch(Test, d2, 1, 128)(2, 20);
-	d5 = graph.launch(Test, d3, 1, 128)(2, 30);
+	d2 = graph.barrier({ d1 });
+	d3 = graph.launch(Test, { d2 }, 1, 128)(2, 22);
+	d4 = graph.launch(Test, { d2 }, 1, 128)(2, 20);
+	d5 = graph.launch(Test, { d3 }, 1, 128)(2, 30);
 	d6 = graph.launch(Test0, { d2, d3 }, 1, 128)();
-	d7 = graph.memcpy(output.data(), input.data(), 1, d5);
+	d7 = graph.memcpy(output.data(), input.data(), 1, { d5 });
 	graph.execute(stream);
 
 	device->sync();

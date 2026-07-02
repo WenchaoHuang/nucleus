@@ -189,7 +189,7 @@ namespace NS_NAMESPACE
 	********************************    Graph    *********************************
 	*****************************************************************************/
 
-	template<typename Type> ExecDep Graph::memset(Type * pValues, Type value, size_t count, ArrayProxy<ExecDep> dependencies)
+	template<typename Type> ExecDep Graph::memset(Type * pValues, Type value, size_t count, Span<const ExecDep> dependencies)
 	{
 		constexpr unsigned int [[maybe_unused]] optimal_block_size_RTX_3080_Ti = 512;
 		constexpr unsigned int [[maybe_unused]] optimal_block_size_RTX_2070_SUPER = 256;
@@ -199,7 +199,7 @@ namespace NS_NAMESPACE
 		return this->launch(kernel::memset<Type>, dependencies, ns::ceil_div(count, blockSize), blockSize)(pValues, value, count);
 	}
 
-	template<typename... Args> ExecDep Graph::launchKernel(KernelFunc<Args...> func, ArrayProxy<ExecDep> dependencies, const dim3 & gridDim, const dim3 & blockDim, unsigned int sharedMem, Args... args)
+	template<typename... Args> ExecDep Graph::launchKernel(KernelFunc<Args...> func, Span<const ExecDep> dependencies, const dim3 & gridDim, const dim3 & blockDim, unsigned int sharedMem, Args... args)
 	{
 		if (m_pImmediateLaunchStream != nullptr)	//	in immediate launch mode
 		{
@@ -288,7 +288,7 @@ namespace NS_NAMESPACE
 		}
 	}
 
-	template<> inline ExecDep Graph::launchKernel<>(KernelFunc<> func, ArrayProxy<ExecDep> dependencies, const dim3 & gridDim, const dim3 & blockDim, unsigned int sharedMem)
+	template<> inline ExecDep Graph::launchKernel<>(KernelFunc<> func, Span<const ExecDep> dependencies, const dim3 & gridDim, const dim3 & blockDim, unsigned int sharedMem)
 	{
 		if (m_pImmediateLaunchStream != nullptr)	//	in immediate launch mode
 		{
@@ -372,7 +372,7 @@ namespace NS_NAMESPACE
 		}
 	}
 
-	template<typename... Args> NS_NODISCARD auto Graph::launch(KernelFunc<Args...> func, ArrayProxy<ExecDep> dependencies, const dim3 & gridDim, const dim3 & blockDim, unsigned int sharedMem)
+	template<typename... Args> NS_NODISCARD auto Graph::launch(KernelFunc<Args...> func, Span<const ExecDep> dependencies, const dim3 & gridDim, const dim3 & blockDim, unsigned int sharedMem)
 	{
 	#if NS_HAS_CXX_20
 		return [=, this](Args... args) -> ExecDep { return this->launchKernel(func, dependencies, gridDim, blockDim, sharedMem, args...); };
