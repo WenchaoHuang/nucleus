@@ -22,6 +22,7 @@
 #pragma once
 
 #include "fwd.h"
+#include "vector_traits.h"
 
 namespace NS_NAMESPACE
 {
@@ -44,6 +45,32 @@ namespace NS_NAMESPACE
 	 *				Alignment must be a non-zero positive integer.
 	 */
 	constexpr size_t align_up(size_t x, size_t alignment) { return ceil_div(x, alignment) * alignment; }
+
+
+	/**
+	 *	@brief		Converts cubemap face coordinates to a unnormalized 3D direction vector.
+	 *	@tparam		Type - The vector type to return (must be compatible with float3).
+	 *	@param[in]	face - Cubemap face index (0 to 5).
+	 *	@param[in]	x - X coordinate on the cubemap face [0, size-1].
+	 *	@param[in]	y - Y coordinate on the cubemap face [0, size-1].
+	 *	@param[in]	size - Size of the cubemap face (width/height).
+	 *	@note		Face indices correspond to: 0=+X, 1=-X, 2=+Y, 3=-Y, 4=+Z, 5=-Z.
+	 */
+	template<float3_like Type = float3> constexpr Type cubemap_texel_to_direction(int face, float x, float y, int size)
+	{
+		float u = 2.0f * x / float(size) - 1.0f;
+		float v = 2.0f * y / float(size) - 1.0f;
+
+		switch (face)
+		{
+			case 0:  return Type{  1.0f, -v, -u };	// +X
+			case 1:  return Type{ -1.0f, -v,  u };	// -X
+			case 2:  return Type{  u,  1.0f,  v };	// +Y
+			case 3:  return Type{  u, -1.0f, -v };	// -Y
+			case 4:  return Type{  u, -v,  1.0f };	// +Z
+			default: return Type{ -u, -v, -1.0f };	// -Z
+		}
+	}
 
 	/*****************************************************************************
 	***************************    BinaryCompatible    ***************************
