@@ -47,8 +47,6 @@ void Surface::bindImage(std::shared_ptr<Image> pImage)
 
 	cudaError_t err = cudaCreateSurfaceObject(&m_hSurface, &resDesc);
 
-	NS_WARNING_LOG_IF(!pImage->isSurfaceLoadStoreSupported(), "Binding a image without 'bSurfaceLoadStore' flag.");
-
 	if (err == cudaSuccess)
 	{
 		m_image = pImage;

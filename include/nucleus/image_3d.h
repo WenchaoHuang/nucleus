@@ -45,10 +45,9 @@ namespace NS_NAMESPACE
 		 *	@param[in]	width - Width of the image.
 		 *	@param[in]	height - height of the image.
 		 *	@param[in]	depth - Depth of the image.
-		 * 	@param[in]	bSurfaceLoadStore - Boolean flag indicating whether the buffer should support surface load/store operations.
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		NS_API explicit Image3D(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, bool bSurfaceLoadStore = false);
+		NS_API explicit Image3D(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth);
 
 	private:
 
@@ -92,10 +91,9 @@ namespace NS_NAMESPACE
 		 *	@param[in]	width - Width of the image.
 		 *	@param[in]	height - height of the image.
 		 *	@param[in]	depth - Depth of the image.
-		 * 	@param[in]	bSurfaceLoadStore - Boolean flag indicating whether the buffer should support surface load/store operations.
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit Image3D(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t depth, bool bSurfaceLoadStore = false) : Image3D<void>(allocator, FormatMapping<Type>::value, width, height, depth, bSurfaceLoadStore) {}
+		explicit Image3D(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t depth) : Image3D<void>(allocator, FormatMapping<Type>::value, width, height, depth) {}
 
 	public:
 

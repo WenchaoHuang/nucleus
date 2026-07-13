@@ -85,6 +85,9 @@ namespace NS_NAMESPACE
 	/**
 	 *	@brief		Base class represents a arbitrary texture memory.
 	 *	@note		Texture memory are opaque memory layouts optimized for texture fetching.
+	 *	@note		Nucleus-created images always enable CUDA surface load/store support. This
+	 *				removes a creation-time API choice so an image can be bound to a Surface
+	 *				when needed; the additional capability has negligible performance impact.
 	 *	@see		class `ImageBase`
 	 */
 	class Image : public ImageBase
@@ -127,9 +130,6 @@ namespace NS_NAMESPACE
 		//	Returns accessor to the data.
 		ImageAccessor<void> data() const { return ImageAccessor<void>{ m_hImage }; }
 
-		//	Checks if the buffer supports surface load/store operations.
-		NS_API bool isSurfaceLoadStoreSupported() const;
-
 	protected:
         
         const cudaArray_t		m_hImage;
@@ -142,6 +142,9 @@ namespace NS_NAMESPACE
 	/**
 	 *	@brief		Base class represents a arbitrary mipmapped texture memory.
 	 *  @note		Texture memory are opaque memory layouts optimized for texture fetching.
+	 *	@note		Nucleus-created images always enable CUDA surface load/store support. This
+	 *				removes a creation-time API choice so an image can be bound to a Surface
+	 *				when needed; the additional capability has negligible performance impact.
 	 *	@see		class `ImageBase` and `Image`
 	 */
 	class ImageLod : public ImageBase

@@ -289,7 +289,9 @@ Nucleus separates texture memory (the backing storage) from the sampling/access 
 
 - **Image** — allocates CUDA array memory on the device (analogous to a GPU texture buffer). Created once and shared across texture/surface objects.
 - **Texture** — a read-only, hardware-sampled view of an Image. Passed to kernels as a `dev::Tex*<T>` handle.
-- **Surface** — a read-write view of an Image (requires `bSurfaceLoadStore = true` at image creation). Passed to kernels as a `dev::Surf*<T>` handle.
+- **Surface** — a read-write view of an Image. Passed to kernels as a `dev::Surf*<T>` handle.
+
+Nucleus always creates CUDA arrays with surface load/store support enabled. This deliberately avoids an opt-in constructor flag: an `Image` can be bound to a `Surface` whenever the workflow needs it, without having to predict that requirement at allocation time. The capability has negligible performance impact for the supported image types, so Nucleus favors this simpler, consistent API.
 
 The table below lists all available Image, Texture, and Surface type combinations:
 

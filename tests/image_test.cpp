@@ -40,14 +40,12 @@ void image_test()
 
 	ns::Image1D<int> image1(allocator, 128);
 	static_assert(image1.format() == ns::Format::Int);
-	assert(image1.isSurfaceLoadStoreSupported() == false);
 	assert(image1.allocator() == allocator);
 	assert(image1.data() != nullptr);
 	assert(image1.width() == 128);
 
-	ns::Image1DLayered<float> image2(allocator, 1024, 5, true);
+	ns::Image1DLayered<float> image2(allocator, 1024, 5);
 	static_assert(image2.format() == ns::Format::Float);
-	assert(image2.isSurfaceLoadStoreSupported() == true);
 	assert(image2.allocator() == allocator);
 	assert(image2.data() != nullptr);
 	assert(image2.numLayers() == 5);
@@ -80,15 +78,13 @@ void image_test()
 
 	ns::Image2D<int> image5(allocator, 128, 128);
 	static_assert(image5.format() == ns::Format::Int);
-	assert(image5.isSurfaceLoadStoreSupported() == false);
 	assert(image5.allocator() == allocator);
 	assert(image5.data() != nullptr);
 	assert(image5.height() == 128);
 	assert(image5.width() == 128);
 
-	ns::Image2DLayered<float> image6(allocator, 1024, 256, 5, true);
+	ns::Image2DLayered<float> image6(allocator, 1024, 256, 5);
 	static_assert(image6.format() == ns::Format::Float);
-	assert(image6.isSurfaceLoadStoreSupported() == true);
 	assert(image6.allocator() == allocator);
 	assert(image6.data() != nullptr);
 	assert(image6.numLayers() == 5);
@@ -132,7 +128,6 @@ void image_test()
 
 	ns::Image3D<int> image9(allocator, 128, 128, 128);
 	static_assert(image9.format() == ns::Format::Int);
-	assert(image9.isSurfaceLoadStoreSupported() == false);
 	assert(image9.allocator() == allocator);
 	assert(image9.data() != nullptr);
 	assert(image9.height() == 128);
@@ -161,13 +156,11 @@ void image_test()
 
 	ns::ImageCube<int> image11(allocator, 128);
 	static_assert(image11.format() == ns::Format::Int);
-	assert(image11.isSurfaceLoadStoreSupported() == false);
 	assert(image11.allocator() == allocator);
 	assert(image11.data() != nullptr);
 	assert(image11.width() == 128);
 
-	ns::ImageCubeLayered<float> image12(allocator, 1024, 5, true);
-	assert(image12.isSurfaceLoadStoreSupported() == true);
+	ns::ImageCubeLayered<float> image12(allocator, 1024, 5);
 	assert(image12.format() == ns::Format::Float);
 	assert(image12.allocator() == allocator);
 	assert(image12.data() != nullptr);

@@ -44,10 +44,9 @@ namespace NS_NAMESPACE
 		 *	@param[in]	format - Texel format of the image.
 		 *	@param[in]	width - Width of the image.
 		 *	@param[in]	height - height of the image.
-		 * 	@param[in]	bSurfaceLoadStore - Boolean flag indicating whether the buffer should support surface load/store operations.
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		NS_API explicit Image2D(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, bool bSurfaceLoadStore = false);
+		NS_API explicit Image2D(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height);
 
 	private:
 
@@ -88,10 +87,9 @@ namespace NS_NAMESPACE
 		 *	@param[in]	width - Width of the image.
 		 *	@param[in]	height - height of the image.
 		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
-		 * 	@param[in]	bSurfaceLoadStore - Boolean flag indicating whether the buffer should support surface load/store operations.
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit Image2D(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, bool bSurfaceLoadStore = false) : Image2D<void>(allocator, FormatMapping<Type>::value, width, height, bSurfaceLoadStore) {}
+		explicit Image2D(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height) : Image2D<void>(allocator, FormatMapping<Type>::value, width, height) {}
 
 	public:
 
@@ -122,10 +120,9 @@ namespace NS_NAMESPACE
 		 *	@param[in]	width - Width of the image.
 		 *	@param[in]	height - height of the image.
 		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
-		 * 	@param[in]	bSurfaceLoadStore - Boolean flag indicating whether the buffer should support surface load/store operations.
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		NS_API explicit Image2DLayered(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t numLayers, bool bSurfaceLoadStore = false);
+		NS_API explicit Image2DLayered(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t numLayers);
 
 	private:
 
@@ -169,10 +166,9 @@ namespace NS_NAMESPACE
 		 *	@param[in]	width - Width of the image.
 		 *	@param[in]	height - height of the image.
 		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
-		 * 	@param[in]	bSurfaceLoadStore - Boolean flag indicating whether the buffer should support surface load/store operations.
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit Image2DLayered(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t numLayers, bool bSurfaceLoadStore = false) : Image2DLayered<void>(allocator, FormatMapping<Type>::value, width, height, numLayers, bSurfaceLoadStore) {}
+		explicit Image2DLayered(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t numLayers) : Image2DLayered<void>(allocator, FormatMapping<Type>::value, width, height, numLayers) {}
 	
 	public:
 

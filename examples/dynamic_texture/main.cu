@@ -202,7 +202,7 @@ int main()
 	auto allocator = device->defaultAllocator();
 	auto & stream = device->defaultStream();
 	
-	auto image = std::make_shared<ns::Image2D<unsigned char>>(allocator, width, height, true);
+	auto image = std::make_shared<ns::Image2D<unsigned char>>(allocator, width, height);
 
 	std::vector<ColorRGB>			h_pixels(width * height);
 	ns::Array2D<ColorRGB>			d_pixels(allocator, width, height);

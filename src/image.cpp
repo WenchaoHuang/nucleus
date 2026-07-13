@@ -49,7 +49,8 @@ ImageBase::ImageBase(std::shared_ptr<DeviceAllocator> allocator, Format format, 
 *********************************************************************************/
 
 Image::Image(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, int flags)
-	: ImageBase(allocator, format, width, height, depth, flags), m_hImage(allocator->allocateTextureMemory(format, width, height, depth, flags))
+	: ImageBase(allocator, format, width, height, depth, flags),
+	m_hImage(allocator->allocateTextureMemory(format, width, height, depth, flags | cudaArraySurfaceLoadStore))
 {
 	NS_ASSERT(allocator != nullptr);
 }
@@ -59,12 +60,6 @@ Image::Image(cudaArray_t hImage, Format format, size_t width, size_t height, siz
 	: ImageBase(nullptr, format, width, height, depth, flags), m_hImage(hImage)
 {
 	NS_ASSERT(hImage != nullptr);
-}
-
-
-bool Image::isSurfaceLoadStoreSupported() const
-{
-	return (m_flags & cudaArraySurfaceLoadStore);
 }
 
 
@@ -82,7 +77,7 @@ Image::~Image() noexcept
 
 ImageLod::ImageLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, unsigned int numLevels, int flags)
 	: ImageBase(allocator, format, width, height, depth, flags), m_numLevels(numLevels),
-	  m_hImageLod(allocator->allocateMipmapTextureMemory(format, width, height, depth, numLevels, flags))
+	  m_hImageLod(allocator->allocateMipmapTextureMemory(format, width, height, depth, numLevels, flags | cudaArraySurfaceLoadStore))
 {
 	NS_ASSERT(allocator != 0);
 }
@@ -147,15 +142,15 @@ static std::vector<cudaArray_t> getMipmapHandles(cudaMipmappedArray_t hImageLod,
  *	@details	A 1D layered CUDA array is allocated if only the height extent is zero and the cudaArrayLayered flag is set.
  *				Each layer is a 1D array. The number of layers is determined by the depth extent.
  */
-Image1D<void>::Image1D(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, bool bSurfaceLoadStore)
-	: Image(allocator, format, width, 0, 0, bSurfaceLoadStore ? cudaArraySurfaceLoadStore : cudaArrayDefault)
+Image1D<void>::Image1D(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width)
+	: Image(allocator, format, width, 0, 0, cudaArrayDefault)
 {
 	NS_ASSERT(width > 0);
 }
 
 
-Image1DLayered<void>::Image1DLayered(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t numLayers, bool bSurfaceLoadStore)
-	: Image(allocator, format, width, 0, std::max<size_t>(1, numLayers), bSurfaceLoadStore ? (cudaArrayLayered | cudaArraySurfaceLoadStore) : cudaArrayLayered)
+Image1DLayered<void>::Image1DLayered(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t numLayers)
+	: Image(allocator, format, width, 0, std::max<size_t>(1, numLayers), cudaArrayLayered)
 {
 	NS_ASSERT(width > 0);
 }
@@ -187,15 +182,15 @@ Image1DLayeredLod<void>::Image1DLayeredLod(std::shared_ptr<DeviceAllocator> allo
  *	@details	A 2D layered CUDA array is allocated if all three extents are non-zero and the cudaArrayLayered flag is set.
  *				Each layer is a 2D array. The number of layers is determined by the depth extent.
  */
-Image2D<void>::Image2D(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, bool bSurfaceLoadStore)
-	: Image(allocator, format, width, height, 0, bSurfaceLoadStore ? cudaArraySurfaceLoadStore : cudaArrayDefault)
+Image2D<void>::Image2D(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height)
+	: Image(allocator, format, width, height, 0, cudaArrayDefault)
 {
 	NS_ASSERT(width * height > 0);
 }
 
 
-Image2DLayered<void>::Image2DLayered(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t numLayers, bool bSurfaceLoadStore)
-	: Image(allocator, format, width, height, std::max<size_t>(1, numLayers), bSurfaceLoadStore ? (cudaArrayLayered | cudaArraySurfaceLoadStore) : cudaArrayLayered)
+Image2DLayered<void>::Image2DLayered(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t numLayers)
+	: Image(allocator, format, width, height, std::max<size_t>(1, numLayers), cudaArrayLayered)
 {
 	NS_ASSERT(width * height > 0);
 }
@@ -225,8 +220,8 @@ Image2DLayeredLod<void>::Image2DLayeredLod(std::shared_ptr<DeviceAllocator> allo
 /**
  *	@details	A 3D array is allocated if all three extents are non-zero.
  */
-Image3D<void>::Image3D(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, bool bSurfaceLoadStore)
-	: Image(allocator, format, width, height, depth, bSurfaceLoadStore ? cudaArraySurfaceLoadStore : cudaArrayDefault)
+Image3D<void>::Image3D(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth)
+	: Image(allocator, format, width, height, depth, cudaArrayDefault)
 {
 	NS_ASSERT(width * height * depth > 0);
 }
@@ -252,15 +247,15 @@ Image3DLod<void>::Image3DLod(std::shared_ptr<DeviceAllocator> allocator, Format 
  *				Width must be equal to height, and depth must be a multiple of six. A cubemap layered CUDA array is a special type of 2D layered CUDA array that consists of a collection of cubemaps.
  *				The first six layers represent the first cubemap, the next six layers form the second cubemap, and so on.
  */
-ImageCube<void>::ImageCube(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, bool bSurfaceLoadStore)
-	: Image(allocator, format, width, width, 6, bSurfaceLoadStore ? (cudaArrayCubemap | cudaArraySurfaceLoadStore) : cudaArrayCubemap)
+ImageCube<void>::ImageCube(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width)
+	: Image(allocator, format, width, width, 6, cudaArrayCubemap)
 {
 	NS_ASSERT(width > 0);
 }
 
 
-ImageCubeLayered<void>::ImageCubeLayered(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t numLayers, bool bSurfaceLoadStore)
-	: Image(allocator, format, width, width, 6 * std::max<size_t>(1, numLayers), bSurfaceLoadStore ? (cudaArrayCubemap | cudaArrayLayered | cudaArraySurfaceLoadStore) : (cudaArrayCubemap | cudaArrayLayered))
+ImageCubeLayered<void>::ImageCubeLayered(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t numLayers)
+	: Image(allocator, format, width, width, 6 * std::max<size_t>(1, numLayers), cudaArrayCubemap | cudaArrayLayered)
 {
 	NS_ASSERT(width > 0);
 }

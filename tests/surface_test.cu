@@ -148,43 +148,43 @@ void surface_test()
 	auto device = ns::Runtime::device(0);
 	auto allocator = device->defaultAllocator();
 
-	ns::Surface1D<int>	surface0(ns::SharedImage1D<int>(allocator, 128, true));
+	ns::Surface1D<int>	surface0(ns::SharedImage1D<int>(allocator, 128));
 	surface0.empty();
 	surface0.image();
 	surface0.accessor();
 	surface0.handle();
 
-	ns::Surface2D<short>	surface1(ns::SharedImage2D<short>(allocator, 128, 128, true));
+	ns::Surface2D<short>	surface1(ns::SharedImage2D<short>(allocator, 128, 128));
 	surface1.empty();
 	surface1.image();
 	surface1.accessor();
 	surface1.handle();
 
-	ns::Surface3D<float>	surface2(ns::SharedImage3D<float>(allocator, 128, 128, 128, true));
+	ns::Surface3D<float>	surface2(ns::SharedImage3D<float>(allocator, 128, 128, 128));
 	surface2.empty();
 	surface2.image();
 	surface2.accessor();
 	surface2.handle();
 
-	ns::SurfaceCube<ns::float2>	surface3(ns::SharedImageCube<ns::float2>(allocator, 128, true));
+	ns::SurfaceCube<ns::float2>	surface3(ns::SharedImageCube<ns::float2>(allocator, 128));
 	surface3.empty();
 	surface3.image();
 	surface3.accessor();
 	surface3.handle();
 
-	ns::Surface1DLayered<float>	surface4(ns::SharedImage1DLayered<float>(allocator, 128, 8, true));
+	ns::Surface1DLayered<float>	surface4(ns::SharedImage1DLayered<float>(allocator, 128, 8));
 	surface4.empty();
 	surface4.image();
 	surface4.accessor();
 	surface4.handle();
 	
-	ns::Surface2DLayered<float>	surface5(ns::SharedImage2DLayered<float>(allocator, 128, 128, 8, true));
+	ns::Surface2DLayered<float>	surface5(ns::SharedImage2DLayered<float>(allocator, 128, 128, 8));
 	surface5.empty();
 	surface5.image();
 	surface5.accessor();
 	surface5.handle();
 
-	ns::SurfaceCubeLayered<int>	surface6(ns::SharedImageCubeLayered<int>(allocator, 128, 8, true));
+	ns::SurfaceCubeLayered<int>	surface6(ns::SharedImageCubeLayered<int>(allocator, 128, 8));
 	surface6.empty();
 	surface6.image();
 	surface6.accessor();

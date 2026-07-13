@@ -43,10 +43,9 @@ namespace NS_NAMESPACE
 		 *	@param[in]	allocator - Pointer to the associated allocator.
 		 *	@param[in]	format - Texel format of the image.
 		 *	@param[in]	width - Width of the image.
-		 * 	@param[in]	bSurfaceLoadStore - Boolean flag indicating whether the buffer should support surface load/store operations.
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		NS_API explicit ImageCube(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, bool bSurfaceLoadStore = false);
+		NS_API explicit ImageCube(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width);
 
 	private:
 
@@ -81,10 +80,9 @@ namespace NS_NAMESPACE
 		 *	@param[in]	allocator - Pointer to the associated allocator.
 		 *	@param[in]	width - Width of the image.
 		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
-		 * 	@param[in]	bSurfaceLoadStore - Boolean flag indicating whether the buffer should support surface load/store operations.
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit ImageCube(std::shared_ptr<DeviceAllocator> allocator, size_t width, bool bSurfaceLoadStore = false) : ImageCube<void>(allocator, FormatMapping<Type>::value, width, bSurfaceLoadStore) {}
+		explicit ImageCube(std::shared_ptr<DeviceAllocator> allocator, size_t width) : ImageCube<void>(allocator, FormatMapping<Type>::value, width) {}
 
 	public:
 
@@ -114,10 +112,9 @@ namespace NS_NAMESPACE
 		 *	@param[in]	format - Texel format of the image.
 		 *	@param[in]	width - Width of the image.
 		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
-		 * 	@param[in]	bSurfaceLoadStore - Boolean flag indicating whether the buffer should support surface load/store operations.
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		NS_API explicit ImageCubeLayered(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t numLayers, bool bSurfaceLoadStore = false);
+		NS_API explicit ImageCubeLayered(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t numLayers);
 
 	private:
 
@@ -157,10 +154,9 @@ namespace NS_NAMESPACE
 		 *	@param[in]	allocator - Pointer to the associated allocator.
 		 *	@param[in]	width - Width of the image.
 		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
-		 * 	@param[in]	bSurfaceLoadStore - Boolean flag indicating whether the buffer should support surface load/store operations.
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit ImageCubeLayered(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t numLayers, bool bSurfaceLoadStore = false) : ImageCubeLayered<void>(allocator, FormatMapping<Type>::value, width, numLayers, bSurfaceLoadStore) {}
+		explicit ImageCubeLayered(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t numLayers) : ImageCubeLayered<void>(allocator, FormatMapping<Type>::value, width, numLayers) {}
 	
 	public:
 
