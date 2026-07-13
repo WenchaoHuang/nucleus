@@ -47,9 +47,8 @@ namespace NS_NAMESPACE
 		 *	@param[in]	width - Width of the image.
 		 *	@param[in]	height - height of the image.
 		 *	@param[in]	depth - Depth of the image.
-		 *	@param[in]	flags - Flags for image creation (interanl use).
 		 */
-		NS_API explicit ImageBase(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, int flags);
+		NS_API explicit ImageBase(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth);
 
 
 		/**
@@ -75,7 +74,6 @@ namespace NS_NAMESPACE
 		const uint32_t								m_width;
 		const uint32_t								m_height;
 		const uint32_t								m_depth;
-		const int									m_flags;
 	};
 
 	/*****************************************************************************
@@ -115,9 +113,8 @@ namespace NS_NAMESPACE
 		 *	@param[in]	width - Width of the image.
 		 *	@param[in]	height - height of the image.
 		 *	@param[in]	depth - Depth of the image.
-		 *	@param[in]	flags - Flags for image creation (interanl use).
 		 */
-		NS_API explicit Image(cudaArray_t hImage, Format format, size_t width, size_t height, size_t depth, int flags);
+		NS_API explicit Image(cudaArray_t hImage, Format format, size_t width, size_t height, size_t depth);
 
 
 		/**

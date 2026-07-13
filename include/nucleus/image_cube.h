@@ -56,11 +56,10 @@ namespace NS_NAMESPACE
 		 *	@param[in]	width - Width of the image.
 		 *	@param[in]	height - height of the image.
 		 *	@param[in]	depth - Depth of the image.
-		 * 	@param[in]	flags - Flags for image creation (interanl use).
 		 *	@throw		cudaError_t - In case of failure.
 		 * 	@note		Created by class `ImageCubeLod<void>` only.
 		 */
-		explicit ImageCube(cudaArray_t hImage, Format format, size_t width, size_t height, size_t depth, int flags) : Image(hImage, format, width, height, depth, flags) {}
+		explicit ImageCube(cudaArray_t hImage, Format format, size_t width, size_t height, size_t depth) : Image(hImage, format, width, height, depth) {}
 	};
 
 	/*****************************************************************************
@@ -125,11 +124,10 @@ namespace NS_NAMESPACE
 		 *	@param[in]	width - Width of the image.
 		 *	@param[in]	height - height of the image.
 		 *	@param[in]	depth - Depth of the image.
-		 * 	@param[in]	flags - Flags for image creation (interanl use).
 		 *	@throw		cudaError_t - In case of failure.
 		 * 	@note		Created by class `ImageCubeLayeredLod<void>` only.
 		 */
-		explicit ImageCubeLayered(cudaArray_t hImage, Format format, size_t width, size_t height, size_t depth, int flags) : Image(hImage, format, width, height, depth, flags) {}
+		explicit ImageCubeLayered(cudaArray_t hImage, Format format, size_t width, size_t height, size_t depth) : Image(hImage, format, width, height, depth) {}
 
 	public:
 
