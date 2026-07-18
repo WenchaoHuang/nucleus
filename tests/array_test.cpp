@@ -71,7 +71,7 @@ void array_test()
 		assert(array11.width() == 100);
 		assert(array11.bytes() == 100 * sizeof(int));
 		assert(array11.pitch() == 100 * sizeof(int));
-		assert(array11.releaseBuffer() != nullptr);
+		assert(!array11.releaseBuffer().empty());
 		assert(array11.allocator() == nullptr);
 		array11.resize(allocator, 200);
 		array11.resize(300);
@@ -91,7 +91,7 @@ void array_test()
 		assert(array33.pitch() == 100 * sizeof(float));
 		assert(array33.height() == 100);
 		assert(array33.allocator() == allocator);
-		assert(array33.releaseBuffer() != nullptr);
+		assert(!array33.releaseBuffer().empty());
 		array33.resize(allocator, 200, 400);
 		array33.reshape(100, 800);
 		array33.resize(400, 200);

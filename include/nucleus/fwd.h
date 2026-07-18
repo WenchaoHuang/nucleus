@@ -149,7 +149,6 @@ namespace NS_NAMESPACE
 	template<typename Type> struct ImageAccessor;
 	template<typename... Args> using KernelFunc = void(*)(Args...);
 
-	using BufferPtr			= std::shared_ptr<Buffer>;
 	using AllocPtr			= std::shared_ptr<Allocator>;
 	using HostAllocPtr		= std::shared_ptr<HostAllocator>;
 	using DevAllocPtr		= std::shared_ptr<DeviceAllocator>;
@@ -204,7 +203,6 @@ namespace NS_NAMESPACE
 	//!	Type aliases for commonly shared image objects.
 	using SharedEvent											= SharedHandle<Event>;
 	using SharedStream											= SharedHandle<Stream>;
-	using SharedBuffer											= SharedHandle<Buffer>;
 	using SharedAlloctor										= SharedHandle<Allocator>;
 	using SharedHostAlloctor									= SharedHandle<HostAllocator>;
 	using SharedDeviceAlloctor									= SharedHandle<DeviceAllocator>;

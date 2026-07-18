@@ -43,13 +43,13 @@ namespace NS_NAMESPACE
 	public:
 
 		//!	@brief		Construct an empty array.
-		Array() noexcept : dev::Ptr<Type>(nullptr), m_buffer(nullptr) {}
+		Array() noexcept : dev::Ptr<Type>(nullptr) {}
 
 		//!	@brief		Allocates array with \p width elements.
 		explicit Array(std::shared_ptr<Allocator> alloctor, size_t width) : Array() { this->resize(alloctor, width); }
 
 		//!	@brief		Move constructor. Transfers ownership from another array.
-		Array(Array && rhs) : dev::Ptr<Type>(std::exchange(rhs.m_data, nullptr), std::exchange(rhs.m_width, 0)), m_buffer(std::exchange(rhs.m_buffer, nullptr)) {}
+		Array(Array && rhs) : dev::Ptr<Type>(std::exchange(rhs.m_data, nullptr), std::exchange(rhs.m_width, 0)), m_buffer(std::move(rhs.m_buffer)) {}
 
 	public:
 
@@ -65,9 +65,9 @@ namespace NS_NAMESPACE
 
 			if ((this->allocator() != allocator) || (this->size() != width))
 			{
-				m_buffer = std::make_shared<Buffer>(allocator, sizeof(Type) * width);
+				m_buffer = Buffer(allocator, sizeof(Type) * width);
 					
-				dev::Ptr<Type>::m_data = reinterpret_cast<Type*>(m_buffer->data());
+				dev::Ptr<Type>::m_data = reinterpret_cast<Type*>(m_buffer.data());
 
 				dev::Ptr<Type>::m_width = width;
 			}
@@ -81,9 +81,9 @@ namespace NS_NAMESPACE
 		 */
 		void resize(size_t width)
 		{
-			NS_ASSERT_LOG_IF(m_buffer == nullptr, "Empty allocator!");
+			NS_ASSERT_LOG_IF(!m_buffer, "Empty allocator!");
 
-			this->resize(m_buffer->allocator(), width);
+			this->resize(m_buffer.allocator(), width);
 		}
 
 
@@ -92,7 +92,7 @@ namespace NS_NAMESPACE
 		 */
 		 std::shared_ptr<Allocator> allocator() const
 		 {
-			 return m_buffer ? m_buffer->allocator() : nullptr;
+			 return m_buffer.allocator();
 		 }
 
 
@@ -101,13 +101,13 @@ namespace NS_NAMESPACE
 		 *	@return		The released buffer (nullptr if array was empty).
 		 *	@note		After this call, the array will be empty but still valid.
 		 */
-		std::shared_ptr<Buffer> releaseBuffer() noexcept
+		Buffer releaseBuffer() noexcept
 		{
 			dev::Ptr<Type>::m_width = 0;
 
 			dev::Ptr<Type>::m_data = nullptr;
 
-			return std::exchange(m_buffer, nullptr);
+			return std::exchange(m_buffer, Buffer());
 		}
 
 
@@ -116,11 +116,11 @@ namespace NS_NAMESPACE
 		 */
 		void operator=(Array && rhs) noexcept
 		{
-			m_buffer = std::exchange(rhs.m_buffer, nullptr);
+			dev::Ptr<Type>::m_data = std::exchange(rhs.m_data, nullptr);
 
 			dev::Ptr<Type>::m_width = std::exchange(rhs.m_width, 0);
 
-			dev::Ptr<Type>::m_data = std::exchange(rhs.m_data, nullptr);
+			m_buffer = std::move(rhs.m_buffer);
 		}
 
 
@@ -142,13 +142,13 @@ namespace NS_NAMESPACE
 		 */
 		void clear() noexcept
 		{
-			if (m_buffer != nullptr)
+			if (m_buffer)
 			{
 				dev::Ptr<Type>::m_data = nullptr;
 
 				dev::Ptr<Type>::m_width = 0;
 
-				m_buffer = nullptr;
+				m_buffer = Buffer();
 			}
 		}
 
@@ -180,6 +180,6 @@ namespace NS_NAMESPACE
 
 	private:
 
-		std::shared_ptr<Buffer>		m_buffer;
+		Buffer		m_buffer;
 	};
 }

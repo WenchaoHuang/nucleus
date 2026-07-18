@@ -43,13 +43,13 @@ namespace NS_NAMESPACE
 	public:
 
 		//!	@brief		Construct an empty array.
-		Array3D() noexcept : dev::Ptr3<Type>(nullptr), m_buffer(nullptr) {}
+		Array3D() noexcept : dev::Ptr3<Type>(nullptr), m_buffer() {}
 
 		//!	@brief		Constructs and allocates a 2D array with specified dimensions.
 		explicit Array3D(std::shared_ptr<Allocator> allocator, size_t width, size_t height, size_t depth) : Array3D() { this->resize(allocator, width, height, depth); }
 
 		//!	@brief		Move constructor. Transfers ownership from another array.
-		Array3D(Array3D && rhs) : m_buffer(std::exchange(rhs.m_buffer, nullptr)),
+		Array3D(Array3D && rhs) : m_buffer(std::move(rhs.m_buffer)),
 			dev::Ptr3<Type>(std::exchange(rhs.m_data, nullptr), std::exchange(rhs.m_height, 0), std::exchange(rhs.m_width, 0), std::exchange(rhs.m_depth, 0)) {}
 
 	public:
@@ -68,9 +68,9 @@ namespace NS_NAMESPACE
 
 			if ((this->allocator() != allocator) || (this->size() != width * height * depth))
 			{
-				m_buffer = std::make_shared<Buffer>(allocator, sizeof(Type) * width * height * depth);
+				m_buffer = Buffer(allocator, sizeof(Type) * width * height * depth);
 
-				dev::Ptr3<Type>::m_data = reinterpret_cast<Type*>(m_buffer->data());
+				dev::Ptr3<Type>::m_data = reinterpret_cast<Type*>(m_buffer.data());
 
 				dev::Ptr3<Type>::m_height = static_cast<uint32_t>(height);
 
@@ -97,9 +97,9 @@ namespace NS_NAMESPACE
 		 */
 		void resize(size_t width, size_t height, size_t depth)
 		{
-			NS_ASSERT_LOG_IF(m_buffer == nullptr, "Empty allocator!");
+			NS_ASSERT_LOG_IF(!m_buffer, "Empty allocator!");
 			
-			this->resize(m_buffer->allocator(), width, height, depth);
+			this->resize(m_buffer.allocator(), width, height, depth);
 		}
 
 
@@ -129,7 +129,7 @@ namespace NS_NAMESPACE
 		 */
 		std::shared_ptr<Allocator> allocator() const
 		{
-			return m_buffer ? m_buffer->allocator() : nullptr;
+			return m_buffer.allocator();
 		}
 
 
@@ -137,7 +137,7 @@ namespace NS_NAMESPACE
 		 *	@brief		Releases the ownership of the internal buffer and returns it.
 		 *	@note		After this call, the Array3D will be in an empty state.
 		 */
-		std::shared_ptr<Buffer> releaseBuffer()
+		Buffer releaseBuffer()
 		{
 			dev::Ptr3<Type>::m_width = 0;
 			
@@ -147,7 +147,7 @@ namespace NS_NAMESPACE
 
 			dev::Ptr3<Type>::m_data = nullptr;
 
-			return std::exchange(m_buffer, nullptr);
+			return std::exchange(m_buffer, Buffer());
 		}
 
 
@@ -164,7 +164,7 @@ namespace NS_NAMESPACE
 
 			dev::Ptr3<Type>::m_depth = std::exchange(rhs.m_depth, 0);
 
-			m_buffer = std::exchange(rhs.m_buffer, nullptr);
+			m_buffer = std::move(rhs.m_buffer);
 		}
 
 
@@ -191,7 +191,7 @@ namespace NS_NAMESPACE
 		 */
 		void clear() noexcept
 		{
-			if (m_buffer != nullptr)
+			if (m_buffer)
 			{
 				dev::Ptr3<Type>::m_data = nullptr;
 
@@ -201,7 +201,7 @@ namespace NS_NAMESPACE
 
 				dev::Ptr3<Type>::m_width = 0;
 
-				m_buffer = nullptr;
+				m_buffer = Buffer();
 			}
 		}
 
@@ -233,6 +233,6 @@ namespace NS_NAMESPACE
 
 	private:
 
-		std::shared_ptr<Buffer>		m_buffer;
+		Buffer		m_buffer;
 	};
 }
