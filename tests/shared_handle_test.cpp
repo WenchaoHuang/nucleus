@@ -20,9 +20,7 @@
  *	SOFTWARE.
  */
 
-#include <nucleus/buffer.h>
-#include <nucleus/device.h>
-#include <nucleus/runtime.h>
+#include <nucleus/fwd.h>
 
 /*********************************************************************************
 ****************************    shared_handle_test    ****************************
@@ -30,27 +28,33 @@
 
 void shared_handle_test()
 {
-	auto device = ns::Runtime::device(0);
-	auto allocator = device->defaultAllocator();
+	struct TestObject
+	{
+		explicit TestObject(size_t value) : value(value) {}
 
-	ns::SharedBuffer sharedBuffer0;
-	ns::SharedBuffer sharedBuffer1 = nullptr;
-	ns::SharedBuffer sharedBuffer2(allocator, 100);
+		size_t value;
+	};
 
-	assert(sharedBuffer2->capacity() == 100);
-	ns::SharedBuffer sharedBuffer3 = std::move(sharedBuffer2);
-	assert(sharedBuffer3->capacity() == 100);
+	using TestHandle = ns::SharedHandle<TestObject>;
 
-	ns::SharedBuffer sharedBuffer4 = ns::SharedBuffer{ allocator, 200 };
-	assert(sharedBuffer4->capacity() == 200);
+	TestHandle handle0;
+	TestHandle handle1 = nullptr;
+	TestHandle handle2(100);
 
-	ns::SharedBuffer sharedBuffer5 = std::make_unique<ns::Buffer>(allocator, 300);
-	assert(sharedBuffer5->capacity() == 300);
+	assert(handle2->value == 100);
+	TestHandle handle3 = std::move(handle2);
+	assert(handle3->value == 100);
 
-	ns::SharedBuffer sharedBuffer6 = std::make_shared<ns::Buffer>(allocator, 400);
-	assert(sharedBuffer6->capacity() == 400);
-	assert(sharedBuffer6);
+	TestHandle handle4 = TestHandle{ 200 };
+	assert(handle4->value == 200);
 
-	sharedBuffer6.reset();
-	assert(sharedBuffer6 == nullptr);
+	TestHandle handle5 = std::make_unique<TestObject>(300);
+	assert(handle5->value == 300);
+
+	TestHandle handle6 = std::make_shared<TestObject>(400);
+	assert(handle6->value == 400);
+	assert(handle6);
+
+	handle6.reset();
+	assert(handle6 == nullptr);
 }

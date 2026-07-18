@@ -30,23 +30,19 @@ namespace NS_NAMESPACE
 	*****************************************************************************/
 
 	/**
-	 *	@brief		RAII wrapper for memory management.
-	 *	@note		This class provides a safe and exception-safe way to manage dynamically
-	 *				allocated memory buffers. It handles allocation and deallocation
-	 *				automatically through the provided Allocator interface.
+	 *	@brief		Shared handle for memory management.
+	 *	@note		The allocated memory is owned by an internal body and remains valid until
+	 *				the last Buffer handle that references it is destroyed.
 	 */
 	class Buffer
 	{
-		NS_NONCOPYABLE(Buffer)
-
 	public:
 
 		/**
 		 *	@brief		Constructs an empty buffer.
-		 *	@note		Creates a Buffer object with null data pointer and zero capacity.
-		 *				No memory allocation is performed.
+		 *	@note		No memory allocation is performed.
 		 */
-		Buffer() noexcept : m_allocator(nullptr), m_data(nullptr), m_capacity(0) {}
+		Buffer() noexcept = default;
 
 
 		/**
@@ -54,81 +50,87 @@ namespace NS_NAMESPACE
 		 *	@param[in]	allocator - Shared pointer to the memory allocator.
 		 *	@param[in]	capacity - Requested buffer capacity in bytes.
 		 *	@throws		cudaError_t - In case of failure.
-		 *	@note		The actual allocation is delegated to the provided Allocator
+		 *	@note		The actual allocation is delegated to the provided Allocator.
 		 */
-		explicit Buffer(std::shared_ptr<Allocator> allocator, size_t capacity) : m_allocator(allocator), m_capacity(capacity), m_data(nullptr)
+		explicit Buffer(std::shared_ptr<Allocator> allocator, size_t capacity)
 		{
-			m_data = allocator->allocateMemory(capacity);
-		}
-
-
-		/**
-		 *	@brief		Destructor.
-		 *	@details	Automatically deallocates the buffer using the stored allocator.
-		 *				Guaranteed not to throw exceptions (noexcept).
-		 */
-		~Buffer() noexcept
-		{
-			if ((m_allocator != nullptr) && (m_data != nullptr))
-			{
-				m_allocator->deallocateMemory(m_data);
-
-				m_allocator = nullptr;
-
-				m_data = nullptr;
-
-				m_capacity = 0;
-			}
+			if (capacity > 0) { m_storage = std::make_shared<Storage>(std::move(allocator), capacity); }
 		}
 
 	public:
 
 		/**
-		 *	@brief		Gets the buffer capacity.
-		 *	@return		Returns the total number of bytes allocated for this buffer.
+		 *	@brief		Gets the associated memory allocator.
+		 *	@return		Shared pointer to the Allocator instance.
 		 */
-		size_t capacity() const { return m_capacity; }
+		const std::shared_ptr<Allocator> & allocator() const noexcept
+		{
+			static const std::shared_ptr<Allocator> nullAllocator;
+
+			return m_storage ? m_storage->allocator : nullAllocator;
+		}
 
 
 		/**
 		 *	@brief		Checks if buffer is empty.
-		 *	@return		Returns true if buffer is empty (nullptr), false otherwise.
+		 *	@return		Returns `true` if storage is empty (nullptr), `false` otherwise.
 		 */
-		bool empty() const { return m_data == nullptr; }
+		bool empty() const noexcept { return m_storage == nullptr; }
 
 
 		/**
-		 *	@brief		Gets the associated memory allocator.
-		 *	@return		Shared pointer to the Allocator instance.
+		 *	@brief		Checks whether this handle references a buffer body.
 		 */
-		const std::shared_ptr<Allocator> & allocator() const { return m_allocator; }
+		explicit operator bool() const noexcept { return m_storage != nullptr; }
+
+
+		/**
+		 *	@brief		Gets the buffer capacity.
+		 *	@return		Returns the total number of bytes allocated for this buffer.
+		 */
+		size_t capacity() const noexcept { return m_storage ? m_storage->capacity : 0; }
 
 
 		/**
 		 *	@brief		Retrun logical address of the memory.
 		 */
-		std::uintptr_t address() const { return reinterpret_cast<std::uintptr_t>(m_data); }
+		std::uintptr_t address() const noexcept { return reinterpret_cast<std::uintptr_t>(this->data()); }
 
 
 		/**
 		 *	@brief		Gets constant pointer to the underlying data.
-		 *	@return		Const pointer to the buffer data
-		 *	@note		The returned pointer remains valid until the Buffer object is destroyed.
+		 *	@return		Const pointer to the buffer data.
+		 *	@note		The returned pointer remains valid until the last sharing Buffer handle is destroyed.
 		 */
-		const void * data() const { return m_data; }
+		const void * data() const noexcept { return m_storage ? m_storage->data : nullptr; }
 
 
 		/**
 		 *	@brief		Gets mutable pointer to the underlying data.
-		 *	@return		Pointer to the buffer data
-		 *	@note		The returned pointer remains valid until the Buffer object is destroyed.
+		 *	@return		Pointer to the buffer data.
+		 *	@note		The returned pointer remains valid until the last sharing Buffer handle is destroyed.
 		 */
-		void * data() { return m_data; }
-		
+		void * data() noexcept { return m_storage ? m_storage->data : nullptr; }
+
 	private:
 
-		void *							m_data;
-		size_t							m_capacity;
-		std::shared_ptr<Allocator>		m_allocator;
+		/**
+		 *	@brief		Internal storage structure for buffer data and allocator.
+		 */
+		struct Storage
+		{
+			const std::shared_ptr<Allocator>		allocator;
+			const size_t							capacity;
+			void * const							data;
+
+			//!	@brief		Constructs a Storage instance with specified allocator and capacity.
+			explicit Storage(std::shared_ptr<Allocator> allocator, size_t capacity)
+				: allocator(std::move(allocator)), capacity(capacity), data(this->allocator->allocateMemory(capacity)) {}
+
+			//!	@brief		Destructs the Storage instance and deallocates the associated memory.	
+			~Storage() noexcept { if (data != nullptr) { allocator->deallocateMemory(data); } }
+		};
+		
+		std::shared_ptr<Storage>		m_storage;
 	};
 }

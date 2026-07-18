@@ -43,13 +43,13 @@ namespace NS_NAMESPACE
 	public:
 
 		//!	@brief		Construct an empty array.
-		Array2D() noexcept : dev::Ptr2<Type>(nullptr), m_buffer(nullptr) {}
+		Array2D() noexcept : dev::Ptr2<Type>(nullptr), m_buffer() {}
 
 		//!	@brief		Constructs and allocates a 2D array with specified dimensions.
 		explicit Array2D(std::shared_ptr<Allocator> alloctor, size_t width, size_t height) : Array2D() { this->resize(alloctor, width, height); }
 
 		//!	@brief		Move constructor. Transfers ownership from another array.
-		Array2D(Array2D && rhs) : dev::Ptr2<Type>(std::exchange(rhs.m_data, nullptr), std::exchange(rhs.m_width, 0), std::exchange(rhs.m_height, 0)),  m_buffer(std::exchange(rhs.m_buffer, nullptr)) {}
+		Array2D(Array2D && rhs) : dev::Ptr2<Type>(std::exchange(rhs.m_data, nullptr), std::exchange(rhs.m_width, 0), std::exchange(rhs.m_height, 0)),  m_buffer(std::move(rhs.m_buffer)) {}
 
 	public:
 
@@ -66,9 +66,9 @@ namespace NS_NAMESPACE
 
 			if ((this->allocator() != allocator) || (this->size() != width * height))
 			{
-				m_buffer = std::make_shared<Buffer>(allocator, sizeof(Type) * width * height);
+				m_buffer = Buffer(allocator, sizeof(Type) * width * height);
 
-				dev::Ptr2<Type>::m_data = reinterpret_cast<Type*>(m_buffer->data());
+				dev::Ptr2<Type>::m_data = reinterpret_cast<Type*>(m_buffer.data());
 
 				dev::Ptr2<Type>::m_height = static_cast<uint32_t>(height);
 
@@ -91,9 +91,9 @@ namespace NS_NAMESPACE
 		 */
 		void resize(size_t width, size_t height)
 		{
-			NS_ASSERT_LOG_IF(m_buffer == nullptr, "Empty allocator!");
+			NS_ASSERT_LOG_IF(!m_buffer, "Empty allocator!");
 
-			this->resize(m_buffer->allocator(), width, height);
+			this->resize(m_buffer.allocator(), width, height);
 		}
 
 
@@ -120,7 +120,7 @@ namespace NS_NAMESPACE
 		 */
 		std::shared_ptr<Allocator> allocator() const
 		{
-			return m_buffer ? m_buffer->allocator() : nullptr;
+			return m_buffer.allocator();
 		}
 
 
@@ -128,7 +128,7 @@ namespace NS_NAMESPACE
 		 *	@brief		Releases the ownership of the internal buffer and returns it.
 		 *	@note		After this call, the Array2D will be in an empty state.
 		 */
-		std::shared_ptr<Buffer> releaseBuffer()
+		Buffer releaseBuffer()
 		{
 			dev::Ptr2<Type>::m_width = 0;
 
@@ -136,7 +136,7 @@ namespace NS_NAMESPACE
 
 			dev::Ptr2<Type>::m_data = nullptr;
 
-			return std::exchange(m_buffer, nullptr);
+			return std::exchange(m_buffer, Buffer());
 		}
 
 
@@ -151,7 +151,7 @@ namespace NS_NAMESPACE
 
 			dev::Ptr2<Type>::m_width = std::exchange(rhs.m_width, 0);
 
-			m_buffer = std::exchange(rhs.m_buffer, nullptr);
+			m_buffer = std::move(rhs.m_buffer);
 		}
 
 
@@ -175,7 +175,7 @@ namespace NS_NAMESPACE
 		 */
 		void clear() noexcept
 		{
-			if (m_buffer != nullptr)
+			if (m_buffer)
 			{
 				dev::Ptr2<Type>::m_data = nullptr;
 
@@ -183,7 +183,7 @@ namespace NS_NAMESPACE
 				
 				dev::Ptr2<Type>::m_width = 0;
 
-				m_buffer = nullptr;
+				m_buffer = Buffer();
 			}
 		}
 
@@ -215,6 +215,6 @@ namespace NS_NAMESPACE
 
 	private:
 
-		std::shared_ptr<Buffer>		m_buffer;
+		Buffer		m_buffer;
 	};
 }

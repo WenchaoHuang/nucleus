@@ -32,7 +32,7 @@ void buffer_view_test()
 {
 	auto device = ns::Runtime::device(0);
 	auto allocator = device->defaultAllocator();
-	auto buffer = std::make_shared<ns::Buffer>(allocator, sizeof(int) * 1024);
+	ns::Buffer buffer(allocator, sizeof(int) * 1024);
 
 	ns::BufferView<int> bufferView0;
 	ns::BufferView<int> bufferView1 = nullptr;
