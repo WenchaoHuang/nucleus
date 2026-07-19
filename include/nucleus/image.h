@@ -24,7 +24,6 @@
 #include "fwd.h"
 #include "format.h"
 #include "host_types.h"
-#include <vector>
 
 namespace NS_NAMESPACE
 {
@@ -33,7 +32,7 @@ namespace NS_NAMESPACE
 	*****************************************************************************/
 
 	/**
-	 *	@brief		Base class of `Image` and `ImageLod`
+	 *	@brief		Represents a texture memory with specified texel format.
 	 */
 	class ImageBase
 	{
@@ -92,36 +91,43 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Virtual destructor.
 		 */
-		NS_API virtual ~ImageBase() noexcept;
+		NS_API virtual ~ImageBase() {}
 
 	public:
 
-		//	Returns the texel format of the image.
+		//!	@brief		Returns the texel format of the image.
 		Format format() const { return m_format; }
 
-		//	Retruns the width of the image.
+		//!	@brief		Retruns the width of the image.
 		uint32_t width() const { return m_width; }
 
-		//	Returns pointer to the allocator associated with.
-		std::shared_ptr<DeviceAllocator> allocator() const { return m_allocator; }
+		//!	@brief		Retruns the depth of the image.
+		uint32_t depth() const { return m_depth; }
 
-		//	Returns accessor to the data.
-		ImageAccessor<void> data() const { return ImageAccessor<void>{ m_hImage }; }
+		//!	@brief		Retruns the height of the image.
+		uint32_t height() const { return m_height; }
 
-		//	Returns CUDA type of this object.
+		//!	@brief		Returns the number of mipmap levels.
+		unsigned int numLevels() const { return m_numLevels; }
+
+		//!	@brief		Returns CUDA type of this object.
 		cudaMipmappedArray_t handle() const { return m_hImageLod; }
 
-		//	Returns the number of mipmap levels.
-		unsigned int numLevels() const { return m_numLevels; }
+		//!	@brief		Returns pointer to the allocator associated with.
+		std::shared_ptr<DeviceAllocator> allocator() const { return m_allocator; }
+
+		//!	@brief		Returns accessor to the data.
+		ImageAccessor<void> data() const { return ImageAccessor<void>{ m_hImage }; }
 
 	protected:
 
+		class Storage;
+		std::shared_ptr<Storage>					m_storage;
 		const std::shared_ptr<DeviceAllocator>		m_allocator;
 		const Format								m_format;
 		const uint32_t								m_width;
 		const uint32_t								m_height;
 		const uint32_t								m_depth;
-
 		cudaArray_t									m_hImage;
 		cudaMipmappedArray_t						m_hImageLod;
 		unsigned int								m_numLevels;

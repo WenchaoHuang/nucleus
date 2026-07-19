@@ -28,10 +28,104 @@
 #include "image_cube.h"
 
 #include <cmath>
+#include <vector>
+#include <variant>
 #include <algorithm>
 #include <cuda_runtime_api.h>
 
 NS_USING_NAMESPACE
+
+/*********************************************************************************
+****************************    ImageBase::Storage    ****************************
+*********************************************************************************/
+
+/**
+ *	@brief		Storage class for ImageBase, which manages the underlying CUDA array or mipmapped array.
+ */
+class ImageBase::Storage
+{
+
+public:
+
+	/**
+	 *	@brief		Constructs a image.
+	 *	@param[in]	allocator - Pointer to the associated allocator.
+	 *	@param[in]	format - Texel format of the image.
+	 *	@param[in]	width - Width of the image.
+	 *	@param[in]	height - height of the image.
+	 *	@param[in]	depth - Depth of the image.
+	 *	@param[in]	flags - Flags for image creation (interanl use).
+	 *	@throw		cudaError_t - In case of failure.
+	 */
+	explicit Storage(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, int flags)
+		: hImage(allocator->allocateTextureMemory(format, width, height, depth, flags | cudaArraySurfaceLoadStore)), numLevels(0),
+		allocator(allocator), height(static_cast<uint32_t>(height)), width(static_cast<uint32_t>(width)), depth(static_cast<uint32_t>(depth)), format(format) {}
+
+
+	/**
+	 *	@brief		Constructs a image with level of details.
+	 *	@param[in]	allocator - Pointer to the associated allocator.
+	 *	@param[in]	format - Texel format of the image.
+	 *	@param[in]	width - Width of the image.
+	 *	@param[in]	height - height of the image.
+	 *	@param[in]	depth - Depth of the image.
+	 *	@param[in]	numLevels - Number of mipmap levels to allocated.
+	 *	@param[in]	flags - Flags for image creation (interanl use).
+	 *	@throw		cudaError_t - In case of failure.
+	 */
+	explicit Storage(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, unsigned int numLevels, int flags)
+		: hImage(allocator->allocateMipmapTextureMemory(format, width, height, depth, numLevels, flags | cudaArraySurfaceLoadStore)), numLevels(numLevels),
+		allocator(allocator), height(static_cast<uint32_t>(height)), width(static_cast<uint32_t>(width)), depth(static_cast<uint32_t>(depth)), format(format)
+	{
+		this->mipmaps.resize(numLevels);
+
+		auto hImageLod = std::get<cudaMipmappedArray_t>(hImage);
+
+		for (unsigned int i = 0; i < numLevels; i++)
+		{
+			cudaError_t err = cudaGetMipmappedArrayLevel(mipmaps.data() + i, hImageLod, i);
+
+			if (err != cudaSuccess)
+			{
+				NS_ERROR_LOG("%s.", cudaGetErrorString(err));
+
+				cudaGetLastError();
+
+				throw err;
+			}
+		}
+	}
+
+
+	/**
+	 *	@brief		Destroys the image storage.
+	 */
+	~Storage()
+	{
+		if (allocator != nullptr)
+		{
+			if (hImage.index() == 0)
+			{
+				allocator->deallocateTextureMemory(std::get<cudaArray_t>(hImage));
+			}
+			else if (hImage.index() == 1)
+			{
+				allocator->deallocateMipmapTextureMemory(std::get<cudaMipmappedArray_t>(hImage));
+			}
+		}
+	}
+
+public:
+
+	std::vector<cudaArray_t>									mipmaps;
+	const std::variant<cudaArray_t, cudaMipmappedArray_t>		hImage;
+	const std::shared_ptr<DeviceAllocator>						allocator;
+	const unsigned int											numLevels;
+	const unsigned int											height;
+	const unsigned int											width;
+	const unsigned int											depth;
+	const Format												format;
+};
 
 /*********************************************************************************
 ********************************    ImageBase    *********************************
@@ -48,7 +142,8 @@ ImageBase::ImageBase(std::shared_ptr<DeviceAllocator> allocator, Format format, 
 ImageBase::ImageBase(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, int flags)
 	: ImageBase(allocator, format, width, height, depth)
 {
-	m_hImage = allocator->allocateTextureMemory(format, width, height, depth, flags | cudaArraySurfaceLoadStore);
+	m_storage = std::make_shared<Storage>(allocator, format, width, height, depth, flags | cudaArraySurfaceLoadStore);
+	m_hImage = std::get<cudaArray_t>(m_storage->hImage);
 
 	NS_ASSERT(allocator != nullptr);
 }
@@ -65,25 +160,11 @@ ImageBase::ImageBase(cudaArray_t hImage, Format format, size_t width, size_t hei
 ImageBase::ImageBase(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, unsigned int numLevels, int flags)
 	: ImageBase(allocator, format, width, height, depth)
 {
-	m_hImageLod = allocator->allocateMipmapTextureMemory(format, width, height, depth, numLevels, flags | cudaArraySurfaceLoadStore);
-
-	m_numLevels = numLevels;
+	m_storage = std::make_shared<Storage>(allocator, format, width, height, depth, numLevels, flags | cudaArraySurfaceLoadStore);
+	m_hImageLod = std::get<cudaMipmappedArray_t>(m_storage->hImage);
+	m_numLevels = m_storage->numLevels;
 
 	NS_ASSERT(allocator != 0);
-}
-
-
-ImageBase::~ImageBase() noexcept
-{
-	if ((m_allocator != nullptr) && (m_hImage != nullptr))
-	{
-		m_allocator->deallocateTextureMemory(m_hImage);
-	}
-
-	if ((m_allocator != nullptr) && (m_hImageLod != nullptr))
-	{
-		m_allocator->deallocateMipmapTextureMemory(m_hImageLod);
-	}
 }
 
 /*********************************************************************************
