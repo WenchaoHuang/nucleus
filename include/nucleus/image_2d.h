@@ -34,7 +34,6 @@ namespace NS_NAMESPACE
 	 */
 	template<> class Image2D<void> : public Image
 	{
-		friend class Image2DLod<void>;
 
 	public:
 
@@ -47,20 +46,6 @@ namespace NS_NAMESPACE
 		 *	@throw		cudaError_t - In case of failure.
 		 */
 		NS_API explicit Image2D(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height);
-
-	private:
-
-		/**
-		 *	@brief		Constructs from Image2DLod.
-		 *	@param[in]	hImage - Handle of texture memory (from cudaMipmappedArray_t).
-		 *	@param[in]	format - Texel format of the image.
-		 *	@param[in]	width - Width of the image.
-		 *	@param[in]	height - height of the image.
-		 *	@param[in]	depth - Depth of the image.
-		 *	@throw		cudaError_t - In case of failure.
-		 *	@note		Created by class `Image2DLod<void>` only.
-		 */
-		explicit Image2D(cudaArray_t hImage, Format format, size_t width, size_t height, size_t depth) : Image(hImage, format, width, height, depth) {}
 
 	public:
 
@@ -108,7 +93,6 @@ namespace NS_NAMESPACE
 	 */
 	template<> class Image2DLayered<void> : public Image
 	{
-		friend class Image2DLayeredLod<void>;
 
 	public:
 
@@ -122,20 +106,6 @@ namespace NS_NAMESPACE
 		 *	@throw		cudaError_t - In case of failure.
 		 */
 		NS_API explicit Image2DLayered(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t numLayers);
-
-	private:
-
-		/**
-		 *	@brief		Constructs from MipmappedTextureMemory2DLayered.
-		 *	@param[in]	hImage - Handle of texture memory (from cudaMipmappedArray_t).
-		 *	@param[in]	format - Texel format of the image.
-		 *	@param[in]	width - Width of the image.
-		 *	@param[in]	height - height of the image.
-		 *	@param[in]	depth - Depth of the image.
-		 *	@throw		cudaError_t - In case of failure.
-		 *	@note		Created by class `Image2DLayeredLod<void>` only.
-		 */
-		explicit Image2DLayered(cudaArray_t hImage, Format format, size_t width, size_t height, size_t depth) : Image(hImage, format, width, height, depth) {}
 
 	public:
 
@@ -202,20 +172,9 @@ namespace NS_NAMESPACE
 
 
 		/**
-		 *	@return		Reference to the specified level.
-		 *	@warning	`level` should be in the range [0, numLevel).
-		 */
-		Image2D<void> & getLevel(size_t level) { return *m_mipmaps[level]; }
-
-
-		/**
 		 *	@return		The height of the image.
 		 */
 		uint32_t height() const { return m_height; }
-
-	private:
-
-		std::vector<std::shared_ptr<Image2D<void>>>		m_mipmaps;
 	};
 
 	/*****************************************************************************
@@ -239,13 +198,6 @@ namespace NS_NAMESPACE
 		 *	@throw		cudaError_t - In case of failure.
 		 */
 		Image2DLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, unsigned int numLevels) : Image2DLod<void>(allocator, FormatMapping<Type>::value, width, height, numLevels) {}
-
-
-		/**
-		 *	@return		Reference to the specified level.
-		 *	@warning	`level` should be in the range [0, numLevel).
-		 */
-		Image2D<Type> & getLevel(size_t level) { return reinterpret_cast<Image2D<Type>&>(Image2DLod<void>::getLevel(level)); }
 
 
 		/**
@@ -278,24 +230,11 @@ namespace NS_NAMESPACE
 		 */
 		NS_API Image2DLayeredLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t numLayers, unsigned int numLevels);
 
-
-		/**
-		 *	@return		Reference to the specified level.
-		 *	@warning	`level` should be in the range [0, numLevel).
-		 */
-		Image2DLayered<void> & getLevel(size_t level) { return *m_mipmaps[level]; }
-
-	public:
-
 		//	Returns the number of layers.
 		uint32_t numLayers() const { return m_depth; }
 
 		//	Returns the height of the image.
 		uint32_t height() const { return m_height; }
-
-	private:
-
-		std::vector<std::shared_ptr<Image2DLayered<void>>>		m_mipmaps;
 	};
 
 	/*****************************************************************************
@@ -320,13 +259,6 @@ namespace NS_NAMESPACE
 		 *	@throw		cudaError_t - In case of failure.
 		 */
 		Image2DLayeredLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t numLayers, unsigned int numLevels) : Image2DLayeredLod<void>(allocator, FormatMapping<Type>::value, width, height, numLayers, numLevels) {}
-
-
-		/**
-		 *	@return		Reference to the specified level.
-		 *	@warning	`level` should be in the range [0, numLevel).
-		 */
-		Image2DLayered<Type> & getLevel(size_t level) { return reinterpret_cast<Image2DLayered<Type>&>(Image2DLayeredLod<void>::getLevel(level)); }
 
 
 		/**

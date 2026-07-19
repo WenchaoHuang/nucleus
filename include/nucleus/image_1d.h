@@ -34,7 +34,6 @@ namespace NS_NAMESPACE
 	 */
 	template<> class Image1D<void> : public Image
 	{
-		friend class Image1DLod<void>;
 
 	public:
 
@@ -45,20 +44,6 @@ namespace NS_NAMESPACE
 		 *	@param[in]	width - Width of the image.
 		 */
 		NS_API explicit Image1D(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width);
-
-	private:
-
-		/**
-		 *	@brief		Constructs from Image1DLod.
-		 *	@param[in]	hImage - Handle of texture memory (from cudaMipmappedArray_t).
-		 *	@param[in]	format - Texel format of the image.
-		 *	@param[in]	width - Width of the image.
-		 *	@param[in]	height - height of the image.
-		 *	@param[in]	depth - Depth of the image.
-		 *	@throw		cudaError_t - In case of failure.
-		 *	@note		Created by class `Image1DLod<void>` only.
-		 */
-		explicit Image1D(cudaArray_t hImage, Format format, size_t width, size_t height, size_t depth) : Image(hImage, format, width, height, depth) {}
 	};
 
 	/*****************************************************************************
@@ -98,7 +83,6 @@ namespace NS_NAMESPACE
 	 */
 	template<> class Image1DLayered<void> : public Image
 	{
-		friend class Image1DLayeredLod<void>;
 
 	public:
 
@@ -110,20 +94,6 @@ namespace NS_NAMESPACE
 		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
 		 */
 		NS_API explicit Image1DLayered(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t numLayers);
-
-	private:
-
-		/**
-		 *	@brief		Constructs from MipmappedTextureMemory1DLayered.
-		 *	@param[in]	hImage - Handle of texture memory (from cudaMipmappedArray_t).
-		 *	@param[in]	format - Texel format of the image.
-		 *	@param[in]	width - Width of the image.
-		 *	@param[in]	height - height of the image.
-		 *	@param[in]	depth - Depth of the image.
-		 *	@throw		cudaError_t - In case of failure.
-		 *	@note		Created by class `Image1DLayeredLod<void>` only.
-		 */
-		explicit Image1DLayered(cudaArray_t hImage, Format format, size_t width, size_t height, size_t depth) : Image(hImage, format, width, height, depth) {}
 
 	public:
 
@@ -181,17 +151,6 @@ namespace NS_NAMESPACE
 		 *	@throw		cudaError_t - In case of failure.
 		 */
 		NS_API Image1DLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, unsigned int numLevels);
-
-
-		/**
-		 *	@return		Reference to the specified level.
-		 *	@warning	`level` should be in the range [0, numLevel).
-		 */
-		Image1D<void> & getLevel(size_t level) { return *m_mipmaps[level]; }
-
-	private:
-
-		std::vector<std::shared_ptr<Image1D<void>>>		m_mipmaps;
 	};
 
 	/*****************************************************************************
@@ -214,13 +173,6 @@ namespace NS_NAMESPACE
 		 *	@throw		cudaError_t - In case of failure.
 		 */
 		Image1DLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, unsigned int numLevels) : Image1DLod<void>(allocator, FormatMapping<Type>::value, width, numLevels) {}
-
-
-		/**
-		 *	@return		Reference to the specified level.
-		 *	@warning	`level` should be in the range [0, numLevel).
-		 */
-		Image1D<Type> & getLevel(size_t level) { return reinterpret_cast<Image1D<Type>&>(Image1DLod<void>::getLevel(level)); }
 
 
 		/**
@@ -254,20 +206,9 @@ namespace NS_NAMESPACE
 
 
 		/**
-		 *	@return		Reference to the specified level.
-		 *	@warning	`level` should be in the range [0, numLevel).
-		 */
-		Image1DLayered<void> & getLevel(size_t level) { return *m_mipmaps[level]; }
-
-
-		/**
 		 *	@return		The number of layers.
 		 */
 		uint32_t numLayers() const { return m_depth; }
-
-	private:
-
-		std::vector<std::shared_ptr<Image1DLayered<void>>>		m_mipmaps;
 	};
 
 	/*****************************************************************************
@@ -291,13 +232,6 @@ namespace NS_NAMESPACE
 		 *	@throw		cudaError_t - In case of failure.
 		 */
 		Image1DLayeredLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t numLayers, unsigned int numLevels) : Image1DLayeredLod<void>(allocator, FormatMapping<Type>::value, width, numLayers, numLevels) {}
-
-
-		/**
-		 *	@return		Reference to the specified level.
-		 *	@warning	`level` should be in the range [0, numLevel).
-		 */
-		Image1DLayered<Type> & getLevel(size_t level) { return reinterpret_cast<Image1DLayered<Type>&>(Image1DLayeredLod<void>::getLevel(level)); }
 
 
 		/**

@@ -64,17 +64,6 @@ namespace NS_NAMESPACE
 
 
 		/**
-		 *	@brief		Constructs from ImageLod.
-		 *	@param[in]	hImage - Handle of texture memory (from cudaMipmappedArray_t).
-		 *	@param[in]	format - Texel format of the image.
-		 *	@param[in]	width - Width of the image.
-		 *	@param[in]	height - height of the image.
-		 *	@param[in]	depth - Depth of the image.
-		 */
-		NS_API explicit ImageBase(cudaArray_t hImage, Format format, size_t width, size_t height, size_t depth);
-
-
-		/**
 		 *	@brief		Constructs a image with level of details.
 		 *	@param[in]	allocator - Pointer to the associated allocator.
 		 *	@param[in]	format - Texel format of the image.

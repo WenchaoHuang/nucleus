@@ -34,7 +34,6 @@ namespace NS_NAMESPACE
 	 */
 	template<> class Image3D<void> : public Image
 	{
-		friend class Image3DLod<void>;
 
 	public:
 
@@ -48,20 +47,6 @@ namespace NS_NAMESPACE
 		 *	@throw		cudaError_t - In case of failure.
 		 */
 		NS_API explicit Image3D(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth);
-
-	private:
-
-		/**
-		 *	@brief		Constructs from Image3DLod.
-		 *	@param[in]	hImage - Handle of texture memory (from cudaMipmappedArray_t).
-		 *	@param[in]	format - Texel format of the image.
-		 *	@param[in]	width - Width of the image.
-		 *	@param[in]	height - height of the image.
-		 *	@param[in]	depth - Depth of the image.
-		 *	@throw		cudaError_t - In case of failure.
-		 * 	@note		Created by class `Image3DLod<void>` only.
-		 */
-		explicit Image3D(cudaArray_t hImage, Format format, size_t width, size_t height, size_t depth) : Image(hImage, format, width, height, depth) {}
 
 	public:
 
@@ -127,24 +112,11 @@ namespace NS_NAMESPACE
 		 */
 		NS_API Image3DLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, unsigned int numLevels);
 
-
-		/**
-		 *	@return		Reference to the specified level.
-		 *	@warning	`level` should be in the range [0, numLevel).
-		 */
-		Image3D<void> & getLevel(size_t level) { return *m_mipmaps[level]; }
-
-	public:
-
 		//	Returns the height of the image.
 		uint32_t height() const { return m_height; }
 
 		//	Returns the depth of the image.
 		uint32_t depth() const { return m_depth; }
-
-	private:
-
-		std::vector<std::shared_ptr<Image3D<void>>>		m_mipmaps;
 	};
 
 	/*****************************************************************************
@@ -169,13 +141,6 @@ namespace NS_NAMESPACE
 		 *	@throw		cudaError_t - In case of failure.
 		 */
 		Image3DLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t depth, unsigned int numLevels) : Image3DLod<void>(allocator, FormatMapping<Type>::value, width, height, depth, numLevels) {}
-
-
-		/**
-		 *	@return		Reference to the specified level.
-		 *	@warning	`level` should be in the range [0, numLevel).
-		 */
-		Image3D<Type> & getLevel(size_t level) { return reinterpret_cast<Image3D<Type>&>(Image3DLod<void>::getLevel(level)); }
 
 
 		/**
