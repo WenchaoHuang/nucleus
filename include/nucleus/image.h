@@ -52,48 +52,6 @@ namespace NS_NAMESPACE
 
 
 		/**
-		 *	@brief		Virtual destructor.
-		 */
-		virtual ~ImageBase() noexcept {}
-
-	public:
-
-		//	Returns the texel format of the image.
-		Format format() const { return m_format; }
-
-		//	Retruns the width of the image.
-		uint32_t width() const { return m_width; }
-
-		//	Returns pointer to the allocator associated with.
-		std::shared_ptr<DeviceAllocator> allocator() const { return m_allocator; }
-
-	protected:
-
-		const std::shared_ptr<DeviceAllocator>		m_allocator;
-		const Format								m_format;
-		const uint32_t								m_width;
-		const uint32_t								m_height;
-		const uint32_t								m_depth;
-	};
-
-	/*****************************************************************************
-	********************************    Image    *********************************
-	*****************************************************************************/
-
-	/**
-	 *	@brief		Base class represents a arbitrary texture memory.
-	 *	@note		Texture memory are opaque memory layouts optimized for texture fetching.
-	 *	@note		Nucleus-created images always enable CUDA surface load/store support. This
-	 *				removes a creation-time API choice so an image can be bound to a Surface
-	 *				when needed; the additional capability has negligible performance impact.
-	 *	@see		class `ImageBase`
-	 */
-	class Image : public ImageBase
-	{
-		
-	protected:
-
-		/**
 		 *	@brief		Constructs a image.
 		 *	@param[in]	allocator - Pointer to the associated allocator.
 		 *	@param[in]	format - Texel format of the image.
@@ -103,7 +61,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	flags - Flags for image creation (interanl use).
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		NS_API explicit Image(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, int flags);
+		NS_API explicit ImageBase(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, int flags);
 
 
 		/**
@@ -114,40 +72,8 @@ namespace NS_NAMESPACE
 		 *	@param[in]	height - height of the image.
 		 *	@param[in]	depth - Depth of the image.
 		 */
-		NS_API explicit Image(cudaArray_t hImage, Format format, size_t width, size_t height, size_t depth);
+		NS_API explicit ImageBase(cudaArray_t hImage, Format format, size_t width, size_t height, size_t depth);
 
-
-		/**
-		 *	@brief		Virtual destructor.
-		 */
-		NS_API virtual ~Image() noexcept;
-
-	public:
-
-		//	Returns accessor to the data.
-		ImageAccessor<void> data() const { return ImageAccessor<void>{ m_hImage }; }
-
-	protected:
-        
-        const cudaArray_t		m_hImage;
-	};
-
-	/*****************************************************************************
-	*******************************    ImageLod    *******************************
-	*****************************************************************************/
-
-	/**
-	 *	@brief		Base class represents a arbitrary mipmapped texture memory.
-	 *  @note		Texture memory are opaque memory layouts optimized for texture fetching.
-	 *	@note		Nucleus-created images always enable CUDA surface load/store support. This
-	 *				removes a creation-time API choice so an image can be bound to a Surface
-	 *				when needed; the additional capability has negligible performance impact.
-	 *	@see		class `ImageBase` and `Image`
-	 */
-	class ImageLod : public ImageBase
-	{
-
-	protected:
 
 		/**
 		 *	@brief		Constructs a image with level of details.
@@ -160,15 +86,27 @@ namespace NS_NAMESPACE
 		 *	@param[in]	flags - Flags for image creation (interanl use).
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		NS_API explicit ImageLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, unsigned int numLevels, int flags);
+		NS_API explicit ImageBase(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, unsigned int numLevels, int flags);
 
 
 		/**
 		 *	@brief		Virtual destructor.
 		 */
-		NS_API virtual ~ImageLod() noexcept;
+		NS_API virtual ~ImageBase() noexcept;
 
 	public:
+
+		//	Returns the texel format of the image.
+		Format format() const { return m_format; }
+
+		//	Retruns the width of the image.
+		uint32_t width() const { return m_width; }
+
+		//	Returns pointer to the allocator associated with.
+		std::shared_ptr<DeviceAllocator> allocator() const { return m_allocator; }
+
+		//	Returns accessor to the data.
+		ImageAccessor<void> data() const { return ImageAccessor<void>{ m_hImage }; }
 
 		//	Returns CUDA type of this object.
 		cudaMipmappedArray_t handle() const { return m_hImageLod; }
@@ -178,7 +116,17 @@ namespace NS_NAMESPACE
 
 	protected:
 
-		const cudaMipmappedArray_t		m_hImageLod;
-		const unsigned int				m_numLevels;
+		const std::shared_ptr<DeviceAllocator>		m_allocator;
+		const Format								m_format;
+		const uint32_t								m_width;
+		const uint32_t								m_height;
+		const uint32_t								m_depth;
+
+		cudaArray_t									m_hImage;
+		cudaMipmappedArray_t						m_hImageLod;
+		unsigned int								m_numLevels;
 	};
+
+	using Image = ImageBase;
+	using ImageLod = ImageBase;
 }
