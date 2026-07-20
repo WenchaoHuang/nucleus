@@ -190,6 +190,62 @@ void surface_test()
 	surface6.accessor();
 	surface6.handle();
 
+	auto image7 = ns::SharedImage1DLod<int>(allocator, 128, 2);
+	ns::Surface1D<int>	surface7(image7, 1);
+	assert(surface7.image() == nullptr);
+	assert(surface7.mipmap() == image7);
+	assert(surface7.level() == 1);
+	assert(surface7.accessor().width() == 64);
+
+	auto image8 = ns::SharedImage2DLod<short>(allocator, 128, 128, 2);
+	ns::Surface2D<short>	surface8(image8, 1);
+	assert(surface8.image() == nullptr);
+	assert(surface8.mipmap() == image8);
+	assert(surface8.level() == 1);
+	assert(surface8.accessor().width() == 64);
+	assert(surface8.accessor().height() == 64);
+
+	auto image9 = ns::SharedImage3DLod<float>(allocator, 128, 128, 128, 2);
+	ns::Surface3D<float>	surface9(image9, 1);
+	assert(surface9.image() == nullptr);
+	assert(surface9.mipmap() == image9);
+	assert(surface9.level() == 1);
+	assert(surface9.accessor().width() == 64);
+	assert(surface9.accessor().height() == 64);
+	assert(surface9.accessor().depth() == 64);
+
+	auto image10 = ns::SharedImageCubeLod<ns::float2>(allocator, 128, 2);
+	ns::SurfaceCube<ns::float2>	surface10(image10, 1);
+	assert(surface10.image() == nullptr);
+	assert(surface10.mipmap() == image10);
+	assert(surface10.level() == 1);
+	assert(surface10.accessor().width() == 64);
+
+	auto image11 = ns::SharedImage1DLayeredLod<float>(allocator, 128, 8, 2);
+	ns::Surface1DLayered<float>	surface11(image11, 1);
+	assert(surface11.image() == nullptr);
+	assert(surface11.mipmap() == image11);
+	assert(surface11.level() == 1);
+	assert(surface11.accessor().width() == 64);
+	assert(surface11.accessor().numLayers() == 8);
+
+	auto image12 = ns::SharedImage2DLayeredLod<float>(allocator, 128, 128, 8, 2);
+	ns::Surface2DLayered<float>	surface12(image12, 1);
+	assert(surface12.image() == nullptr);
+	assert(surface12.mipmap() == image12);
+	assert(surface12.level() == 1);
+	assert(surface12.accessor().width() == 64);
+	assert(surface12.accessor().height() == 64);
+	assert(surface12.accessor().numLayers() == 8);
+
+	auto image13 = ns::SharedImageCubeLayeredLod<int>(allocator, 128, 8, 2);
+	ns::SurfaceCubeLayered<int>	surface13(image13, 1);
+	assert(surface13.image() == nullptr);
+	assert(surface13.mipmap() == image13);
+	assert(surface13.level() == 1);
+	assert(surface13.accessor().width() == 64);
+	assert(surface13.accessor().numLayers() == 8);
+
 	test_device_surface << <1, 1 >> > (surface0, surface0,
 									   surface1, surface1,
 									   surface2, surface2,
@@ -198,5 +254,24 @@ void surface_test()
 									   surface5, surface5,
 									   surface6, surface6);
 
+	test_device_surface << <1, 1 >> > (surface7, surface7,
+									   surface8, surface8,
+									   surface9, surface9,
+									   surface10, surface10,
+									   surface11, surface11,
+									   surface12, surface12,
+									   surface13, surface13);
+
 	device->sync();
+
+	std::weak_ptr<ns::Image2DLod<int>> weakImage;
+	ns::Surface2D<int> lifetimeSurface;
+	{
+		auto image = ns::SharedImage2DLod<int>(allocator, 16, 16, 2);
+		weakImage = image;
+		lifetimeSurface.bind(image, 1);
+	}
+	assert(!weakImage.expired());
+	lifetimeSurface.unbind();
+	assert(weakImage.expired());
 }

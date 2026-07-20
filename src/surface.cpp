@@ -31,25 +31,26 @@ NS_USING_NAMESPACE
 *********************************    Surface    **********************************
 *********************************************************************************/
 
-Surface::Surface() : m_hSurface(0)
+Surface::Surface() : m_hSurface(0), m_level(0)
 {
 
 }
 
 
-void Surface::bindImage(std::shared_ptr<Image> pImage)
+void Surface::bindImage(std::shared_ptr<Image> pImage, unsigned int level)
 {
 	this->unbind();
 
 	cudaResourceDesc resDesc = {};
 	resDesc.resType = cudaResourceTypeArray;
-	resDesc.res.array.array = pImage->data().handle;
+	resDesc.res.array.array = pImage->subresource(level);
 
 	cudaError_t err = cudaCreateSurfaceObject(&m_hSurface, &resDesc);
 
 	if (err == cudaSuccess)
 	{
 		m_image = pImage;
+		m_level = level;
 	}
 	else
 	{
@@ -75,10 +76,11 @@ void Surface::unbind()
 			cudaGetLastError();
 		}
 
-		m_image = nullptr;
-
 		m_hSurface = 0;
 	}
+
+	m_image = nullptr;
+	m_level = 0;
 }
 
 

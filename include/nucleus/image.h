@@ -36,6 +36,7 @@ namespace NS_NAMESPACE
 	 */
 	class ImageBase
 	{
+		friend class Surface;
 
 	protected:
 
@@ -109,6 +110,9 @@ namespace NS_NAMESPACE
 		ImageAccessor<void> data() const { return ImageAccessor<void>{ m_hImage }; }
 
 	protected:
+
+		//! @brief Returns the specified array subresource.
+		NS_API cudaArray_t subresource(unsigned int level) const;
 
 		class Storage;
 		std::shared_ptr<Storage>					m_storage;

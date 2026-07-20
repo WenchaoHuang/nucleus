@@ -28,7 +28,6 @@
 #include "image_cube.h"
 
 #include <cmath>
-#include <vector>
 #include <variant>
 #include <algorithm>
 #include <cuda_runtime_api.h>
@@ -75,26 +74,7 @@ public:
 	 */
 	explicit Storage(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, unsigned int numLevels, int flags)
 		: hImage(allocator->allocateMipmapTextureMemory(format, width, height, depth, numLevels, flags | cudaArraySurfaceLoadStore)), numLevels(numLevels),
-		allocator(allocator), height(static_cast<uint32_t>(height)), width(static_cast<uint32_t>(width)), depth(static_cast<uint32_t>(depth)), format(format)
-	{
-		this->mipmaps.resize(numLevels);
-
-		auto hImageLod = std::get<cudaMipmappedArray_t>(hImage);
-
-		for (unsigned int i = 0; i < numLevels; i++)
-		{
-			cudaError_t err = cudaGetMipmappedArrayLevel(mipmaps.data() + i, hImageLod, i);
-
-			if (err != cudaSuccess)
-			{
-				NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-				cudaGetLastError();
-
-				throw err;
-			}
-		}
-	}
+		allocator(allocator), height(static_cast<uint32_t>(height)), width(static_cast<uint32_t>(width)), depth(static_cast<uint32_t>(depth)), format(format) {}
 
 
 	/**
@@ -117,7 +97,6 @@ public:
 
 public:
 
-	std::vector<cudaArray_t>									mipmaps;
 	const std::variant<cudaArray_t, cudaMipmappedArray_t>		hImage;
 	const std::shared_ptr<DeviceAllocator>						allocator;
 	const unsigned int											numLevels;
@@ -157,6 +136,34 @@ ImageBase::ImageBase(std::shared_ptr<DeviceAllocator> allocator, Format format, 
 	m_numLevels = m_storage->numLevels;
 
 	NS_ASSERT(allocator != 0);
+}
+
+
+cudaArray_t ImageBase::subresource(unsigned int level) const
+{
+	cudaArray_t hImage = m_hImage;
+
+	if (m_hImageLod != nullptr)
+	{
+		NS_ASSERT(level < m_numLevels);
+
+		cudaError_t err = cudaGetMipmappedArrayLevel(&hImage, m_hImageLod, level);
+
+		if (err != cudaSuccess)
+		{
+			NS_ERROR_LOG("%s.", cudaGetErrorString(err));
+
+			cudaGetLastError();
+
+			throw err;
+		}
+	}
+	else
+	{
+		NS_ASSERT(level == 0);
+	}
+
+	return hImage;
 }
 
 /*********************************************************************************

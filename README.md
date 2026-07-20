@@ -304,13 +304,20 @@ The table below lists all available Image, Texture, and Surface type combination
 | 1-D layered | `Image1DLayered<T>` | `Texture1DLayered<T>` → `dev::Tex1DLayered<T>` | `Surface1DLayered<T>` → `dev::Surf1DLayered<T>` |
 | 2-D layered | `Image2DLayered<T>` | `Texture2DLayered<T>` → `dev::Tex2DLayered<T>` | `Surface2DLayered<T>` → `dev::Surf2DLayered<T>` |
 | Cubemap layered | `ImageCubeLayered<T>` | `TextureCubeLayered<T>` → `dev::TexCubeLayered<T>` | `SurfaceCubeLayered<T>` → `dev::SurfCubeLayered<T>` |
-| 1-D mipmapped | `Image1DLod<T>` | `Texture1DLod<T>` → `dev::Tex1DLod<T>` | — |
-| 2-D mipmapped | `Image2DLod<T>` | `Texture2DLod<T>` → `dev::Tex2DLod<T>` | — |
-| 3-D mipmapped | `Image3DLod<T>` | `Texture3DLod<T>` → `dev::Tex3DLod<T>` | — |
-| Cubemap mipmapped | `ImageCubeLod<T>` | `TextureCubeLod<T>` → `dev::TexCubeLod<T>` | — |
-| 1-D layered mipmapped | `Image1DLayeredLod<T>` | `Texture1DLayeredLod<T>` → `dev::Tex1DLayeredLod<T>` | — |
-| 2-D layered mipmapped | `Image2DLayeredLod<T>` | `Texture2DLayeredLod<T>` → `dev::Tex2DLayeredLod<T>` | — |
-| Cubemap layered mipmapped | `ImageCubeLayeredLod<T>` | `TextureCubeLayeredLod<T>` → `dev::TexCubeLayeredLod<T>` | — |
+| 1-D mipmapped | `Image1DLod<T>` | `Texture1DLod<T>` → `dev::Tex1DLod<T>` | `Surface1D<T>` → `dev::Surf1D<T>` |
+| 2-D mipmapped | `Image2DLod<T>` | `Texture2DLod<T>` → `dev::Tex2DLod<T>` | `Surface2D<T>` → `dev::Surf2D<T>` |
+| 3-D mipmapped | `Image3DLod<T>` | `Texture3DLod<T>` → `dev::Tex3DLod<T>` | `Surface3D<T>` → `dev::Surf3D<T>` |
+| Cubemap mipmapped | `ImageCubeLod<T>` | `TextureCubeLod<T>` → `dev::TexCubeLod<T>` | `SurfaceCube<T>` → `dev::SurfCube<T>` |
+| 1-D layered mipmapped | `Image1DLayeredLod<T>` | `Texture1DLayeredLod<T>` → `dev::Tex1DLayeredLod<T>` | `Surface1DLayered<T>` → `dev::Surf1DLayered<T>` |
+| 2-D layered mipmapped | `Image2DLayeredLod<T>` | `Texture2DLayeredLod<T>` → `dev::Tex2DLayeredLod<T>` | `Surface2DLayered<T>` → `dev::Surf2DLayered<T>` |
+| Cubemap layered mipmapped | `ImageCubeLayeredLod<T>` | `TextureCubeLayeredLod<T>` → `dev::TexCubeLayeredLod<T>` | `SurfaceCubeLayered<T>` → `dev::SurfCubeLayered<T>` |
+
+A surface binds one mipmap level at a time. Pass the requested level to the surface constructor or `bind()` method:
+
+```cpp
+auto image = std::make_shared<ns::Image2DLod<float>>(allocator, width, height, numLevels);
+ns::Surface2D<float> surface(image, level);
+```
 
 **Typical usage pattern:**
 
