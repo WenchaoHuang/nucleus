@@ -60,9 +60,6 @@ if(NUCLEUS_BUILD_SHARED_LIB)
     # Create the shared library
     add_library(${TARGET_NAME} SHARED ${NUCLEUS_SOURCES})
 
-    # Link directories
-    target_link_libraries(${TARGET_NAME} PUBLIC CUDA::cudart)
-
     # Export macro
     target_compile_definitions(${TARGET_NAME} PRIVATE NS_API_BUILD)
 
@@ -82,7 +79,17 @@ else()
         ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}_export.h
         COPYONLY
     )
+
+    # Warn about potential issues with static library linking
+     message(WARNING
+        "NUCLEUS_BUILD_SHARED_LIB is OFF. When the static Nucleus library is linked "
+        "into multiple shared libraries or modules, each may have its own singleton "
+        "instances. Ensure singleton state remains consistent across module boundaries."
+     )
 endif()
+    
+# Link directories
+target_link_libraries(${TARGET_NAME} PUBLIC CUDA::cudart)
 
 # Include directories
 target_include_directories(${TARGET_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
