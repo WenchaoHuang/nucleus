@@ -84,17 +84,17 @@ int main()
 	auto allocator = device->defaultAllocator();
 	auto & stream = device->defaultStream();
 	
-	auto image1 = std::make_shared<ns::Image2D<MyPixelType1>>(allocator, 16, 16);
-	auto image2 = std::make_shared<ns::Image2D<MyPixelType2>>(allocator, 16, 16);
+	auto image1 = ns::Image2D<MyPixelType1>(allocator, 16, 16);
+	auto image2 = ns::Image2D<MyPixelType2>(allocator, 16, 16);
 
 	ns::Surface2D<MyPixelType1>		surface1(image1);
 	ns::Surface2D<MyPixelType2>		surface2(image2);
-	ns::Array2D<MyPixelType1>		array1(hostAlloc, image1->width(), image1->height());
-	ns::Array2D<MyPixelType2>		array2(hostAlloc, image2->width(), image2->height());
+	ns::Array2D<MyPixelType1>		array1(hostAlloc, image1.width(), image1.height());
+	ns::Array2D<MyPixelType2>		array2(hostAlloc, image2.width(), image2.height());
 
-	stream.launch(pixel_assign, 1, { image1->width(), image1->height(), 1})(surface1, surface2);
-	stream.memcpy2D(array1.data(), array1.pitch(), image1->data(), image1->width(), image1->height());
-	stream.memcpy2D(array2.data(), array2.pitch(), image2->data(), image2->width(), image2->height());
+	stream.launch(pixel_assign, 1, { image1.width(), image1.height(), 1})(surface1, surface2);
+	stream.memcpy2D(array1.data(), array1.pitch(), image1.data(), image1.width(), image1.height());
+	stream.memcpy2D(array2.data(), array2.pitch(), image2.data(), image2.width(), image2.height());
 	stream.sync();
 
 	for (int i = 0; i < array1.height(); i++)

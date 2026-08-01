@@ -33,27 +33,28 @@ namespace NS_NAMESPACE
 	*******************************    Surface    ********************************
 	*****************************************************************************/
 
-	class Surface	//	Base class to manage CUDA surface resources.
+	//!	@brief		Base class to manage CUDA surface resources.
+	class Surface
 	{
 		NS_NONCOPYABLE(Surface)
 
 	public:
 
-		//	Default constructor
+		//!	@brief		Default constructor
 		NS_API Surface();
 
-		//	Destructor
+		//!	@brief		Destructor
 		NS_API ~Surface();
 
 	public:
 
-		//	Unbinds the current surface resource.
+		//!	@brief		Unbinds the current surface resource.
 		NS_API void unbind();
 
-		//	Checks if the surface is empty.
+		//!	@brief		Checks if the surface is empty.
 		bool empty() const { return m_hSurface == 0; }
 
-		//	Return CUDA type of this object.
+		//!	@brief		Return CUDA type of this object.
 		cudaSurfaceObject_t handle() const { return m_hSurface; }
 
 	protected:
@@ -76,36 +77,36 @@ namespace NS_NAMESPACE
 	******************************    Surface1D    *******************************
 	*****************************************************************************/
 
-	//	Representing a CUDA 1D surface object.
+	//!	@brief		Representing a CUDA 1D surface object.
 	template<typename Type> class Surface1D : public Surface
 	{
 
 	public:
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		Surface1D() {}
 
-		//	Constructs a 1D surface and binds a texture memory object.
-		explicit Surface1D(std::shared_ptr<Image1D<Type>> image) { this->bind(image); }
+		//!	@brief		Constructs a 1D surface and binds a texture memory object.
+		explicit Surface1D(const Image1D<Type> & image) { this->bind(image); }
 
 	public:
 
-		//	Binds a 1D texture memory object to the surface.
-		void bind(std::shared_ptr<Image1D<Type>> image) { this->bindImage(image); }
+		//!	@brief		Returns the binded texture memory.
+		Image1D<Type> image() const { return *std::static_pointer_cast<Image1D<Type>>(m_image); }
 
-		//	Returns shared pointer to the binded texture memory.
-		std::shared_ptr<Image1D<Type>> image() const { return std::dynamic_pointer_cast<Image1D<Type>>(m_image); }
+		//!	@brief		Binds a 1D texture memory object to the surface.
+		void bind(const Image1D<Type> & image) { this->bindImage(std::make_shared<Image1D<Type>>(image)); }
 
-		//	Converts to a device surface object for kernal access.
+		//!	@brief		Converts to a device surface object for kernal access.
 		operator dev::Surf1D<Type>() { return m_image ? dev::Surf1D<Type>(m_hSurface, m_image->width()) : nullptr; }
 
-		//	Converts to a device surface object for kernal access (constant version).
+		//!	@brief		Converts to a device surface object for kernal access (constant version).
 		operator dev::Surf1D<const Type>() const { return *this; }
 
-		//	Returns read-only device accessor explicitly.
+		//!	@brief		Returns read-only device accessor explicitly.
 		dev::Surf1D<const Type> accessor() const { return *this; }
 
-		//	Returns device accessor explicitly.
+		//!	@brief		Returns device accessor explicitly.
 		dev::Surf1D<Type> accessor() { return *this; }
 	};
 
@@ -113,36 +114,36 @@ namespace NS_NAMESPACE
 	******************************    Surface2D    *******************************
 	*****************************************************************************/
 
-	//	Representing a CUDA 2D surface object.
+	//!	@brief		Representing a CUDA 2D surface object.
 	template<typename Type> class Surface2D : public Surface
 	{
 
 	public:
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		Surface2D() {}
 
-		//	Constructs a 2D surface and binds a texture memory object.
-		explicit Surface2D(std::shared_ptr<Image2D<Type>> image) { this->bind(image); }
+		//!	@brief		Constructs a 2D surface and binds a texture memory object.
+		explicit Surface2D(const Image2D<Type> & image) { this->bind(image); }
 
 	public:
 
-		//	Binds a 2D texture memory object to the surface.
-		void bind(std::shared_ptr<Image2D<Type>> image) { this->bindImage(image); }
+		//!	@brief		Returns the binded texture memory.
+		Image2D<Type> image() const { return *std::static_pointer_cast<Image2D<Type>>(m_image); }
 
-		//	Returns shared pointer to the binded texture memory.
-		std::shared_ptr<Image2D<Type>> image() const { return std::dynamic_pointer_cast<Image2D<Type>>(m_image); }
+		//!	@brief		Binds a 2D texture memory object to the surface.
+		void bind(const Image2D<Type> & image) { this->bindImage(std::make_shared<Image2D<Type>>(image)); }
 
-		//	Converts to a device surface object for kernal access.
-		operator dev::Surf2D<Type>() { return m_image ? dev::Surf2D<Type>(m_hSurface, image()->width(), image()->height()) : nullptr; }
+		//!	@brief		Converts to a device surface object for kernal access.
+		operator dev::Surf2D<Type>() { return m_image ? dev::Surf2D<Type>(m_hSurface, m_image->width(), this->image().height()) : nullptr; }
 
-		//	Converts to a device surface object for kernal access (constant version).
+		//!	@brief		Converts to a device surface object for kernal access (constant version).
 		operator dev::Surf2D<const Type>() const { return *this; }
 
-		//	Returns read-only device accessor explicitly.
+		//!	@brief		Returns read-only device accessor explicitly.
 		dev::Surf2D<const Type> accessor() const { return *this; }
 
-		//	Returns device accessor explicitly.
+		//!	@brief		Returns device accessor explicitly.
 		dev::Surf2D<Type> accessor() { return *this; }
 	};
 
@@ -150,36 +151,36 @@ namespace NS_NAMESPACE
 	******************************    Surface3D    *******************************
 	*****************************************************************************/
 
-	//	Representing a CUDA 3D surface object.
+	//!	@brief		Representing a CUDA 3D surface object.
 	template<typename Type> class Surface3D : public Surface
 	{
 
 	public:
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		Surface3D() {}
 
-		//	Constructs a 3D surface and binds a texture memory object.
-		explicit Surface3D(std::shared_ptr<Image3D<Type>> image) { this->bind(image); }
+		//!	@brief		Constructs a 3D surface and binds a texture memory object.
+		explicit Surface3D(const Image3D<Type> & image) { this->bind(image); }
 
 	public:
 
-		//	Binds a 3D texture memory object to the surface.
-		void bind(std::shared_ptr<Image3D<Type>> image) { this->bindImage(image); }
+		//!	@brief		Returns the binded texture memory.
+		Image3D<Type> image() const { return *std::static_pointer_cast<Image3D<Type>>(m_image); }
 
-		//	Returns shared pointer to the binded texture memory.
-		std::shared_ptr<Image3D<Type>> image() const { return std::dynamic_pointer_cast<Image3D<Type>>(m_image); }
+		//!	@brief		Binds a 3D texture memory object to the surface.
+		void bind(const Image3D<Type> & image) { this->bindImage(std::make_shared<Image3D<Type>>(image)); }
 
-		//	Converts to a device surface object for kernal access.
-		operator dev::Surf3D<Type>() { return m_image ? dev::Surf3D<Type>(m_hSurface, image()->width(), image()->height(), image()->depth()) : nullptr; }
+		//!	@brief		Converts to a device surface object for kernal access.
+		operator dev::Surf3D<Type>() { return m_image ? dev::Surf3D<Type>(m_hSurface, m_image->width(), this->image().height(), this->image().depth()) : nullptr; }
 
-		//	Converts to a device surface object for kernal access (constant version).
+		//!	@brief		Converts to a device surface object for kernal access (constant version).
 		operator dev::Surf3D<const Type>() const { return *this; }
 
-		//	Returns read-only device accessor explicitly.
+		//!	@brief		Returns read-only device accessor explicitly.
 		dev::Surf3D<const Type> accessor() const { return *this; }
 
-		//	Returns device accessor explicitly.
+		//!	@brief		Returns device accessor explicitly.
 		dev::Surf3D<Type> accessor() { return *this; }
 	};
 
@@ -187,36 +188,36 @@ namespace NS_NAMESPACE
 	***************************    Surface1DLayered    ***************************
 	*****************************************************************************/
 
-	//	Representing a CUDA 1D layered surface object.
+	//!	@brief		Representing a CUDA 1D layered surface object.
 	template<typename Type> class Surface1DLayered : public Surface
 	{
 
 	public:
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		Surface1DLayered() {}
 
-		//	Constructs a 1D layered surface and binds a texture memory object.
-		explicit Surface1DLayered(std::shared_ptr<Image1DLayered<Type>> image) { this->bind(image); }
+		//!	@brief		Constructs a 1D layered surface and binds a texture memory object.
+		explicit Surface1DLayered(const Image1DLayered<Type> & image) { this->bind(image); }
 
 	public:
 
-		//	Binds a 1D layered texture memory object to the surface.
-		void bind(std::shared_ptr<Image1DLayered<Type>> image) { this->bindImage(image); }
+		//!	@brief		Returns the binded texture memory.
+		Image1DLayered<Type> image() const { return *std::static_pointer_cast<Image1DLayered<Type>>(m_image); }
 
-		//	Returns shared pointer to the binded texture memory.
-		std::shared_ptr<Image1DLayered<Type>> image() const { return std::dynamic_pointer_cast<Image1DLayered<Type>>(m_image); }
+		//!	@brief		Binds a 1D layered texture memory object to the surface.
+		void bind(const Image1DLayered<Type> & image) { this->bindImage(std::make_shared<Image1DLayered<Type>>(image)); }
 
-		//	Converts to a device surface object for kernal access.
-		operator dev::Surf1DLayered<Type>() { return m_image ? dev::Surf1DLayered<Type>(m_hSurface, image()->width(), image()->numLayers()) : nullptr; }
+		//!	@brief		Converts to a device surface object for kernal access.
+		operator dev::Surf1DLayered<Type>() { return m_image ? dev::Surf1DLayered<Type>(m_hSurface, m_image->width(), this->image().numLayers()) : nullptr; }
 
-		//	Converts to a device surface object for kernal access (constant version).
+		//!	@brief		Converts to a device surface object for kernal access (constant version).
 		operator dev::Surf1DLayered<const Type>() const { return *this; }
 
-		//	Returns read-only device accessor explicitly.
+		//!	@brief		Returns read-only device accessor explicitly.
 		dev::Surf1DLayered<const Type> accessor() const { return *this; }
 
-		//	Returns device accessor explicitly.
+		//!	@brief		Returns device accessor explicitly.
 		dev::Surf1DLayered<Type> accessor() { return *this; }
 	};
 
@@ -224,36 +225,36 @@ namespace NS_NAMESPACE
 	***************************    Surface2DLayered    ***************************
 	*****************************************************************************/
 
-	//	Representing a CUDA 2D layered surface object.
+	//!	@brief		Representing a CUDA 2D layered surface object.
 	template<typename Type> class Surface2DLayered : public Surface
 	{
 
 	public:
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		Surface2DLayered() {}
 
-		//	Constructs a 2D layered surface and binds a texture memory object.
-		explicit Surface2DLayered(std::shared_ptr<Image2DLayered<Type>> image) { this->bind(image); }
+		//!	@brief		Constructs a 2D layered surface and binds a texture memory object.
+		explicit Surface2DLayered(const Image2DLayered<Type> & image) { this->bind(image); }
 
 	public:
 
-		//	Binds a 2D layered texture memory object to the surface.
-		void bind(std::shared_ptr<Image2DLayered<Type>> image) { this->bindImage(image); }
+		//!	@brief		Returns the binded texture memory.
+		Image2DLayered<Type> image() const { return *std::static_pointer_cast<Image2DLayered<Type>>(m_image); }
 
-		//	Returns shared pointer to the binded texture memory.
-		std::shared_ptr<Image2DLayered<Type>> image() const { return std::dynamic_pointer_cast<Image2DLayered<Type>>(m_image); }
+		//!	@brief		Binds a 2D layered texture memory object to the surface.
+		void bind(const Image2DLayered<Type> & image) { this->bindImage(std::make_shared<Image2DLayered<Type>>(image)); }
 
-		//	Converts to a device surface object for kernal access.
-		operator dev::Surf2DLayered<Type>() { return m_image ? dev::Surf2DLayered<Type>(m_hSurface, image()->width(), image()->height(), image()->numLayers()) : nullptr; }
+		//!	@brief		Converts to a device surface object for kernal access.
+		operator dev::Surf2DLayered<Type>() { return m_image ? dev::Surf2DLayered<Type>(m_hSurface, m_image->width(), this->image().height(), this->image().numLayers()) : nullptr; }
 
-		//	Converts to a device surface object for kernal access (constant version).
+		//!	@brief		Converts to a device surface object for kernal access (constant version).
 		operator dev::Surf2DLayered<const Type>() const { return *this; }
 
-		//	Returns read-only device accessor explicitly.
+		//!	@brief		Returns read-only device accessor explicitly.
 		dev::Surf2DLayered<const Type> accessor() const { return *this; }
 
-		//	Returns device accessor explicitly.
+		//!	@brief		Returns device accessor explicitly.
 		dev::Surf2DLayered<Type> accessor() { return *this; }
 	};
 
@@ -261,36 +262,36 @@ namespace NS_NAMESPACE
 	*****************************    SurfaceCube    ******************************
 	*****************************************************************************/
 
-	//	Representing a CUDA cubemap surface object.
+	//!	@brief		Representing a CUDA cubemap surface object.
 	template<typename Type> class SurfaceCube : public Surface
 	{
 
 	public:
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		SurfaceCube() {}
 
-		//	Constructs a cubemap surface and binds a texture memory object.
-		explicit SurfaceCube(std::shared_ptr<ImageCube<Type>> image) { this->bind(image); }
+		//!	@brief		Constructs a cubemap surface and binds a texture memory object.
+		explicit SurfaceCube(const ImageCube<Type> & image) { this->bind(image); }
 
 	public:
 
-		//	Binds a cubemap texture memory object to the surface.
-		void bind(std::shared_ptr<ImageCube<Type>> image) { this->bindImage(image); }
+		//!	@brief		Returns shared pointer to the binded texture memory.
+		ImageCube<Type> image() const { return *std::static_pointer_cast<ImageCube<Type>>(m_image); }
 
-		//	Returns shared pointer to the binded texture memory.
-		std::shared_ptr<ImageCube<Type>> image() const { return std::dynamic_pointer_cast<ImageCube<Type>>(m_image); }
+		//!	@brief		Binds a cubemap texture memory object to the surface.
+		void bind(const ImageCube<Type> & image) { this->bindImage(std::make_shared<ImageCube<Type>>(image)); }
 
-		//	Converts to a device surface object for kernal access.
-		operator dev::SurfCube<Type>() { return m_image ? dev::SurfCube<Type>(m_hSurface, image()->width()) : nullptr; }
+		//!	@brief		Converts to a device surface object for kernal access.
+		operator dev::SurfCube<Type>() { return m_image ? dev::SurfCube<Type>(m_hSurface, m_image->width()) : nullptr; }
 
-		//	Converts to a device surface object for kernal access (constant version).
+		//!	@brief		Converts to a device surface object for kernal access (constant version).
 		operator dev::SurfCube<const Type>() const { return *this; }
 
-		//	Returns read-only device accessor explicitly.
+		//!	@brief		Returns read-only device accessor explicitly.
 		dev::SurfCube<const Type> accessor() const { return *this; }
 
-		//	Returns device accessor explicitly.
+		//!	@brief		Returns device accessor explicitly.
 		dev::SurfCube<Type> accessor() { return *this; }
 	};
 
@@ -298,36 +299,36 @@ namespace NS_NAMESPACE
 	**************************    SurfaceCubeLayered    **************************
 	*****************************************************************************/
 
-	//	Representing a CUDA layered cubemap surface object.
+	//!	@brief		Representing a CUDA layered cubemap surface object.
 	template<typename Type> class SurfaceCubeLayered : public Surface
 	{
 
 	public:
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		SurfaceCubeLayered() {}
 
-		//	Constructs a layered cubemap surface and binds a texture memory object.
-		explicit SurfaceCubeLayered(std::shared_ptr<ImageCubeLayered<Type>> image) { this->bind(image); }
+		//!	@brief		Constructs a layered cubemap surface and binds a texture memory object.
+		explicit SurfaceCubeLayered(const ImageCubeLayered<Type> & image) { this->bind(image); }
 
 	public:
 
-		//	Binds a layered cubemap texture memory object to the surface.
-		void bind(std::shared_ptr<ImageCubeLayered<Type>> image) { this->bindImage(image); }
+		//!	@brief		Returns shared pointer to the binded texture memory.
+		ImageCubeLayered<Type> image() const { return *std::static_pointer_cast<ImageCubeLayered<Type>>(m_image); }
 
-		//	Returns shared pointer to the binded texture memory.
-		std::shared_ptr<ImageCubeLayered<Type>> image() const { return std::dynamic_pointer_cast<ImageCubeLayered<Type>>(m_image); }
+		//!	@brief		Binds a layered cubemap texture memory object to the surface.
+		void bind(const ImageCubeLayered<Type> & image) { this->bindImage(std::make_shared<ImageCubeLayered<Type>>(image)); }
 
-		//	Converts to a device surface object for kernal access.
-		operator dev::SurfCubeLayered<Type>() { return m_image ? dev::SurfCubeLayered<Type>(m_hSurface, image()->width(), image()->numLayers()) : nullptr; }
+		//!	@brief		Converts to a device surface object for kernal access.
+		operator dev::SurfCubeLayered<Type>() { return m_image ? dev::SurfCubeLayered<Type>(m_hSurface, m_image->width(), this->image().numLayers()) : nullptr; }
 
-		//	Converts to a device surface object for kernal access (constant version).
+		//!	@brief		Converts to a device surface object for kernal access (constant version).
 		operator dev::SurfCubeLayered<const Type>() const { return *this; }
 
-		//	Returns read-only device accessor explicitly.
+		//!	@brief		Returns read-only device accessor explicitly.
 		dev::SurfCubeLayered<const Type> accessor() const { return *this; }
 
-		//	Returns device accessor explicitly.
+		//!	@brief		Returns device accessor explicitly.
 		dev::SurfCubeLayered<Type> accessor() { return *this; }
 	};
 }

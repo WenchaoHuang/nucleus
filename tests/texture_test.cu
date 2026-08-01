@@ -115,54 +115,54 @@ void texture_test()
 	auto & stream = device->defaultStream();
 
 	//	1D
-	ns::Texture1D<int>	texture0(ns::SharedImage1D<int>(allocator, 10));
-	assert(texture0.image() != nullptr);
+	ns::Texture1D<int> texture0(ns::Image1D<int>(allocator, 10));
+	assert(texture0.image());
 	
-	ns::Texture1DLod<int>	texture1(ns::SharedImage1DLod<int>(allocator, 10, 2));
-	assert(texture1.image() != nullptr);
+	ns::Texture1DLod<int> texture1(ns::Image1DLod<int>(allocator, 10, 2));
+	assert(texture1.image());
 
-	ns::Texture1DLayered<int>	texture2(ns::SharedImage1DLayered<int>(allocator, 10, 2));
-	assert(texture2.image() != nullptr);
+	ns::Texture1DLayered<int> texture2(ns::Image1DLayered<int>(allocator, 10, 2));
+	assert(texture2.image());
 
-	ns::Texture1DLayeredLod<int>	texture3(ns::SharedImage1DLayeredLod<int>(allocator, 10, 2, 2));
-	assert(texture3.image() != nullptr);
+	ns::Texture1DLayeredLod<int> texture3(ns::Image1DLayeredLod<int>(allocator, 10, 2, 2));
+	assert(texture3.image());
 
 	//	2D
-	ns::Texture2D<float>	texture4(ns::SharedImage2D<char>(allocator, 10, 10));
-	assert(texture4.image() != nullptr);
+	ns::Texture2D<float> texture4(ns::Image2D<char>(allocator, 10, 10));
+	assert(texture4.image());
 
-	ns::Texture2DLod<int>	texture5(ns::SharedImage2DLod<int>(allocator, 10, 10, 2));
-	assert(texture5.image() != nullptr);
+	ns::Texture2DLod<int> texture5(ns::Image2DLod<int>(allocator, 10, 10, 2));
+	assert(texture5.image());
 
-	ns::Texture2DLayered<int>	texture6(ns::SharedImage2DLayered<int>(allocator, 10, 10, 2));
-	assert(texture6.image() != nullptr);
+	ns::Texture2DLayered<int> texture6(ns::Image2DLayered<int>(allocator, 10, 10, 2));
+	assert(texture6.image());
 
-	ns::Texture2DLayeredLod<int>	texture7(ns::SharedImage2DLayeredLod<int>(allocator, 10, 10, 2, 2));
-	assert(texture7.image() != nullptr);
+	ns::Texture2DLayeredLod<int> texture7(ns::Image2DLayeredLod<int>(allocator, 10, 10, 2, 2));
+	assert(texture7.image());
 
 	//	3D
-	ns::Texture3D<int>	texture8(ns::SharedImage3D<int>(allocator, 10, 10, 10));
-	assert(texture8.image() != nullptr);
+	ns::Texture3D<int> texture8(ns::Image3D<int>(allocator, 10, 10, 10));
+	assert(texture8.image());
 
-	ns::Texture3DLod<int>	texture9(ns::SharedImage3DLod<int>(allocator, 10, 10, 10, 2));
-	assert(texture9.image() != nullptr);
+	ns::Texture3DLod<int> texture9(ns::Image3DLod<int>(allocator, 10, 10, 10, 2));
+	assert(texture9.image());
 
 	//	Cube
-	ns::TextureCube<int>	texture10(ns::SharedImageCube<int>(allocator, 10));
-	assert(texture10.image() != nullptr);
+	ns::TextureCube<int> texture10(ns::ImageCube<int>(allocator, 10));
+	assert(texture10.image());
 
-	ns::TextureCubeLod<int>	texture11(ns::SharedImageCubeLod<int>(allocator, 10, 2));
-	assert(texture11.image() != nullptr);
+	ns::TextureCubeLod<int> texture11(ns::ImageCubeLod<int>(allocator, 10, 2));
+	assert(texture11.image());
 
-	ns::TextureCubeLayered<int>	texture12(ns::SharedImageCubeLayered<int>(allocator, 10, 2));
-	assert(texture12.image() != nullptr);
+	ns::TextureCubeLayered<int> texture12(ns::ImageCubeLayered<int>(allocator, 10, 2));
+	assert(texture12.image());
 
-	ns::TextureCubeLayeredLod<int>	texture13(ns::SharedImageCubeLayeredLod<int>(allocator, 10, 2, 2));
-	assert(texture13.image() != nullptr);
+	ns::TextureCubeLayeredLod<int> texture13(ns::ImageCubeLayeredLod<int>(allocator, 10, 2, 2));
+	assert(texture13.image());
 
 	// Read mode: normalized float
-	ns::Texture2D<float>	texture14(ns::SharedImage2D<char>(allocator, 10, 10));
-	assert(texture14.image() != nullptr);
+	ns::Texture2D<float> texture14(ns::Image2D<char>(allocator, 10, 10));
+	assert(texture14.image());
 
 	stream.launch(test_device_texture, 1, 1)(texture0, texture1, texture2, texture3,
 											 texture4, texture5, texture6, texture7,

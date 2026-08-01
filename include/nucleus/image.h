@@ -72,6 +72,9 @@ namespace NS_NAMESPACE
 		//!	@brief		Returns pointer to the allocator associated with.
 		NS_API const std::shared_ptr<DeviceAllocator> & allocator() const;
 
+		//!	@brief		Tests if the image is valid (non-null).
+		operator bool() const { return m_resource != nullptr; }
+
 	protected:
 
 		std::shared_ptr<Resource>		m_resource;

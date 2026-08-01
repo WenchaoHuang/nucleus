@@ -210,21 +210,6 @@ namespace NS_NAMESPACE
 	using SharedHostAlloctor									= SharedHandle<HostAllocator>;
 	using SharedDeviceAlloctor									= SharedHandle<DeviceAllocator>;
 
-	template<typename Type> using SharedImage1D					= SharedHandle<Image1D<Type>>;
-	template<typename Type> using SharedImage2D					= SharedHandle<Image2D<Type>>;
-	template<typename Type> using SharedImage3D					= SharedHandle<Image3D<Type>>;
-	template<typename Type> using SharedImageCube				= SharedHandle<ImageCube<Type>>;
-	template<typename Type> using SharedImage1DLayered			= SharedHandle<Image1DLayered<Type>>;
-	template<typename Type> using SharedImage2DLayered			= SharedHandle<Image2DLayered<Type>>;
-	template<typename Type> using SharedImageCubeLayered		= SharedHandle<ImageCubeLayered<Type>>;
-	template<typename Type> using SharedImage1DLod				= SharedHandle<Image1DLod<Type>>;
-	template<typename Type> using SharedImage2DLod				= SharedHandle<Image2DLod<Type>>;
-	template<typename Type> using SharedImage3DLod				= SharedHandle<Image3DLod<Type>>;
-	template<typename Type> using SharedImageCubeLod			= SharedHandle<ImageCubeLod<Type>>;
-	template<typename Type> using SharedImage1DLayeredLod		= SharedHandle<Image1DLayeredLod<Type>>;
-	template<typename Type> using SharedImage2DLayeredLod		= SharedHandle<Image2DLayeredLod<Type>>;
-	template<typename Type> using SharedImageCubeLayeredLod		= SharedHandle<ImageCubeLayeredLod<Type>>;
-
 	template<typename Type> using SharedTexture1D				= SharedHandle<Texture1D<Type>>;
 	template<typename Type> using SharedTexture2D				= SharedHandle<Texture2D<Type>>;
 	template<typename Type> using SharedTexture3D				= SharedHandle<Texture3D<Type>>;
