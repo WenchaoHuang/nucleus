@@ -39,6 +39,7 @@ namespace NS_NAMESPACE
 	 */
 	enum class Format
 	{
+		Undefined,					// Undefined format
 		Int, Int2, Int4,			// Signed 32-bit integer (1, 2, or 4 components)
 		Uint, Uint2, Uint4,			// Unsigned 32-bit integer (1, 2, or 4 components)
 		Char, Char2, Char4,			// Signed 8-bit integer (1, 2, or 4 components)

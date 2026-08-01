@@ -34,6 +34,16 @@
 NS_USING_NAMESPACE
 
 /*********************************************************************************
+********************************    makeExtent    ********************************
+*********************************************************************************/
+
+//!	@brief		Constructs an `Extent` object from width, height, and depth.
+static inline Extent makeExtent(size_t width, size_t height, size_t depth)
+{
+	return Extent{ static_cast<unsigned int>(width), static_cast<unsigned int>(height), static_cast<unsigned int>(depth) };
+}
+
+/*********************************************************************************
 ***************************    ImageBase::Resource    ****************************
 *********************************************************************************/
 
@@ -135,10 +145,9 @@ public:
 ********************************    ImageBase    *********************************
 *********************************************************************************/
 
-ImageBase::ImageBase(Format format, size_t width, size_t height, size_t depth)
-	: m_format(format), m_extent{ static_cast<uint32_t>(width), static_cast<uint32_t>(height), static_cast<uint32_t>(depth) }
+ImageBase::ImageBase(std::shared_ptr<Resource> resource, Format format, Extent extent) : m_resource(resource), m_format(format), m_extent(extent)
 {
-
+	NS_ASSERT(resource != nullptr);
 }
 
 
@@ -149,82 +158,38 @@ const std::shared_ptr<DeviceAllocator> & ImageBase::allocator() const
 	return m_resource ? m_resource->allocator : nullAllocator;
 }
 
-
 /*********************************************************************************
 **********************************    Image    ***********************************
 *********************************************************************************/
 
-Image::Image(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, int flags)
-	: ImageBase(format, width, height, depth)
+Image::Image(std::shared_ptr<DeviceAllocator> allocator, Format format, Extent extent, int flags)
+	: ImageBase(std::make_shared<Resource>(allocator, format, extent, flags), format, extent), m_hImage(std::get<cudaArray_t>(m_resource->handle))
 {
-	m_resource = std::make_shared<Resource>(allocator, format, Extent{ static_cast<uint32_t>(width), static_cast<uint32_t>(height), static_cast<uint32_t>(depth) }, flags);
-
-	m_hImage = std::get<cudaArray_t>(m_resource->handle);
-
 	NS_ASSERT(allocator != nullptr);
 }
 
 
-Image::Image(cudaArray_t hImage, Format format, size_t width, size_t height, size_t depth) : ImageBase(format, width, height, depth), m_hImage(hImage)
+Image::Image(std::shared_ptr<Resource> resource, unsigned int level) : ImageBase(resource, resource->format, resource->mipmaps[level].second), m_hImage(resource->mipmaps[level].first)
 {
-	NS_ASSERT(hImage != nullptr);
+	NS_ASSERT(level < m_resource->mipmaps.size());
 }
 
 /*********************************************************************************
 *********************************    ImageLod    *********************************
 *********************************************************************************/
 
-ImageLod::ImageLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, unsigned int numLevels, int flags)
-	: ImageBase(format, width, height, depth), m_numLevels(numLevels)
+ImageLod::ImageLod(std::shared_ptr<DeviceAllocator> allocator, Format format, Extent extent, unsigned int numLevels, int flags)
+	: ImageBase(std::make_shared<Resource>(allocator, format, extent, numLevels, flags), format, extent), m_numLevels(numLevels), m_hImageLod(std::get<cudaMipmappedArray_t>(m_resource->handle))
 {
-	m_resource = std::make_shared<Resource>(allocator, format, Extent{ static_cast<uint32_t>(width), static_cast<uint32_t>(height), static_cast<uint32_t>(depth) }, numLevels, flags);
-
-	m_hImageLod = std::get<cudaMipmappedArray_t>(m_resource->handle);
-
 	NS_ASSERT(allocator != 0);
-}
 
-/*********************************************************************************
-****************************    NS_CREATE_MIPMAPS    *****************************
-*********************************************************************************/
+	m_mipmaps.reserve(m_resource->mipmaps.size());
 
-static std::vector<cudaArray_t> getMipmapHandles(cudaMipmappedArray_t hImageLod, unsigned int numLevels)
-{
-	std::vector<cudaArray_t> hImages(numLevels);
-
-	for (unsigned int i = 0; i < numLevels; i++)
+	for (unsigned int level = 0; level < m_resource->mipmaps.size(); level++)
 	{
-		cudaError_t err = cudaGetMipmappedArrayLevel(hImages.data() + i, hImageLod, i);
-
-		if (err != cudaSuccess)
-		{
-			NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-			cudaGetLastError();
-
-			throw err;
-		}
+		m_mipmaps.emplace_back(Image(m_resource, level));
 	}
-
-	return hImages;
 }
-
-#define NS_CREATE_MIPMAPS(ImageType)										\
-																			\
-	auto mipmapHandles = getMipmapHandles(m_hImageLod, m_numLevels);		\
-																			\
-	m_mipmaps.resize(mipmapHandles.size());									\
-																			\
-	for (size_t i = 0; i < mipmapHandles.size(); i++)						\
-	{																		\
-		uint32_t				flags = 0;									\
-		cudaExtent				extent = {};								\
-		cudaChannelFormatDesc	channelDesc = {};							\
-																			\
-		cudaArrayGetInfo(&channelDesc, &extent, &flags, mipmapHandles[i]);	\
-																			\
-		m_mipmaps[i] = std::shared_ptr<ImageType>(new ImageType(mipmapHandles[i], format, extent.width, extent.height, extent.depth));	\
-	}
 
 /*********************************************************************************
 *********************************    Image1D    **********************************
@@ -236,34 +201,30 @@ static std::vector<cudaArray_t> getMipmapHandles(cudaMipmappedArray_t hImageLod,
  *				Each layer is a 1D array. The number of layers is determined by the depth extent.
  */
 Image1D<void>::Image1D(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width)
-	: Image(allocator, format, width, 0, 0, cudaArrayDefault)
+	: Image(allocator, format, makeExtent(width, 0, 0), cudaArrayDefault)
 {
 	NS_ASSERT(width > 0);
 }
 
 
 Image1DLayered<void>::Image1DLayered(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t numLayers)
-	: Image(allocator, format, width, 0, std::max<size_t>(1, numLayers), cudaArrayLayered)
+	: Image(allocator, format, makeExtent(width, 0, std::max<size_t>(1, numLayers)), cudaArrayLayered)
 {
 	NS_ASSERT(width > 0);
 }
 
 
 Image1DLod<void>::Image1DLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, unsigned int numLevels)
-	: ImageLod(allocator, format, width, 0, 0, std::clamp(numLevels, 1u, 1u + static_cast<uint32_t>(std::floor(std::log2(width)))), cudaArrayDefault)
+	: ImageLod(allocator, format, makeExtent(width, 0, 0), std::clamp(numLevels, 1u, 1u + static_cast<unsigned int>(std::floor(std::log2(width)))), cudaArrayDefault)
 {
 	NS_ASSERT(width > 0);
-
-	NS_CREATE_MIPMAPS(Image1D<void>);
 }
 
 
 Image1DLayeredLod<void>::Image1DLayeredLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t numLayers, unsigned int numLevels)
-	: ImageLod(allocator, format, width, 0, std::max<size_t>(1, numLayers), std::clamp(numLevels, 1u, 1u + static_cast<uint32_t>(std::floor(std::log2(width)))), cudaArrayLayered)
+	: ImageLod(allocator, format, makeExtent(width, 0, std::max<size_t>(1, numLayers)), std::clamp(numLevels, 1u, 1u + static_cast<uint32_t>(std::floor(std::log2(width)))), cudaArrayLayered)
 {
 	NS_ASSERT(width > 0);
-
-	NS_CREATE_MIPMAPS(Image1DLayered<void>);
 }
 
 /*********************************************************************************
@@ -276,34 +237,30 @@ Image1DLayeredLod<void>::Image1DLayeredLod(std::shared_ptr<DeviceAllocator> allo
  *				Each layer is a 2D array. The number of layers is determined by the depth extent.
  */
 Image2D<void>::Image2D(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height)
-	: Image(allocator, format, width, height, 0, cudaArrayDefault)
+	: Image(allocator, format, makeExtent(width, height, 0), cudaArrayDefault)
 {
 	NS_ASSERT(width * height > 0);
 }
 
 
 Image2DLayered<void>::Image2DLayered(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t numLayers)
-	: Image(allocator, format, width, height, std::max<size_t>(1, numLayers), cudaArrayLayered)
+	: Image(allocator, format, makeExtent(width, height, std::max<size_t>(1, numLayers)), cudaArrayLayered)
 {
 	NS_ASSERT(width * height > 0);
 }
 
 
 Image2DLod<void>::Image2DLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, unsigned int numLevels)
-	: ImageLod(allocator, format, width, height, 0, std::clamp(numLevels, 1u, 1u + static_cast<uint32_t>(std::floor(std::log2(std::max(width, height))))), cudaArrayDefault)
+	: ImageLod(allocator, format, makeExtent(width, height, 0), std::clamp(numLevels, 1u, 1u + static_cast<uint32_t>(std::floor(std::log2(std::max(width, height))))), cudaArrayDefault)
 {
 	NS_ASSERT(width * height > 0);
-
-	NS_CREATE_MIPMAPS(Image2D<void>);
 }
 
 
 Image2DLayeredLod<void>::Image2DLayeredLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t numLayers, unsigned int numLevels)
-	: ImageLod(allocator, format, width, height, std::max<size_t>(1, numLayers), std::clamp(numLevels, 1u, 1u + static_cast<uint32_t>(std::floor(std::log2(std::max(width, height))))), cudaArrayLayered)
+	: ImageLod(allocator, format, makeExtent(width, height, std::max<size_t>(1, numLayers)), std::clamp(numLevels, 1u, 1u + static_cast<uint32_t>(std::floor(std::log2(std::max(width, height))))), cudaArrayLayered)
 {
 	NS_ASSERT(width * height > 0);
-
-	NS_CREATE_MIPMAPS(Image2DLayered<void>);
 }
 
 /*********************************************************************************
@@ -314,18 +271,16 @@ Image2DLayeredLod<void>::Image2DLayeredLod(std::shared_ptr<DeviceAllocator> allo
  *	@details	A 3D array is allocated if all three extents are non-zero.
  */
 Image3D<void>::Image3D(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth)
-	: Image(allocator, format, width, height, depth, cudaArrayDefault)
+	: Image(allocator, format, makeExtent(width, height, depth), cudaArrayDefault)
 {
 	NS_ASSERT(width * height * depth > 0);
 }
 
 
 Image3DLod<void>::Image3DLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, unsigned int numLevels)
-	: ImageLod(allocator, format, width, height, depth, std::clamp(numLevels, 1u, 1u + static_cast<uint32_t>(std::floor(std::log2(std::max(std::max(width, height), depth))))), cudaArrayDefault)
+	: ImageLod(allocator, format, makeExtent(width, height, depth), std::clamp(numLevels, 1u, 1u + static_cast<uint32_t>(std::floor(std::log2(std::max(std::max(width, height), depth))))), cudaArrayDefault)
 {
 	NS_ASSERT(width * height * depth > 0);
-
-	NS_CREATE_MIPMAPS(Image3D<void>);
 }
 
 /*********************************************************************************
@@ -341,32 +296,28 @@ Image3DLod<void>::Image3DLod(std::shared_ptr<DeviceAllocator> allocator, Format 
  *				The first six layers represent the first cubemap, the next six layers form the second cubemap, and so on.
  */
 ImageCube<void>::ImageCube(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width)
-	: Image(allocator, format, width, width, 6, cudaArrayCubemap)
+	: Image(allocator, format, makeExtent(width, width, 6), cudaArrayCubemap)
 {
 	NS_ASSERT(width > 0);
 }
 
 
 ImageCubeLayered<void>::ImageCubeLayered(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t numLayers)
-	: Image(allocator, format, width, width, 6 * std::max<size_t>(1, numLayers), cudaArrayCubemap | cudaArrayLayered)
+	: Image(allocator, format, makeExtent(width, width, 6 * std::max<size_t>(1, numLayers)), cudaArrayCubemap | cudaArrayLayered)
 {
 	NS_ASSERT(width > 0);
 }
 
 
 ImageCubeLod<void>::ImageCubeLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, unsigned int numLevels)
-	: ImageLod(allocator, format, width, width, 6, std::clamp(numLevels, 1u, 1u + static_cast<uint32_t>(std::floor(std::log2(width)))), cudaArrayCubemap)
+	: ImageLod(allocator, format, makeExtent(width, width, 6), std::clamp(numLevels, 1u, 1u + static_cast<uint32_t>(std::floor(std::log2(width)))), cudaArrayCubemap)
 {
 	NS_ASSERT(width > 0);
-
-	NS_CREATE_MIPMAPS(ImageCube<void>);
 }
 
 
 ImageCubeLayeredLod<void>::ImageCubeLayeredLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t numLayers, unsigned int numLevels)
-	: ImageLod(allocator, format, width, width, 6 * std::max<size_t>(1, numLayers), std::clamp(numLevels, 1u, 1u + static_cast<uint32_t>(std::floor(std::log2(width)))), cudaArrayCubemap | cudaArrayLayered)
+	: ImageLod(allocator, format, makeExtent(width, width, 6 * std::max<size_t>(1, numLayers)), std::clamp(numLevels, 1u, 1u + static_cast<uint32_t>(std::floor(std::log2(width)))), cudaArrayCubemap | cudaArrayLayered)
 {
 	NS_ASSERT(width > 0);
-
-	NS_CREATE_MIPMAPS(ImageCubeLayered<void>);
 }

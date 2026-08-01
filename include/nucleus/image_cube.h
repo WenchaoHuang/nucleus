@@ -47,19 +47,10 @@ namespace NS_NAMESPACE
 		 */
 		NS_API explicit ImageCube(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width);
 
-	private:
+	protected:
 
-		/**
-		 *	@brief		Constructs from ImageCubeLod.
-		 *	@param[in]	hImage - Handle of texture memory (from cudaMipmappedArray_t).
-		 *	@param[in]	format - Texel format of the image.
-		 *	@param[in]	width - Width of the image.
-		 *	@param[in]	height - height of the image.
-		 *	@param[in]	depth - Depth of the image.
-		 *	@throw		cudaError_t - In case of failure.
-		 * 	@note		Created by class `ImageCubeLod<void>` only.
-		 */
-		explicit ImageCube(cudaArray_t hImage, Format format, size_t width, size_t height, size_t depth) : Image(hImage, format, width, height, depth) {}
+		//!	@brief		Copy constructor from `Image`.
+		explicit ImageCube(const Image & image) : Image(image) {}
 	};
 
 	/*****************************************************************************
@@ -71,6 +62,7 @@ namespace NS_NAMESPACE
 	 */
 	template<typename Type> class ImageCube : public ImageCube<void>
 	{
+		friend class ImageCubeLod<Type>;
 
 	public:
 
@@ -83,12 +75,17 @@ namespace NS_NAMESPACE
 		 */
 		explicit ImageCube(std::shared_ptr<DeviceAllocator> allocator, size_t width) : ImageCube<void>(allocator, FormatMapping<Type>::value, width) {}
 
+	protected:
+
+		//!	@brief		Copy constructor from `Image`.
+		explicit ImageCube(const Image & image) : ImageCube<void>(image) {}
+
 	public:
 
-		//	Returns accessor to the data.
+		//!	@brief		Returns accessor to the data.
 		ImageAccessor<Type> data() const { return ImageAccessor<Type>{ m_hImage }; }
 
-		//	Return the texel format of the image at compile time.
+		//!	@brief		Return the texel format of the image at compile time.
 		static constexpr Format format() { return FormatMapping<Type>::value; }
 	};
 
@@ -115,23 +112,14 @@ namespace NS_NAMESPACE
 		 */
 		NS_API explicit ImageCubeLayered(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t numLayers);
 
-	private:
+	protected:
 
-		/**
-		 *	@brief		Constructs from MipmappedTextureMemoryCubemapLayered.
-		 *	@param[in]	hImage - Handle of texture memory (from cudaMipmappedArray_t).
-		 *	@param[in]	format - Texel format of the image.
-		 *	@param[in]	width - Width of the image.
-		 *	@param[in]	height - height of the image.
-		 *	@param[in]	depth - Depth of the image.
-		 *	@throw		cudaError_t - In case of failure.
-		 * 	@note		Created by class `ImageCubeLayeredLod<void>` only.
-		 */
-		explicit ImageCubeLayered(cudaArray_t hImage, Format format, size_t width, size_t height, size_t depth) : Image(hImage, format, width, height, depth) {}
+		//!	@brief		Copy constructor from `Image`.
+		explicit ImageCubeLayered(const Image & image) : Image(image) {}
 
 	public:
 
-		//	Returns the number of layers.
+		//!	@brief		Returns the number of layers.
 		uint32_t numLayers() const { return m_extent.depth / 6; }
 	};
 
@@ -144,6 +132,7 @@ namespace NS_NAMESPACE
 	 */
 	template<typename Type> class ImageCubeLayered : public ImageCubeLayered<void>
 	{
+		friend class ImageCubeLayeredLod<Type>;
 
 	public:
 
@@ -155,13 +144,18 @@ namespace NS_NAMESPACE
 		 *	@throw		cudaError_t - In case of failure.
 		 */
 		explicit ImageCubeLayered(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t numLayers) : ImageCubeLayered<void>(allocator, FormatMapping<Type>::value, width, numLayers) {}
-	
+
+	protected:
+
+		//!	@brief		Copy constructor from `Image`.
+		explicit ImageCubeLayered(const Image & image) : ImageCubeLayered<void>(image) {}
+
 	public:
 
-		//	Returns accessor to the data.
+		//!	@brief		Returns accessor to the data.
 		ImageAccessor<Type> data() const { return ImageAccessor<Type>{ m_hImage }; }
 
-		//	Return the texel format of the image at compile time.
+		//!	@brief		Return the texel format of the image at compile time.
 		static constexpr Format format() { return FormatMapping<Type>::value; }
 	};
 
@@ -185,18 +179,12 @@ namespace NS_NAMESPACE
 		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(width))].
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		NS_API ImageCubeLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, unsigned int numLevels);
+		NS_API explicit ImageCubeLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, unsigned int numLevels);
 
+	public:
 
-		/**
-		 *	@return		Reference to the specified level.
-		 *	@warning	`level` should be in the range [0, numLevel).
-		 */
-		ImageCube<void> & getLevel(size_t level) { return *m_mipmaps[level]; }
-
-	private:
-
-		std::vector<std::shared_ptr<ImageCube<void>>>		m_mipmaps;
+		//!	@brief		Return the specified level.
+		ImageCube<void> level(size_t i) const { return ImageCube<void>(m_mipmaps[i]); }
 	};
 
 	/*****************************************************************************
@@ -218,19 +206,14 @@ namespace NS_NAMESPACE
 		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(width))].
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		ImageCubeLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, unsigned int numLevels) : ImageCubeLod<void>(allocator, FormatMapping<Type>::value, width, numLevels) {}
+		explicit ImageCubeLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, unsigned int numLevels) : ImageCubeLod<void>(allocator, FormatMapping<Type>::value, width, numLevels) {}
 
+	public:
 
-		/**
-		 *	@return		Reference to the specified level.
-		 *	@warning	`level` should be in the range [0, numLevel).
-		 */
-		ImageCube<Type> & getLevel(size_t level) { return reinterpret_cast<ImageCube<Type>&>(ImageCubeLod<void>::getLevel(level)); }
+		//!	@brief		Return the specified level.
+		ImageCube<Type> level(size_t i) const { return ImageCube<Type>(m_mipmaps[i]); }
 
-
-		/**
-		 *	@return		Texel format of the image at compile time.
-		 */
+		//!	@brief		Returns the texel format of the image at compile time.
 		static constexpr Format format() { return FormatMapping<Type>::value; }
 	};
 
@@ -255,24 +238,15 @@ namespace NS_NAMESPACE
 		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(width))].
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		NS_API ImageCubeLayeredLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t numLayers, unsigned int numLevels);
+		NS_API explicit ImageCubeLayeredLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t numLayers, unsigned int numLevels);
 
+	public:
 
-		/**
-		 *	@return		Reference to the specified level.
-		 *	@warning	`level` should be in the range [0, numLevel).
-		 */
-		ImageCubeLayered<void> & getLevel(size_t level) { return *m_mipmaps[level]; }
+		//!	@brief		Return the specified level.
+		ImageCubeLayered<void> level(size_t i) const { return ImageCubeLayered<void>(m_mipmaps[i]); }
 
-		
-		/**
-		 *	@return		The number of layers.
-		 */
+		//!	@brief		Returns the number of layers.
 		uint32_t numLayers() const { return m_extent.depth / 6; }
-
-	private:
-
-		std::vector<std::shared_ptr<ImageCubeLayered<void>>>		m_mipmaps;
 	};
 
 	/*****************************************************************************
@@ -295,19 +269,14 @@ namespace NS_NAMESPACE
 		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(width))].
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		ImageCubeLayeredLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t numLayers, unsigned int numLevels) : ImageCubeLayeredLod<void>(allocator, FormatMapping<Type>::value, width, numLayers, numLevels) {}
+		explicit ImageCubeLayeredLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t numLayers, unsigned int numLevels) : ImageCubeLayeredLod<void>(allocator, FormatMapping<Type>::value, width, numLayers, numLevels) {}
 
+	public:
 
-		/**
-		 *	@return		Reference to the specified level.
-		 *	@warning	`level` should be in the range [0, numLevel).
-		 */
-		ImageCubeLayered<Type> & getLevel(size_t level) { return reinterpret_cast<ImageCubeLayered<Type>&>(ImageCubeLayeredLod<void>::getLevel(level)); }
+		//!	@brief		Return the specified level.
+		ImageCubeLayered<Type> level(size_t i) const { return ImageCubeLayered<Type>(m_mipmaps[i]); }
 
-
-		/**
-		 *	@return		Texel format of the image at compile time.
-		 */
+		//!	@brief		Returns the texel format of the image at compile time.
 		static constexpr Format format() { return FormatMapping<Type>::value; }
 	};
 }

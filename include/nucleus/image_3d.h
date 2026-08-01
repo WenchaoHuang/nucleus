@@ -49,26 +49,17 @@ namespace NS_NAMESPACE
 		 */
 		NS_API explicit Image3D(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth);
 
-	private:
+	protected:
 
-		/**
-		 *	@brief		Constructs from Image3DLod.
-		 *	@param[in]	hImage - Handle of texture memory (from cudaMipmappedArray_t).
-		 *	@param[in]	format - Texel format of the image.
-		 *	@param[in]	width - Width of the image.
-		 *	@param[in]	height - height of the image.
-		 *	@param[in]	depth - Depth of the image.
-		 *	@throw		cudaError_t - In case of failure.
-		 * 	@note		Created by class `Image3DLod<void>` only.
-		 */
-		explicit Image3D(cudaArray_t hImage, Format format, size_t width, size_t height, size_t depth) : Image(hImage, format, width, height, depth) {}
+		//!	@brief		Copy constructor from `Image`.
+		explicit Image3D(const Image & image) : Image(image) {}
 
 	public:
 
-		//	Returns the height of the image.
+		//!	@brief		Returns the height of the image.
 		uint32_t height() const { return m_extent.height; }
 
-		//	Returns the depth of the image.
+		//!	@brief		Returns the depth of the image.
 		uint32_t depth() const { return m_extent.depth; }
 	};
 
@@ -81,6 +72,7 @@ namespace NS_NAMESPACE
 	 */
 	template<typename Type> class Image3D : public Image3D<void>
 	{
+		friend class Image3DLod<Type>;
 
 	public:
 
@@ -94,12 +86,17 @@ namespace NS_NAMESPACE
 		 */
 		explicit Image3D(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t depth) : Image3D<void>(allocator, FormatMapping<Type>::value, width, height, depth) {}
 
+	protected:
+
+		//!	@brief		Copy constructor from `Image`.
+		explicit Image3D(const Image & image) : Image3D<void>(image) {}
+
 	public:
 
-		//	Returns accessor to the data.
+		//!	@brief		Returns accessor to the data.
 		ImageAccessor<Type> data() const { return ImageAccessor<Type>{ m_hImage }; }
 
-		//	Return the texel format of the image at compile time.
+		//!	@brief		Return the texel format of the image at compile time.
 		static constexpr Format format() { return FormatMapping<Type>::value; }
 	};
 
@@ -125,26 +122,18 @@ namespace NS_NAMESPACE
 		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(max(width, height, depth)))].
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		NS_API Image3DLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, unsigned int numLevels);
-
-
-		/**
-		 *	@return		Reference to the specified level.
-		 *	@warning	`level` should be in the range [0, numLevel).
-		 */
-		Image3D<void> & getLevel(size_t level) { return *m_mipmaps[level]; }
+		NS_API explicit Image3DLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, unsigned int numLevels);
 
 	public:
 
-		//	Returns the height of the image.
+		//!	@brief		Return the specified level.
+		Image3D<void> level(size_t i) const { return Image3D<void>(m_mipmaps[i]); }
+
+		//!	@brief		Returns the height of the image.
 		uint32_t height() const { return m_extent.height; }
 
-		//	Returns the depth of the image.
+		//!	@brief		Returns the depth of the image.
 		uint32_t depth() const { return m_extent.depth; }
-
-	private:
-
-		std::vector<std::shared_ptr<Image3D<void>>>		m_mipmaps;
 	};
 
 	/*****************************************************************************
@@ -168,19 +157,14 @@ namespace NS_NAMESPACE
 		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(max(width, height, depth)))].
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		Image3DLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t depth, unsigned int numLevels) : Image3DLod<void>(allocator, FormatMapping<Type>::value, width, height, depth, numLevels) {}
+		explicit Image3DLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t depth, unsigned int numLevels) : Image3DLod<void>(allocator, FormatMapping<Type>::value, width, height, depth, numLevels) {}
 
+	public:
 
-		/**
-		 *	@return		Reference to the specified level.
-		 *	@warning	`level` should be in the range [0, numLevel).
-		 */
-		Image3D<Type> & getLevel(size_t level) { return reinterpret_cast<Image3D<Type>&>(Image3DLod<void>::getLevel(level)); }
+		//!	@brief		Return the specified level.
+		Image3D<Type> level(size_t i) const { return Image3D<Type>(m_mipmaps[i]); }
 
-
-		/**
-		 *	@return		Texel format of the image at compile time.
-		 */
+		//!	@brief		Returns the texel format of the image at compile time.
 		static constexpr Format format() { return FormatMapping<Type>::value; }
 	};
 }
