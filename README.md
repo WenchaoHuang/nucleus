@@ -287,11 +287,21 @@ graph.execute(stream);
 
 Nucleus separates texture memory (the backing storage) from the sampling/access objects:
 
-- **Image** — allocates CUDA array memory on the device (analogous to a GPU texture buffer). Created once and shared across texture/surface objects.
+- **Image** — a lightweight value object backed by shared RAII-managed CUDA array storage (analogous to a GPU texture buffer). Copying an Image shares its device allocation.
 - **Texture** — a read-only, hardware-sampled view of an Image. Passed to kernels as a `dev::Tex*<T>` handle.
 - **Surface** — a read-write view of an Image. Passed to kernels as a `dev::Surf*<T>` handle.
 
 Nucleus always creates CUDA arrays with surface load/store support enabled. This deliberately avoids an opt-in constructor flag: an `Image` can be bound to a `Surface` whenever the workflow needs it, without having to predict that requirement at allocation time. The capability has negligible performance impact for the supported image types, so Nucleus favors this simpler, consistent API.
+
+Images, textures, and surfaces use value-oriented host APIs. Pass an Image instance directly when constructing a `Texture*` or `Surface*`; the bound object retains shared ownership of the underlying CUDA allocation, so the original Image variable does not need to outlive it. Images can be tested for validity with `operator bool()`, and their native CUDA handles are available through `handle()`.
+
+Mipmapped `Image*Lod<T>` objects own all mip levels through the same shared resource. Use `numLevels()` to query the number of levels and `level(i)` to obtain a lightweight, strongly typed Image view for level `i`. The returned view can be passed directly to a matching surface or used independently while keeping the complete mipmapped allocation alive:
+
+```cpp
+ns::Image2DLod<float4> imageLod(allocator, width, height, 4);
+ns::Image2D<float4> level1 = imageLod.level(1);
+ns::Surface2D<float4> surface(level1);
+```
 
 The table below lists all available Image, Texture, and Surface type combinations:
 
@@ -320,10 +330,10 @@ The table below lists all available Image, Texture, and Surface type combination
 #include <nucleus/sampler.h>
 
 // 1. Allocate image memory (CUDA array on the device).
-auto image = std::make_shared<ns::Image2D<float4>>(device->defaultAllocator(), width, height);
+ns::Image2D<float4> image(device->defaultAllocator(), width, height);
 
 // 2. Upload data via stream.memcpy (host → image).
-stream.memcpy(image->data(), host_pixels.data(), width, height);
+stream.memcpy(image.data(), host_pixels.data(), width, height);
 
 // 3. Create a texture bound to the image.
 ns::Sampler sampler;                           // default: linear filter, clamp
