@@ -128,7 +128,7 @@ namespace NS_NAMESPACE
 	public:
 
 		//	Returns the number of layers.
-		uint32_t numLayers() const { return m_depth; }
+		uint32_t numLayers() const { return m_extent.depth; }
 	};
 
 	/*****************************************************************************
@@ -263,7 +263,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@return		The number of layers.
 		 */
-		uint32_t numLayers() const { return m_depth; }
+		uint32_t numLayers() const { return m_extent.depth; }
 
 	private:
 

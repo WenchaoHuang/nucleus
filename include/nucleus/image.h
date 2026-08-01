@@ -24,10 +24,14 @@
 #include "fwd.h"
 #include "format.h"
 #include "host_types.h"
+#include <variant>
 #include <vector>
 
 namespace NS_NAMESPACE
 {
+	//!	@brief		Represents the dimensions of a 3D object (width, height, depth).
+	struct Extent { unsigned int width, height, depth; };
+
 	/*****************************************************************************
 	******************************    ImageBase    *******************************
 	*****************************************************************************/
@@ -42,13 +46,12 @@ namespace NS_NAMESPACE
 
 		/**
 		 *	@brief		Constructor
-		 *	@param[in]	allocator - Pointer to the associated allocator.
 		 *	@param[in]	format - Texel format of the image.
 		 *	@param[in]	width - Width of the image.
 		 *	@param[in]	height - height of the image.
 		 *	@param[in]	depth - Depth of the image.
 		 */
-		NS_API explicit ImageBase(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth);
+		NS_API explicit ImageBase(Format format, size_t width, size_t height, size_t depth);
 
 
 		/**
@@ -58,22 +61,21 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//	Returns the texel format of the image.
+		//!	@brief		Returns the texel format of the image.
 		Format format() const { return m_format; }
 
-		//	Retruns the width of the image.
-		uint32_t width() const { return m_width; }
+		//!	@brief		Retruns the width of the image.
+		uint32_t width() const { return m_extent.width; }
 
-		//	Returns pointer to the allocator associated with.
-		std::shared_ptr<DeviceAllocator> allocator() const { return m_allocator; }
+		//!	@brief		Returns pointer to the allocator associated with.
+		NS_API const std::shared_ptr<DeviceAllocator> & allocator() const;
 
 	protected:
 
-		const std::shared_ptr<DeviceAllocator>		m_allocator;
-		const Format								m_format;
-		const uint32_t								m_width;
-		const uint32_t								m_height;
-		const uint32_t								m_depth;
+		class Resource;
+		std::shared_ptr<Resource>		m_resource;
+		Format							m_format;
+		Extent							m_extent;
 	};
 
 	/*****************************************************************************
@@ -116,20 +118,14 @@ namespace NS_NAMESPACE
 		 */
 		NS_API explicit Image(cudaArray_t hImage, Format format, size_t width, size_t height, size_t depth);
 
-
-		/**
-		 *	@brief		Virtual destructor.
-		 */
-		NS_API virtual ~Image() noexcept;
-
 	public:
 
-		//	Returns accessor to the data.
+		//!	@brief		Returns accessor to the data.
 		ImageAccessor<void> data() const { return ImageAccessor<void>{ m_hImage }; }
 
 	protected:
         
-        const cudaArray_t		m_hImage;
+        cudaArray_t		m_hImage;
 	};
 
 	/*****************************************************************************
@@ -162,23 +158,17 @@ namespace NS_NAMESPACE
 		 */
 		NS_API explicit ImageLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, unsigned int numLevels, int flags);
 
-
-		/**
-		 *	@brief		Virtual destructor.
-		 */
-		NS_API virtual ~ImageLod() noexcept;
-
 	public:
 
-		//	Returns CUDA type of this object.
+		//!	@brief		Returns CUDA type of this object.
 		cudaMipmappedArray_t handle() const { return m_hImageLod; }
 
-		//	Returns the number of mipmap levels.
+		//!	@brief		Returns the number of mipmap levels.
 		unsigned int numLevels() const { return m_numLevels; }
 
 	protected:
 
-		const cudaMipmappedArray_t		m_hImageLod;
-		const unsigned int				m_numLevels;
+		cudaMipmappedArray_t		m_hImageLod;
+		unsigned int				m_numLevels;
 	};
 }

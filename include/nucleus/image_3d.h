@@ -66,10 +66,10 @@ namespace NS_NAMESPACE
 	public:
 
 		//	Returns the height of the image.
-		uint32_t height() const { return m_height; }
+		uint32_t height() const { return m_extent.height; }
 
 		//	Returns the depth of the image.
-		uint32_t depth() const { return m_depth; }
+		uint32_t depth() const { return m_extent.depth; }
 	};
 
 	/*****************************************************************************
@@ -137,10 +137,10 @@ namespace NS_NAMESPACE
 	public:
 
 		//	Returns the height of the image.
-		uint32_t height() const { return m_height; }
+		uint32_t height() const { return m_extent.height; }
 
 		//	Returns the depth of the image.
-		uint32_t depth() const { return m_depth; }
+		uint32_t depth() const { return m_extent.depth; }
 
 	private:
 

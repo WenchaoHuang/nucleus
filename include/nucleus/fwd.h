@@ -57,6 +57,7 @@ namespace NS_NAMESPACE
 	class DeviceAllocator;
 	using Error_t = int;
 
+	struct Extent;
 	struct Version;
 	struct Sampler;
 	enum class Format;

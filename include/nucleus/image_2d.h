@@ -65,7 +65,7 @@ namespace NS_NAMESPACE
 	public:
 
 		//	Returns the height of the image.
-		uint32_t height() const { return m_height; }
+		uint32_t height() const { return m_extent.height; }
 	};
 
 	/*****************************************************************************
@@ -140,10 +140,10 @@ namespace NS_NAMESPACE
 	public:
 
 		//	Returns the number of layers.
-		uint32_t numLayers() const { return m_depth; }
+		uint32_t numLayers() const { return m_extent.depth; }
 
 		//	Returns the height of the image.
-		uint32_t height() const { return m_height; }
+		uint32_t height() const { return m_extent.height; }
 	};
 
 	/*****************************************************************************
@@ -211,7 +211,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@return		The height of the image.
 		 */
-		uint32_t height() const { return m_height; }
+		uint32_t height() const { return m_extent.height; }
 
 	private:
 
@@ -288,10 +288,10 @@ namespace NS_NAMESPACE
 	public:
 
 		//	Returns the number of layers.
-		uint32_t numLayers() const { return m_depth; }
+		uint32_t numLayers() const { return m_extent.depth; }
 
 		//	Returns the height of the image.
-		uint32_t height() const { return m_height; }
+		uint32_t height() const { return m_extent.height; }
 
 	private:
 
