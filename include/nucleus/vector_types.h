@@ -97,6 +97,63 @@ namespace NS_NAMESPACE
 	using ulonglong4 = Vec4<unsigned long long, 16>;
 	using ulonglong4_16a = Vec4<unsigned long long, 16>;
 	using ulonglong4_32a = Vec4<unsigned long long, 32>;
+
+	/*****************************************************************************
+	************************    CudaBuiltinType<Type>     ************************
+	*****************************************************************************/
+
+	/**
+	 *	@brief		Extracts the builtin CUDA type from a type.
+	 *	@note		For vector types that have a corresponding CUDA builtin type (e.g. `int2`, `float4`).
+	 *	@warning	Requires *.cu for the specializations to work correctly.
+	 */
+	template<typename Type> struct CudaBuiltinType { using type = Type; };
+	template<typename Type> using CudaBuiltinType_t = typename CudaBuiltinType<Type>::type;
+
+#ifdef __CUDACC__
+	template<> struct CudaBuiltinType<int2> { using type = ::int2; };
+	template<> struct CudaBuiltinType<int3> { using type = ::int3; };
+	template<> struct CudaBuiltinType<int4> { using type = ::int4; };
+
+	template<> struct CudaBuiltinType<uint2> { using type = ::uint2; };
+	template<> struct CudaBuiltinType<uint3> { using type = ::uint3; };
+	template<> struct CudaBuiltinType<uint4> { using type = ::uint4; };
+
+	template<> struct CudaBuiltinType<char2> { using type = ::char2; };
+	template<> struct CudaBuiltinType<char3> { using type = ::char3; };
+	template<> struct CudaBuiltinType<char4> { using type = ::char4; };
+
+	template<> struct CudaBuiltinType<uchar2> { using type = ::uchar2; };
+	template<> struct CudaBuiltinType<uchar3> { using type = ::uchar3; };
+	template<> struct CudaBuiltinType<uchar4> { using type = ::uchar4; };
+
+	template<> struct CudaBuiltinType<short2> { using type = ::short2; };
+	template<> struct CudaBuiltinType<short3> { using type = ::short3; };
+	template<> struct CudaBuiltinType<short4> { using type = ::short4; };
+
+	template<> struct CudaBuiltinType<ushort2> { using type = ::ushort2; };
+	template<> struct CudaBuiltinType<ushort3> { using type = ::ushort3; };
+	template<> struct CudaBuiltinType<ushort4> { using type = ::ushort4; };
+
+	template<> struct CudaBuiltinType<float2> { using type = ::float2; };
+	template<> struct CudaBuiltinType<float3> { using type = ::float3; };
+	template<> struct CudaBuiltinType<float4> { using type = ::float4; };
+
+	template<> struct CudaBuiltinType<double2> { using type = ::double2; };
+	template<> struct CudaBuiltinType<double3> { using type = ::double3; };
+	template<> struct CudaBuiltinType<double4_16a> { using type = ::double4_16a; };
+	template<> struct CudaBuiltinType<double4_32a> { using type = ::double4_32a; };
+
+	template<> struct CudaBuiltinType<longlong2> { using type = ::longlong2; };
+	template<> struct CudaBuiltinType<longlong3> { using type = ::longlong3; };
+	template<> struct CudaBuiltinType<longlong4_16a> { using type = ::longlong4_16a; };
+	template<> struct CudaBuiltinType<longlong4_32a> { using type = ::longlong4_32a; };
+
+	template<> struct CudaBuiltinType<ulonglong2> { using type = ::ulonglong2; };
+	template<> struct CudaBuiltinType<ulonglong3> { using type = ::ulonglong3; };
+	template<> struct CudaBuiltinType<ulonglong4_16a> { using type = ::ulonglong4_16a; };
+	template<> struct CudaBuiltinType<ulonglong4_32a> { using type = ::ulonglong4_32a; };
+#endif
 }
 
 #ifdef _MSC_VER

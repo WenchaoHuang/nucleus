@@ -88,7 +88,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ value_type fetch(float x) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			tex1D<decltype(value)>(&value, m_hTexture, x);
 
@@ -126,7 +126,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ value_type fetch(float x, float level) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			tex1DLod<decltype(value)>(&value, m_hTexture, x, level);
 
@@ -140,7 +140,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ value_type grad(float x, float dx, float dy) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			tex1DGrad<decltype(value)>(&value, m_hTexture, x, dx, dy);
 
@@ -178,7 +178,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ value_type fetch(float x, int layer) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			tex1DLayered<decltype(value)>(&value, m_hTexture, x, layer);
 
@@ -216,7 +216,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ value_type fetch(float x, int layer, float level) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			tex1DLayeredLod<decltype(value)>(&value, m_hTexture, x, layer, level);
 
@@ -230,7 +230,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ value_type grad(float x, int layer, float dx, float dy) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			tex1DLayeredGrad<decltype(value)>(&value, m_hTexture, x, layer, dx, dy);
 
@@ -268,7 +268,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ value_type fetch(float x, float y) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			tex2D<decltype(value)>(&value, m_hTexture, x, y);
 
@@ -306,7 +306,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ value_type fetch(float x, float y, float level) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			tex2DLod<decltype(value)>(&value, m_hTexture, x, y, level);
 
@@ -320,7 +320,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ value_type grad(float x, float y, NS_NAMESPACE::float2 dPdx, NS_NAMESPACE::float2 dPdy) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			tex2DGrad<decltype(value)>(&value, m_hTexture, x, y, reinterpret_cast<::float2&>(dPdx), reinterpret_cast<::float2&>(dPdy));
 
@@ -358,7 +358,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ value_type fetch(float x, float y, int layer) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			tex2DLayered<decltype(value)>(&value, m_hTexture, x, y, layer);
 
@@ -396,7 +396,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ value_type fetch(float x, float y, int layer, float level) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			tex2DLayeredLod<decltype(value)>(&value, m_hTexture, x, y, layer, level);
 
@@ -410,7 +410,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ value_type grad(float x, float y, int layer, NS_NAMESPACE::float2 dPdx, NS_NAMESPACE::float2 dPdy) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			tex2DLayeredGrad<decltype(value)>(&value, m_hTexture, x, y, layer, reinterpret_cast<::float2&>(dPdx), reinterpret_cast<::float2&>(dPdy));
 
@@ -448,7 +448,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ value_type fetch(float x, float y, float z) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			tex3D<decltype(value)>(&value, m_hTexture, x, y, z);
 
@@ -486,7 +486,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ value_type fetch(float x, float y, float z, float level) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			tex3DLod<decltype(value)>(&value, m_hTexture, x, y, z, level);
 
@@ -500,7 +500,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ value_type grad(float x, float y, float z, NS_NAMESPACE::float4 dPdx, NS_NAMESPACE::float4 dPdy) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			tex3DGrad<decltype(value)>(&value, m_hTexture, x, y, z, reinterpret_cast<::float4&>(dPdx), reinterpret_cast<::float4&>(dPdy));
 
@@ -538,7 +538,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ value_type fetch(float x, float y, float z) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			texCubemap<decltype(value)>(&value, m_hTexture, x, y, z);
 
@@ -576,7 +576,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ value_type fetch(float x, float y, float z, float level) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			texCubemapLod<decltype(value)>(&value, m_hTexture, x, y, z, level);
 
@@ -590,7 +590,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ value_type grad(float x, float y, float z, NS_NAMESPACE::float4 dPdx, NS_NAMESPACE::float4 dPdy) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			texCubemapGrad<decltype(value)>(&value, m_hTexture, x, y, z, reinterpret_cast<::float4&>(dPdx), reinterpret_cast<::float4&>(dPdy));
 
@@ -628,7 +628,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ value_type fetch(float x, float y, float z, int layer) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			texCubemapLayered<decltype(value)>(&value, m_hTexture, x, y, z, layer);
 
@@ -666,7 +666,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ value_type fetch(float x, float y, float z, int layer, float level) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			texCubemapLayeredLod<decltype(value)>(&value, m_hTexture, x, y, z, layer, level);
 
@@ -680,7 +680,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ Type grad(float x, float y, float z, int layer, NS_NAMESPACE::float4 dPdx, NS_NAMESPACE::float4 dPdy) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			texCubemapLayeredGrad<decltype(value)>(&value, m_hTexture, x, y, z, layer, reinterpret_cast<::float4&>(dPdx), reinterpret_cast<::float4&>(dPdy));
 

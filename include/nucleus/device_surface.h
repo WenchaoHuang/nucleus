@@ -96,7 +96,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ Type read(int x, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			surf1Dread<decltype(value)>(&value, Surface::m_hSurface, sizeof(Type) * x, boundaryMode);
 
@@ -136,7 +136,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ void write(Type value, int x, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
-			surf1Dwrite<InternalValueType<Type>>(reinterpret_cast<InternalValueType<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, boundaryMode);
+			surf1Dwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, boundaryMode);
 		}
 	#endif
 	};
@@ -174,7 +174,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ Type read(int x, int y, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			surf2Dread<decltype(value)>(&value, Surface::m_hSurface, sizeof(Type) * x, y, boundaryMode);
 
@@ -215,7 +215,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ void write(Type value, int x, int y, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
-			surf2Dwrite<InternalValueType<Type>>(reinterpret_cast<InternalValueType<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, y, boundaryMode);
+			surf2Dwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, y, boundaryMode);
 		}
 	#endif
 	};
@@ -256,7 +256,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ Type read(int x, int y, int z, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			surf3Dread<decltype(value)>(&value, Surface::m_hSurface, sizeof(Type) * x, y, z, boundaryMode);
 
@@ -298,7 +298,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ void write(Type value, int x, int y, int z, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
-			surf3Dwrite<InternalValueType<Type>>(reinterpret_cast<InternalValueType<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, y, z, boundaryMode);
+			surf3Dwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, y, z, boundaryMode);
 		}
 	#endif
 	};
@@ -336,7 +336,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ Type read(int x, int layer, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			surf1DLayeredread<decltype(value)>(&value, Surface::m_hSurface, sizeof(Type) * x, layer, boundaryMode);
 
@@ -377,7 +377,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ void write(Type value, int x, int layer, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
-			surf1DLayeredwrite<InternalValueType<Type>>(reinterpret_cast<InternalValueType<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, layer, boundaryMode);
+			surf1DLayeredwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, layer, boundaryMode);
 		}
 	#endif
 	};
@@ -418,7 +418,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ Type read(int x, int y, int layer, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			surf2DLayeredread<decltype(value)>(&value, Surface::m_hSurface, sizeof(Type) * x, y, layer, boundaryMode);
 
@@ -460,7 +460,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ void write(Type value, int x, int y, int layer, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
-			surf2DLayeredwrite<InternalValueType<Type>>(reinterpret_cast<InternalValueType<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, y, layer, boundaryMode);
+			surf2DLayeredwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, y, layer, boundaryMode);
 		}
 	#endif
 	};
@@ -495,7 +495,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ Type read(int x, int y, int face, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			surfCubemapread<decltype(value)>(&value, Surface::m_hSurface, sizeof(Type) * x, y, face, boundaryMode);
 
@@ -535,7 +535,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ void write(Type value, int x, int y, int face, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
-			surfCubemapwrite<InternalValueType<Type>>(reinterpret_cast<InternalValueType<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, y, face, boundaryMode);
+			surfCubemapwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, y, face, boundaryMode);
 		}
 	#endif
 	};
@@ -573,7 +573,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ Type read(int x, int y, int face, int layer, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
-			InternalValueType<Type> value;
+			CudaTexelType_t<Type> value;
 
 			surfCubemapLayeredread<decltype(value)>(&value, Surface::m_hSurface, sizeof(Type) * x, y, 6 * layer + face, boundaryMode);
 
@@ -614,7 +614,7 @@ namespace NS_NAMESPACE::dev
 	#else
 		__device__ void write(Type value, int x, int y, int face, int layer, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
 		{
-			surfCubemapLayeredwrite<InternalValueType<Type>>(reinterpret_cast<InternalValueType<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, y, 6 * layer + face, boundaryMode);
+			surfCubemapLayeredwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, y, 6 * layer + face, boundaryMode);
 		}
 	#endif
 	};

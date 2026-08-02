@@ -84,7 +84,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	sampler - Sampler for texture fetched.
 		 *	@throws		cudaError_t - In case of failure.
 		 */
-		Texture(const ImageTemplate<Type> & image, Sampler sampler = Sampler()) : TextureBase(std::make_shared<ImageTemplate<Type>>(image), sampler, ns::FormatMapping<Type>::value) {}
+		Texture(const ImageTemplate<Type> & image, Sampler sampler = Sampler()) : TextureBase(std::make_shared<ImageTemplate<Type>>(image), sampler, ns::FormatOf<Type>::value) {}
 
 
 		/**
@@ -94,22 +94,22 @@ namespace NS_NAMESPACE
 		 *	@details	Force set ReadMode::eNormalizedFloat to 1.
 		 *	@throws		cudaError_t - In case of failure.
 		 */
-		template<typename StorageType> Texture(const ImageTemplate<StorageType> & image, Sampler sampler = Sampler()) : TextureBase(std::make_shared<ImageTemplate<StorageType>>(image), sampler, ns::FormatMapping<Type>::value)
+		template<typename StorageType> Texture(const ImageTemplate<StorageType> & image, Sampler sampler = Sampler()) : TextureBase(std::make_shared<ImageTemplate<StorageType>>(image), sampler, ns::FormatOf<Type>::value)
 		{
 			//!	@brief		Validate that source and destination formats have the same number of components.
-			static_assert(details::FormatTraits<ns::FormatMapping<StorageType>::value>::component_count == details::FormatTraits<ns::FormatMapping<Type>::value>::component_count,
+			static_assert(FormatInfo<ns::FormatOf<StorageType>::value>::component_count == FormatInfo<ns::FormatOf<Type>::value>::component_count,
 						  "Source and destination formats must have the same component count.");
 
 			//!	@brief		Prohibit unsigned integer source formats.
-			static_assert(!std::is_same_v<typename details::FormatTraits<ns::FormatMapping<StorageType>::value>::component_type, unsigned int>,
+			static_assert(!std::is_same_v<typename FormatInfo<ns::FormatOf<StorageType>::value>::component_type, unsigned int>,
 						  "Unsigned integer source formats are not supported.");
 
 			//!	@brief		Prohibit signed integer source formats.
-			static_assert(!std::is_same_v<typename details::FormatTraits<ns::FormatMapping<StorageType>::value>::component_type, int>,
+			static_assert(!std::is_same_v<typename FormatInfo<ns::FormatOf<StorageType>::value>::component_type, int>,
 						  "Signed integer source formats are not supported.");
 
 			//!	@brief		Enforce float destination format.
-			static_assert(std::is_same_v<typename details::FormatTraits<ns::FormatMapping<Type>::value>::component_type, float>,
+			static_assert(std::is_same_v<typename FormatInfo<ns::FormatOf<Type>::value>::component_type, float>,
 						  "Destination format must use float components.");
 		}
 

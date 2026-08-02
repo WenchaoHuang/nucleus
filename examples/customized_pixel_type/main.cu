@@ -47,8 +47,8 @@ struct NS_ALIGN(16) MyPixelType2
 };
 
 
-template<> struct ns::FormatMapping<MyPixelType1> { static constexpr ns::Format value = ns::Format::Float4; };
-template<> struct ns::FormatMapping<MyPixelType2> { static constexpr ns::Format value = ns::Format::Int4; };
+template<> struct ns::FormatOf<MyPixelType1> { static constexpr ns::Format value = ns::Format::Float4; };
+template<> struct ns::FormatOf<MyPixelType2> { static constexpr ns::Format value = ns::Format::Int4; };
 
 
 __global__ void pixel_assign(dev::Surf2D<MyPixelType1> out1, dev::Surf2D<MyPixelType2> out2)

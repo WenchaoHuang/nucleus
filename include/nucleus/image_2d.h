@@ -86,7 +86,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit Image2D(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height) : Image2D<void>(allocator, FormatMapping<Type>::value, width, height) {}
+		explicit Image2D(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height) : Image2D<void>(allocator, FormatOf<Type>::value, width, height) {}
 
 	protected:
 
@@ -99,7 +99,7 @@ namespace NS_NAMESPACE
 		ImageAccessor<Type> data() const { return ImageAccessor<Type>{ m_hImage }; }
 
 		//!	@brief		Returns the texel format of the image at compile time.
-		static constexpr Format format() { return FormatMapping<Type>::value; }
+		static constexpr Format format() { return FormatOf<Type>::value; }
 	};
 
 	/*****************************************************************************
@@ -167,7 +167,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit Image2DLayered(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t numLayers) : Image2DLayered<void>(allocator, FormatMapping<Type>::value, width, height, numLayers) {}
+		explicit Image2DLayered(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t numLayers) : Image2DLayered<void>(allocator, FormatOf<Type>::value, width, height, numLayers) {}
 
 	protected:
 
@@ -180,7 +180,7 @@ namespace NS_NAMESPACE
 		ImageAccessor<Type> data() const { return ImageAccessor<Type>{ m_hImage }; }
 
 		//!	@brief		Returns the texel format of the image at compile time.
-		static constexpr Format format() { return FormatMapping<Type>::value; }
+		static constexpr Format format() { return FormatOf<Type>::value; }
 	};
 
 	/*****************************************************************************
@@ -241,7 +241,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(max(width, height)))].
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit Image2DLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, unsigned int numLevels) : Image2DLod<void>(allocator, FormatMapping<Type>::value, width, height, numLevels) {}
+		explicit Image2DLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, unsigned int numLevels) : Image2DLod<void>(allocator, FormatOf<Type>::value, width, height, numLevels) {}
 
 	public:
 
@@ -249,7 +249,7 @@ namespace NS_NAMESPACE
 		Image2D<Type> level(size_t i) const { return Image2D<Type>(m_mipmaps[i]); }
 
 		//!	@brief		Returns the texel format of the image at compile time.
-		static constexpr Format format() { return FormatMapping<Type>::value; }
+		static constexpr Format format() { return FormatOf<Type>::value; }
 	};
 
 	/*****************************************************************************
@@ -315,7 +315,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(max(width, height)))].
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit Image2DLayeredLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t numLayers, unsigned int numLevels) : Image2DLayeredLod<void>(allocator, FormatMapping<Type>::value, width, height, numLayers, numLevels) {}
+		explicit Image2DLayeredLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t numLayers, unsigned int numLevels) : Image2DLayeredLod<void>(allocator, FormatOf<Type>::value, width, height, numLayers, numLevels) {}
 
 	public:
 
@@ -323,6 +323,6 @@ namespace NS_NAMESPACE
 		Image2DLayered<Type> level(size_t i) const { return Image2DLayered<Type>(m_mipmaps[i]); }
 
 		//!	@brief		Returns the texel format of the image at compile time.
-		static constexpr Format format() { return FormatMapping<Type>::value; }
+		static constexpr Format format() { return FormatOf<Type>::value; }
 	};
 }

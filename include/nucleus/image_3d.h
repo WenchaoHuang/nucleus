@@ -90,7 +90,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	depth - Depth of the image.
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit Image3D(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t depth) : Image3D<void>(allocator, FormatMapping<Type>::value, width, height, depth) {}
+		explicit Image3D(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t depth) : Image3D<void>(allocator, FormatOf<Type>::value, width, height, depth) {}
 
 	protected:
 
@@ -103,7 +103,7 @@ namespace NS_NAMESPACE
 		ImageAccessor<Type> data() const { return ImageAccessor<Type>{ m_hImage }; }
 
 		//!	@brief		Return the texel format of the image at compile time.
-		static constexpr Format format() { return FormatMapping<Type>::value; }
+		static constexpr Format format() { return FormatOf<Type>::value; }
 	};
 
 	/*****************************************************************************
@@ -169,7 +169,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(max(width, height, depth)))].
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit Image3DLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t depth, unsigned int numLevels) : Image3DLod<void>(allocator, FormatMapping<Type>::value, width, height, depth, numLevels) {}
+		explicit Image3DLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t depth, unsigned int numLevels) : Image3DLod<void>(allocator, FormatOf<Type>::value, width, height, depth, numLevels) {}
 
 	public:
 
@@ -177,6 +177,6 @@ namespace NS_NAMESPACE
 		Image3D<Type> level(size_t i) const { return Image3D<Type>(m_mipmaps[i]); }
 
 		//!	@brief		Returns the texel format of the image at compile time.
-		static constexpr Format format() { return FormatMapping<Type>::value; }
+		static constexpr Format format() { return FormatOf<Type>::value; }
 	};
 }
