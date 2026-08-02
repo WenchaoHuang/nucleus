@@ -70,17 +70,20 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Returns the texel format of the image.
-		Format format() const { return m_format; }
-
-		//!	@brief		Retruns the width of the image.
-		uint32_t width() const { return m_extent.width; }
-
 		//!	@brief		Returns pointer to the allocator associated with.
 		NS_API const std::shared_ptr<DeviceAllocator> & allocator() const;
 
 		//!	@brief		Tests if the image is valid (non-null).
 		operator bool() const { return m_resource != nullptr; }
+
+		//!	@brief		Tests if the image is empty (null).
+		bool empty() const { return m_resource == nullptr; }
+
+		//!	@brief		Retruns the width of the image.
+		uint32_t width() const { return m_extent.width; }
+
+		//!	@brief		Returns the texel format of the image.
+		Format format() const { return m_format; }
 
 	protected:
 
