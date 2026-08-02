@@ -38,6 +38,9 @@ namespace NS_NAMESPACE
 
 	public:
 
+		//!	@brief		Default constructor.
+		ImageCube() = default;
+
 		/**
 		 *	@brief		Constructs a cubemap image.
 		 *	@param[in]	allocator - Pointer to the associated allocator.
@@ -65,6 +68,9 @@ namespace NS_NAMESPACE
 		friend class ImageCubeLod<Type>;
 
 	public:
+
+		//!	@brief		Default constructor.
+		ImageCube() = default;
 
 		/**
 		 *	@brief		Constructs a cubemap image.
@@ -102,6 +108,9 @@ namespace NS_NAMESPACE
 
 	public:
 
+		//!	@brief		Default constructor.
+		ImageCubeLayered() = default;
+
 		/**
 		 *	@brief		Constructs a layered cubemap image.
 		 *	@param[in]	allocator - Pointer to the associated allocator.
@@ -135,6 +144,9 @@ namespace NS_NAMESPACE
 		friend class ImageCubeLayeredLod<Type>;
 
 	public:
+
+		//!	@brief		Default constructor.
+		ImageCubeLayered() = default;
 
 		/**
 		 *	@brief		Constructs a layered cubemap image.
@@ -171,6 +183,9 @@ namespace NS_NAMESPACE
 
 	public:
 
+		//!	@brief		Default constructor.
+		ImageCubeLod() = default;
+
 		/**
 		 *	@brief		Constructs a cube mipmapped image.
 		 *	@param[in]	allocator - Pointer to the associated allocator.
@@ -198,6 +213,9 @@ namespace NS_NAMESPACE
 	{
 
 	public:
+
+		//!	@brief		Default constructor.
+		ImageCubeLod() = default;
 
 		/**
 		 *	@brief		Constructs a cube mipmapped image.
@@ -228,6 +246,9 @@ namespace NS_NAMESPACE
 	{
 
 	public:
+
+		//!	@brief		Default constructor.
+		ImageCubeLayeredLod() = default;
 
 		/**
 		 *	@brief		Constructs a cube layered mipmapped image.
@@ -260,6 +281,9 @@ namespace NS_NAMESPACE
 	{
 
 	public:
+
+		//!	@brief		Default constructor.
+		ImageCubeLayeredLod() = default;
 
 		/**
 		 *	@brief		Constructs a cube layered mipmapped image.

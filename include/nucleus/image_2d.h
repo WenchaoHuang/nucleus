@@ -38,6 +38,9 @@ namespace NS_NAMESPACE
 
 	public:
 
+		//!	@brief		Default constructor.
+		Image2D() = default;
+
 		/**
 		 *	@brief		Constructs a 2D image.
 		 *	@param[in]	allocator - Pointer to the associated allocator.
@@ -71,6 +74,9 @@ namespace NS_NAMESPACE
 		friend class Image2DLod<Type>;
 
 	public:
+
+		//!	@brief		Default constructor.
+		Image2D() = default;
 
 		/**
 		 *	@brief		Constructs a 2D image.
@@ -108,6 +114,9 @@ namespace NS_NAMESPACE
 		friend class Image2DLayeredLod<void>;
 
 	public:
+
+		//!	@brief		Default constructor.
+		Image2DLayered() = default;
 
 		/**
 		 *	@brief		Constructs a layered 2D image.
@@ -147,6 +156,9 @@ namespace NS_NAMESPACE
 
 	public:
 
+		//!	@brief		Default constructor.
+		Image2DLayered() = default;
+
 		/**
 		 *	@brief		Constructs a layered 2D image.
 		 *	@param[in]	allocator - Pointer to the associated allocator.
@@ -183,6 +195,9 @@ namespace NS_NAMESPACE
 
 	public:
 
+		//!	@brief		Default constructor.
+		Image2DLod() = default;
+
 		/**
 		 *	@brief		Constructs a 2D mipmapped image.
 		 *	@param[in]	allocator - Pointer to the associated allocator.
@@ -215,6 +230,9 @@ namespace NS_NAMESPACE
 
 	public:
 
+		//!	@brief		Default constructor.
+		Image2DLod() = default;
+
 		/**
 		 *	@brief		Constructs a 2D mipmapped image.
 		 *	@param[in]	allocator - Pointer to the associated allocator.
@@ -245,6 +263,9 @@ namespace NS_NAMESPACE
 	{
 
 	public:
+
+		//!	@brief		Default constructor.
+		Image2DLayeredLod() = default;
 
 		/**
 		 *	@brief		Constructs a 2D layered mipmapped image.
@@ -281,6 +302,9 @@ namespace NS_NAMESPACE
 	{
 
 	public:
+
+		//!	@brief		Default constructor.
+		Image2DLayeredLod() = default;
 
 		/**
 		 *	@brief		Constructs a 2D layered mipmapped image.

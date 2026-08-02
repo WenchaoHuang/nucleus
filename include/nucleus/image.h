@@ -47,6 +47,13 @@ namespace NS_NAMESPACE
 		//!	@brief		RAII object, which manages the underlying CUDA array or mipmapped array.
 		class Resource;
 
+
+		/**
+		 *	@brief		Default constructor.
+		 */
+		ImageBase() : m_format(Format::Undefined), m_extent({ 0, 0, 0 }) {}
+
+
 		/**
 		 *	@brief		Constructor
 		 *	@param[in]	resource - Shared pointer to the underlying resource.
@@ -101,6 +108,12 @@ namespace NS_NAMESPACE
 	protected:
 
 		/**
+		 *	@brief		Default constructor.
+		 */
+		Image() : m_hImage(nullptr) {}
+
+
+		/**
 		 *	@brief		Constructs a image.
 		 *	@param[in]	allocator - Pointer to the associated allocator.
 		 *	@param[in]	format - Texel format of the image.
@@ -147,6 +160,12 @@ namespace NS_NAMESPACE
 	{
 
 	protected:
+
+		/**
+		 *	@brief		Default constructor.
+		 */
+		ImageLod() : m_hImageLod(nullptr), m_numLevels(0) {}
+
 
 		/**
 		 *	@brief		Constructs a image with level of details.

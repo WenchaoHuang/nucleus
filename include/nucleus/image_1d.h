@@ -38,6 +38,9 @@ namespace NS_NAMESPACE
 
 	public:
 
+		//!	@brief		Default constructor.
+		Image1D() = default;
+
 		/**
 		 *	@brief		Constructs a 1D image.
 		 *	@param[in]	allocator - Pointer to the associated allocator.
@@ -64,6 +67,9 @@ namespace NS_NAMESPACE
 		friend class Image1DLod<Type>;
 
 	public:
+
+		//!	@brief		Default constructor.
+		Image1D() = default;
 
 		/**
 		 *	@brief		Constructs a 1D image.
@@ -99,6 +105,9 @@ namespace NS_NAMESPACE
 
 	public:
 
+		//!	@brief		Default constructor.
+		Image1DLayered() = default;
+
 		/**
 		 *	@brief		Constructs a 1D layered image.
 		 *	@param[in]	allocator - Pointer to the associated allocator.
@@ -131,6 +140,9 @@ namespace NS_NAMESPACE
 		friend class Image1DLayeredLod<Type>;
 
 	public:
+
+		//!	@brief		Default constructor.
+		Image1DLayered() = default;
 
 		/**
 		 *	@brief		Constructs a 1D layered image.
@@ -166,6 +178,9 @@ namespace NS_NAMESPACE
 
 	public:
 
+		//!	@brief		Default constructor.
+		Image1DLod() = default;
+
 		/**
 		 *	@brief		Constructs a 1D mipmapped image.
 		 *	@param[in]	allocator - Pointer to the associated allocator.
@@ -193,6 +208,9 @@ namespace NS_NAMESPACE
 	{
 
 	public:
+
+		//!	@brief		Default constructor.
+		Image1DLod() = default;
 
 		/**
 		 *	@brief		Constructs a 1D mipmapped image.
@@ -223,6 +241,9 @@ namespace NS_NAMESPACE
 	{
 
 	public:
+
+		//!	@brief		Default constructor.
+		Image1DLayeredLod() = default;
 
 		/**
 		 *	@brief		Constructs a 1D layered mipmapped image.
@@ -255,6 +276,9 @@ namespace NS_NAMESPACE
 	{
 
 	public:
+
+		//!	@brief		Default constructor.
+		Image1DLayeredLod() = default;
 
 		/**
 		 *	@brief		Constructs a 1D layered mipmapped image.

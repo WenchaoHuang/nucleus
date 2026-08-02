@@ -38,6 +38,9 @@ namespace NS_NAMESPACE
 
 	public:
 
+		//!	@brief		Default constructor.
+		Image3D() = default;
+
 		/**
 		 *	@brief		Constructs a 3D image.
 		 *	@param[in]	allocator - Pointer to the associated allocator.
@@ -76,6 +79,9 @@ namespace NS_NAMESPACE
 
 	public:
 
+		//!	@brief		Default constructor.
+		Image3D() = default;
+
 		/**
 		 *	@brief		Constructs a 3D image.
 		 *	@param[in]	allocator - Pointer to the associated allocator.
@@ -112,6 +118,9 @@ namespace NS_NAMESPACE
 
 	public:
 
+		//!	@brief		Default constructor.
+		Image3DLod() = default;
+
 		/**
 		 *	@brief		Constructs a 3D mipmapped image.
 		 *	@param[in]	allocator - Pointer to the associated allocator.
@@ -147,6 +156,9 @@ namespace NS_NAMESPACE
 	{
 
 	public:
+
+		//!	@brief		Default constructor.
+		Image3DLod() = default;
 
 		/**
 		 *	@brief		Constructs a 3D mipmapped image.
