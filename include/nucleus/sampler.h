@@ -22,6 +22,7 @@
 #pragma once
 
 #include "fwd.h"
+#include <limits>
 
 namespace NS_NAMESPACE
 {
@@ -102,7 +103,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Specifies the upper end of the mipmap level range to clamp access to.
 		 */
-		float maxMipmapLevelClamp = 0.0f;
+		float maxMipmapLevelClamp = std::numeric_limits<float>::max();
 
 
 		/**
