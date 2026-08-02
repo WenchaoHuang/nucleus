@@ -54,7 +54,7 @@ namespace NS_NAMESPACE
 	*****************************************************************************/
 
 	//!	@brief		Maps C++ types to corresponding `Format` enum values.
-	template<typename Type>		struct FormatOf			{ static_assert(false, "Invalid format!"); };
+	template<typename Type>		struct FormatOf;
 
 	template<>					struct FormatOf<int>	{ static constexpr Format value = Format::Int; };
 	template<int2_like Type>	struct FormatOf<Type>	{ static constexpr Format value = Format::Int2; };
@@ -89,8 +89,7 @@ namespace NS_NAMESPACE
 	*****************************************************************************/
 
 	//!	@brief		Provides type information for a given `Format` enum value.
-	template<Format format> struct FormatInfo		{ static_assert(false, "Invalid format!"); };
-	template<Format format> using FormatInfo_t		= typename FormatInfo<format>::type;
+	template<Format format> struct FormatInfo;
 
 	template<> struct FormatInfo<Format::Int>		{ using type = int;			using component_type = int;		static constexpr int component_count = 1; };
 	template<> struct FormatInfo<Format::Int2>		{ using type = int2;		using component_type = int;		static constexpr int component_count = 2; };
@@ -125,6 +124,6 @@ namespace NS_NAMESPACE
 	*****************************************************************************/
 
 	//!	@brief		Extracts the CUDA texel type corresponding to a C++ type.
-	template<typename Type> using CudaTexelType = CudaBuiltinType<FormatInfo_t<FormatOf<Type>::value>>;
+	template<typename Type> using CudaTexelType = CudaBuiltinType<typename FormatInfo<FormatOf<Type>::value>::type>;
 	template<typename Type> using CudaTexelType_t = typename CudaTexelType<Type>::type;
 }
