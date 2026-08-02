@@ -31,22 +31,22 @@ namespace NS_NAMESPACE
 	****************************    BufferView<T>    *****************************
 	*****************************************************************************/
 
-	//	A class representing a 1D view of a buffer.
+	//!	@brief		A class representing a 1D view of a buffer.
 	template<typename Type> class BufferView : public dev::Ptr<Type>
 	{
 
 	public:
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		BufferView() : dev::Ptr<Type>(nullptr), m_buffer(nullptr), m_offset(0) {}
 
-		//	Construct with nullptr.
+		//!	@brief		Construct with nullptr.
 		BufferView(std::nullptr_t) : dev::Ptr<Type>(nullptr), m_buffer(nullptr), m_offset(0) {}
 
-		//	Copy constructor, initializes from another BufferView of the same type.
+		//!	@brief		Copy constructor, initializes from another BufferView of the same type.
 		BufferView(const BufferView<std::remove_cv_t<Type>> & rhs) : dev::Ptr<Type>(rhs.data(), rhs.width()), m_buffer(rhs.buffer()), m_offset(rhs.offset()) {}
 
-		//	Construct with a given Buffer.
+		//!	@brief		Construct with a given Buffer.
 		explicit BufferView(std::shared_ptr<Buffer> buffer) : dev::Ptr<Type>(static_cast<Type*>(buffer->data()), buffer->capacity() / sizeof(Type)), m_buffer(buffer), m_offset(0) { NS_ASSERT(buffer != nullptr); }
 
 		/**
@@ -65,13 +65,13 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//	Returns pointer to the associated Buffer.
+		//!	@brief		Returns pointer to the associated Buffer.
 		std::shared_ptr<Buffer> buffer() const { return m_buffer; }
 
-		//	Returns device pointer to the underlying array, explicitly.
+		//!	@brief		Returns device pointer to the underlying array, explicitly.
 		const dev::Ptr<Type> & ptr() const { return *this; }
 
-		//	Returns the byte offset within the buffer.
+		//!	@brief		Returns the byte offset within the buffer.
 		size_t offset() const { return m_offset; }
 
 		/**
@@ -96,22 +96,22 @@ namespace NS_NAMESPACE
 	***************************    BufferView2D<T>    ****************************
 	*****************************************************************************/
 
-	//	A class representing a 2D view of a buffer.
+	//!	@brief		A class representing a 2D view of a buffer.
 	template<typename Type> class BufferView2D : public dev::Ptr2<Type>
 	{
 
 	public:
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		BufferView2D() : dev::Ptr2<Type>(nullptr), m_buffer(nullptr), m_offset(0) {}
 
-		//	Construct with nullptr.
+		//!	@brief		Construct with nullptr.
 		BufferView2D(std::nullptr_t) : dev::Ptr2<Type>(nullptr), m_buffer(nullptr), m_offset(0) {}
 
-		//	Copy constructor, initializes from another BufferView2D of the same type.
+		//!	@brief		Copy constructor, initializes from another BufferView2D of the same type.
 		BufferView2D(const BufferView2D<std::remove_cv_t<Type>> & rhs) : dev::Ptr2<Type>(rhs.data(), rhs.width(), rhs.height()), m_buffer(rhs.buffer()), m_offset(rhs.offset()) {}
 
-		//	Copy constructor, construct with a given BufferView.
+		//!	@brief		Copy constructor, construct with a given BufferView.
 		explicit BufferView2D(const BufferView<std::remove_cv_t<Type>> & rhs) : dev::Ptr2<Type>(rhs.data(), rhs.width(), 1), m_buffer(rhs.buffer()), m_offset(rhs.offset()) {}
 
 		/**
@@ -131,13 +131,13 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//	Returns pointer to the associated Buffer.
+		//!	@brief		Returns pointer to the associated Buffer.
 		std::shared_ptr<Buffer> buffer() const { return m_buffer; }
 
-		//	Returns device pointer to the underlying array, explicitly.
+		//!	@brief		Returns device pointer to the underlying array, explicitly.
 		const dev::Ptr2<Type> & ptr() const { return *this; }
 
-		//	Returns the byte offset within the buffer.
+		//!	@brief		Returns the byte offset within the buffer.
 		size_t offset() const { return m_offset; }
 
 		/**
@@ -164,25 +164,25 @@ namespace NS_NAMESPACE
 	***************************    BufferView3D<T>    ****************************
 	*****************************************************************************/
 
-	//	A class representing a 3D view of a buffer.
+	//!	@brief		A class representing a 3D view of a buffer.
 	template<typename Type> class BufferView3D : public dev::Ptr3<Type>
 	{
 
 	public:
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		BufferView3D() : dev::Ptr3<Type>(nullptr), m_buffer(nullptr), m_offset(0) {}
 
-		//	Construct with nullptr.
+		//!	@brief		Construct with nullptr.
 		BufferView3D(std::nullptr_t) : dev::Ptr3<Type>(nullptr), m_buffer(nullptr), m_offset(0) {}
 
-		//	Copy constructor, initializes from another BufferView3D of the same type.
+		//!	@brief		Copy constructor, initializes from another BufferView3D of the same type.
 		BufferView3D(const BufferView3D<std::remove_cv_t<Type>> & rhs) : dev::Ptr3<Type>(rhs.data(), rhs.width(), rhs.height(), rhs.depth()), m_buffer(rhs.buffer()), m_offset(rhs.offset()) {}
 
-		//	Copy constructor, construct with a given BufferView2D.
+		//!	@brief		Copy constructor, construct with a given BufferView2D.
 		explicit BufferView3D(const BufferView2D<std::remove_cv_t<Type>> & rhs) : dev::Ptr3<Type>(rhs.data(), rhs.width(), rhs.height(), 1), m_buffer(rhs.buffer()), m_offset(rhs.offset()) {}
 
-		//	Copy constructor, construct with a given BufferView.
+		//!	@brief		Copy constructor, construct with a given BufferView.
 		explicit BufferView3D(const BufferView<std::remove_cv_t<Type>> & rhs) : dev::Ptr3<Type>(rhs.data(), rhs.width(), 1, 1), m_buffer(rhs.buffer()), m_offset(rhs.offset()) {}
 
 		/**
@@ -203,13 +203,13 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//	Returns pointer to the associated Buffer.
+		//!	@brief		Returns pointer to the associated Buffer.
 		std::shared_ptr<Buffer> buffer() const { return m_buffer; }
 
-		//	Returns device pointer to the underlying array, explicitly.
+		//!	@brief		Returns device pointer to the underlying array, explicitly.
 		const dev::Ptr3<Type> & ptr() const { return *this; }
 
-		//	Returns the byte offset within the buffer.
+		//!	@brief		Returns the byte offset within the buffer.
 		size_t offset() const { return m_offset; }
 
 		/**
@@ -238,7 +238,7 @@ namespace NS_NAMESPACE
 	**************************    view_cast<T1, T2>    ***************************
 	*****************************************************************************/
 
-	//	Reinterpret a 1D buffer view as another element type, enforcing binary compatibility at compile time.
+	//!	@brief		Reinterpret a 1D buffer view as another element type, enforcing binary compatibility at compile time.
 	template<typename DstType, typename SrcType> BufferView<DstType> view_cast(BufferView<SrcType> view)
 	{
 		static_assert(BinaryCompatible<DstType, SrcType>::value, "view_cast requires DstType and SrcType to be binary compatible");
@@ -246,7 +246,7 @@ namespace NS_NAMESPACE
 		return view.empty() ? BufferView<DstType>() : BufferView<DstType>(view.buffer(), view.offset(), view.width());
 	}
 
-	//	Reinterpret a 2D buffer view as another element type, enforcing binary compatibility at compile time.
+	//!	@brief		Reinterpret a 2D buffer view as another element type, enforcing binary compatibility at compile time.
 	template<typename DstType, typename SrcType> BufferView2D<DstType> view_cast(BufferView2D<SrcType> view)
 	{
 		static_assert(BinaryCompatible<DstType, SrcType>::value, "view_cast requires DstType and SrcType to be binary compatible");
@@ -254,7 +254,7 @@ namespace NS_NAMESPACE
 		return view.empty() ? BufferView2D<DstType>() : BufferView2D<DstType>(view.buffer(), view.offset(), view.width(), view.height());
 	}
 
-	//	Reinterpret a 3D buffer view as another element type, enforcing binary compatibility at compile time.
+	//!	@brief		Reinterpret a 3D buffer view as another element type, enforcing binary compatibility at compile time.
 	template<typename DstType, typename SrcType> BufferView3D<DstType> view_cast(BufferView3D<SrcType> view)
 	{
 		static_assert(BinaryCompatible<DstType, SrcType>::value, "view_cast requires DstType and SrcType to be binary compatible");
@@ -262,7 +262,7 @@ namespace NS_NAMESPACE
 		return view.empty() ? BufferView3D<DstType>() : BufferView3D<DstType>(view.buffer(), view.offset(), view.width(), view.height(), view.depth());
 	}
 
-	//	Reinterpret a 1D buffer view as another element type, enforcing binary compatibility at compile time.
+	//!	@brief		Reinterpret a 1D buffer view as another element type, enforcing binary compatibility at compile time.
 	template<typename DstType, typename SrcType> BufferView<const DstType> view_cast(BufferView<const SrcType> view)
 	{
 		static_assert(BinaryCompatible<DstType, SrcType>::value, "view_cast requires DstType and SrcType to be binary compatible");
@@ -270,7 +270,7 @@ namespace NS_NAMESPACE
 		return view.empty() ? BufferView<const DstType>() : BufferView<const DstType>(view.buffer(), view.offset(), view.width());
 	}
 
-	//	Reinterpret a 2D buffer view as another element type, enforcing binary compatibility at compile time.
+	//!	@brief		Reinterpret a 2D buffer view as another element type, enforcing binary compatibility at compile time.
 	template<typename DstType, typename SrcType> BufferView2D<const DstType> view_cast(BufferView2D<const SrcType> view)
 	{
 		static_assert(BinaryCompatible<DstType, SrcType>::value, "view_cast requires DstType and SrcType to be binary compatible");
@@ -278,7 +278,7 @@ namespace NS_NAMESPACE
 		return view.empty() ? BufferView2D<const DstType>() : BufferView2D<const DstType>(view.buffer(), view.offset(), view.width(), view.height());
 	}
 
-	//	Reinterpret a 3D buffer view as another element type, enforcing binary compatibility at compile time.
+	//!	@brief		Reinterpret a 3D buffer view as another element type, enforcing binary compatibility at compile time.
 	template<typename DstType, typename SrcType> BufferView3D<const DstType> view_cast(BufferView3D<const SrcType> view)
 	{
 		static_assert(BinaryCompatible<DstType, SrcType>::value, "view_cast requires DstType and SrcType to be binary compatible");

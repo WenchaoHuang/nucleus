@@ -41,11 +41,11 @@ namespace NS_NAMESPACE
 			struct { long long Encoded; };
 		};
 
-		//	Constructors
+		//!	@brief		Constructors
 		constexpr Version() : Major(0), Minor(0) {}
 		constexpr Version(int major, int minor) : Major(major), Minor(minor) {}
 
-		//	Compare operators
+		//!	@brief		Compare operators
 		constexpr bool operator==(Version rhs) const { return Encoded == rhs.Encoded; }
 		constexpr bool operator!=(Version rhs) const { return Encoded != rhs.Encoded; }
 		constexpr bool operator<=(Version rhs) const { return Encoded <= rhs.Encoded; }
@@ -66,33 +66,33 @@ namespace NS_NAMESPACE
 	 */
 	template<> struct ImageAccessor<void>
 	{
-		//	CUDA array handle (device memory pointer)
+		//!	@brief		CUDA array handle (device memory pointer)
 		cudaArray_t handle = nullptr;
 		
-		//	Current 3D position in the array (x, y, z coordinates)
+		//!	@brief		Current 3D position in the array (x, y, z coordinates)
 		ulonglong3 pos = { 0, 0, 0 };
 
 	public:
 
-		//	Creates a new accessor with 1D offset applied.
+		//!	@brief		Creates a new accessor with 1D offset applied.
 		ImageAccessor operator+(ulonglong offset) const
 		{
 			return ImageAccessor{ handle, ulonglong3{ pos.x + offset, pos.y, pos.z } };
 		}
 
-		//	Creates a new accessor with 2D offset applied.
+		//!	@brief		Creates a new accessor with 2D offset applied.
 		ImageAccessor operator+(ulonglong2 offset) const
 		{
 			return ImageAccessor{ handle, ulonglong3{ pos.x + offset.x, pos.y + offset.y, pos.z } };
 		}
 
-		//	Creates a new accessor with 3D offset applied.
+		//!	@brief		Creates a new accessor with 3D offset applied.
 		ImageAccessor operator+(ulonglong3 offset) const
 		{
 			return ImageAccessor{ handle, ulonglong3{ pos.x + offset.x, pos.y + offset.y, pos.z + offset.z } };
 		}
 
-		//	Implicit conversion to underlying CUDA array handle
+		//!	@brief		Implicit conversion to underlying CUDA array handle
 		operator cudaArray_t() const { return handle; }
 	};
 

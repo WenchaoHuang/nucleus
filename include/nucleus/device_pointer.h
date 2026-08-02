@@ -29,49 +29,49 @@ namespace NS_NAMESPACE::dev
 	********************************    Ptr<T>    ********************************
 	*****************************************************************************/
 
-	//	Template wrapper for 1D device pointer.
+	//!	@brief		Template wrapper for 1D device pointer.
 	template<typename Type> struct Ptr
 	{
-		//	Default constructor, should not initialized.
+		//!	@brief		Default constructor, should not initialized.
 		NS_CUDA_CALLABLE Ptr() noexcept {}
 
-		//	Constructor with zero initialization.
+		//!	@brief		Constructor with zero initialization.
 		NS_CUDA_CALLABLE Ptr(std::nullptr_t) : m_data(nullptr), m_width(0) {}
 
-		//	Construct with pointer, width.
+		//!	@brief		Construct with pointer, width.
 		NS_CUDA_CALLABLE Ptr(Type * ptr, size_t width = SIZE_MAX) : m_data(ptr), m_width(width) {}
 
-		//	Copy constructor.
+		//!	@brief		Copy constructor.
 		NS_CUDA_CALLABLE Ptr(const Ptr<std::remove_cv_t<Type>> &rhs) : m_data(rhs.data()), m_width(rhs.width()) {}
 
-		//	Copy constructor, construct with a given 2D device pointer.
+		//!	@brief		Copy constructor, construct with a given 2D device pointer.
 		NS_CUDA_CALLABLE explicit Ptr(const Ptr2<std::remove_cv_t<Type>> &rhs) : m_data(rhs.data()), m_width(rhs.size()) {}
 
-		//	Copy constructor, construct with a given 3D device pointer.
+		//!	@brief		Copy constructor, construct with a given 3D device pointer.
 		NS_CUDA_CALLABLE explicit Ptr(const Ptr3<std::remove_cv_t<Type>> &rhs) : m_data(rhs.data()), m_width(rhs.size()) {}
 
-		//	Returns size of the array in bytes.
+		//!	@brief		Returns size of the array in bytes.
 		NS_CUDA_CALLABLE size_t bytes() const { return sizeof(Type) * m_width; }
 
-		//	Return pitch the of array in bytes.
+		//!	@brief		Return pitch the of array in bytes.
 		NS_CUDA_CALLABLE size_t pitch() const { return sizeof(Type) * m_width; }
 
 		// Tests if the array is empty.
 		NS_CUDA_CALLABLE bool empty() const { return m_data == nullptr; }
 
-		//	Treat as a raw pointer. e.g. if (pX == nullptr). 
+		//!	@brief		Treat as a raw pointer. e.g. if (pX == nullptr). 
 		NS_CUDA_CALLABLE operator Type*() const { return m_data; }
 
-		//	Return width the of array.
+		//!	@brief		Return width the of array.
 		NS_CUDA_CALLABLE size_t width() const { return m_width; }
 
-		//	Return size of the array.
+		//!	@brief		Return size of the array.
 		NS_CUDA_CALLABLE size_t size() const { return m_width; }
 
-		//	Returns the raw pointer explicitly.
+		//!	@brief		Returns the raw pointer explicitly.
 		NS_CUDA_CALLABLE Type * data() const { return m_data; }
 
-		//	Get address to the first element at [i]-th row.
+		//!	@brief		Get address to the first element at [i]-th row.
 		NS_CUDA_CALLABLE Type & operator[](size_t i) const
 		{
 			NS_ASSERT((m_data != nullptr) && (i < m_width));
@@ -117,52 +117,52 @@ namespace NS_NAMESPACE::dev
 	*******************************    Ptr2<T>    ********************************
 	*****************************************************************************/
 
-	//	Template wrapper for 2D device pointer.
+	//!	@brief		Template wrapper for 2D device pointer.
 	template<typename Type> struct Ptr2
 	{
-		//	Default constructor, should not initialized.
+		//!	@brief		Default constructor, should not initialized.
 		NS_CUDA_CALLABLE Ptr2() noexcept {}
 
-		//	Constructor with zero initialization.
+		//!	@brief		Constructor with zero initialization.
 		NS_CUDA_CALLABLE Ptr2(std::nullptr_t) : m_data(nullptr), m_width(0), m_height(0) {}
 
-		//	Construct with pointer, width and height.
+		//!	@brief		Construct with pointer, width and height.
 		NS_CUDA_CALLABLE Ptr2(Type * ptr, uint32_t width, uint32_t height) : m_data(ptr), m_width(width), m_height(height) {}
 
-		//	Copy constructor.
+		//!	@brief		Copy constructor.
 		NS_CUDA_CALLABLE Ptr2(const Ptr2<std::remove_cv_t<Type>> &rhs) : m_data(rhs.data()), m_width(rhs.width()), m_height(rhs.height()) {}
 
-		//	Copy constructor, construct with a given 3D device pointer.
+		//!	@brief		Copy constructor, construct with a given 3D device pointer.
 		NS_CUDA_CALLABLE explicit Ptr2(const Ptr3<std::remove_cv_t<Type>> &rhs) : m_data(rhs.data()), m_width(rhs.width()), m_height(rhs.height() * rhs.depth()) {}
 
-		//	Copy constructor, construct with a given 1D device pointer.
+		//!	@brief		Copy constructor, construct with a given 1D device pointer.
 		NS_CUDA_CALLABLE explicit Ptr2(const Ptr<std::remove_cv_t<Type>> &rhs) : m_data(rhs.data()), m_width(rhs.width()), m_height(1) {}
 
-		//	Returns size of the array in bytes.
+		//!	@brief		Returns size of the array in bytes.
 		NS_CUDA_CALLABLE size_t bytes() const { return sizeof(Type) * m_width * m_height; }
 
-		//	Returns pitch of the array in bytes.
+		//!	@brief		Returns pitch of the array in bytes.
 		NS_CUDA_CALLABLE uint32_t pitch() const { return sizeof(Type) * m_width; }
 
-		//	Returns element count.
+		//!	@brief		Returns element count.
 		NS_CUDA_CALLABLE size_t size() const { return m_height * m_width; }
 
-		//	Tests if the array is empty.
+		//!	@brief		Tests if the array is empty.
 		NS_CUDA_CALLABLE bool empty() const { return m_data == nullptr; }
 
-		//	Returns height of the array.
+		//!	@brief		Returns height of the array.
 		NS_CUDA_CALLABLE uint32_t height() const { return m_height; }
 
-		//	Returns width the of array.
+		//!	@brief		Returns width the of array.
 		NS_CUDA_CALLABLE uint32_t width() const { return m_width; }
 
-		//	Treat as a raw pointer. e.g. if (pX == nullptr). 
+		//!	@brief		Treat as a raw pointer. e.g. if (pX == nullptr). 
 		NS_CUDA_CALLABLE operator Type*() const { return m_data; }
 
-		//	Returns the raw pointer explicitly.
+		//!	@brief		Returns the raw pointer explicitly.
 		NS_CUDA_CALLABLE Type * data() const { return m_data; }
 
-		//	Get address to the first element at [i]-th row.
+		//!	@brief		Get address to the first element at [i]-th row.
 		NS_CUDA_CALLABLE Ptr<Type> operator[](size_t i) const
 		{
 			NS_ASSERT((m_data != nullptr) && (i < m_height));
@@ -201,55 +201,55 @@ namespace NS_NAMESPACE::dev
 	*******************************    Ptr3<T>    ********************************
 	*****************************************************************************/
 
-	//	Template wrapper for 3D device pointer.
+	//!	@brief		Template wrapper for 3D device pointer.
 	template<typename Type> struct Ptr3
 	{
-		//	Default constructor, should not initialized.
+		//!	@brief		Default constructor, should not initialized.
 		NS_CUDA_CALLABLE Ptr3() noexcept {}
 
-		//	Constructor with zero initialization.
+		//!	@brief		Constructor with zero initialization.
 		NS_CUDA_CALLABLE Ptr3(std::nullptr_t) : m_data(nullptr), m_width(0), m_height(0), m_depth(0) {}
 
-		//	Construct with pointer, width and height.
+		//!	@brief		Construct with pointer, width and height.
 		NS_CUDA_CALLABLE Ptr3(Type * ptr, uint32_t width, uint32_t height, uint32_t depth) : m_data(ptr), m_width(width), m_height(height), m_depth(depth) {}
 
-		//	Copy constructor.
+		//!	@brief		Copy constructor.
 		NS_CUDA_CALLABLE Ptr3(const Ptr3<std::remove_cv_t<Type>> & rhs) : m_data(rhs.data()), m_width(rhs.width()), m_height(rhs.height()), m_depth(rhs.depth()) {}
 
-		//	Copy constructor, construct with a given 2D device pointer.
+		//!	@brief		Copy constructor, construct with a given 2D device pointer.
 		NS_CUDA_CALLABLE explicit Ptr3(const Ptr2<std::remove_cv_t<Type>> & rhs) : m_data(rhs.data()), m_width(rhs.width()), m_height(rhs.height()), m_depth(1) {}
 
-		//	Copy constructor, construct with a given 1D device pointer.
+		//!	@brief		Copy constructor, construct with a given 1D device pointer.
 		NS_CUDA_CALLABLE explicit Ptr3(const Ptr<std::remove_cv_t<Type>> & rhs) : m_data(rhs.data()), m_width(rhs.width()), m_height(1), m_depth(1) {}
 
-		//	Returns size of the array in bytes.
+		//!	@brief		Returns size of the array in bytes.
 		NS_CUDA_CALLABLE size_t bytes() const { return sizeof(Type) * m_width * m_height * m_depth; }
 
-		//	Returns element count of the array.
+		//!	@brief		Returns element count of the array.
 		NS_CUDA_CALLABLE size_t size() const { return m_width * m_height * m_depth; }
 
-		//	Returns pitch of the array in bytes.
+		//!	@brief		Returns pitch of the array in bytes.
 		NS_CUDA_CALLABLE uint32_t pitch() const { return sizeof(Type) * m_width; }
 
 		// Tests if the array is empty.
 		NS_CUDA_CALLABLE bool empty() const { return m_data == nullptr; }
 
-		//	Returns height of the array.
+		//!	@brief		Returns height of the array.
 		NS_CUDA_CALLABLE uint32_t height() const { return m_height; }
 
-		//	Returns width the of array.
+		//!	@brief		Returns width the of array.
 		NS_CUDA_CALLABLE uint32_t width() const { return m_width; }
 
-		//	Returns depth the of array.
+		//!	@brief		Returns depth the of array.
 		NS_CUDA_CALLABLE uint32_t depth() const { return m_depth; }
 
-		//	Treat as a raw pointer. e.g. if (pX == nullptr). 
+		//!	@brief		Treat as a raw pointer. e.g. if (pX == nullptr). 
 		NS_CUDA_CALLABLE operator Type*() const { return m_data; }
 
-		//	Returns the raw pointer explicitly.
+		//!	@brief		Returns the raw pointer explicitly.
 		NS_CUDA_CALLABLE Type * data() const { return m_data; }
 
-		//	Get address to the first element at [i]-th row.
+		//!	@brief		Get address to the first element at [i]-th row.
 		NS_CUDA_CALLABLE Ptr2<Type> operator[](size_t i) const
 		{
 			NS_ASSERT((m_data != nullptr) && (i < m_depth));
@@ -292,7 +292,7 @@ namespace NS_NAMESPACE
 	***************************    ptr_cast<T1, T2>    ***************************
 	*****************************************************************************/
 
-	//	Reinterpret a 1D device pointer as another element type, enforcing binary compatibility at compile time.
+	//!	@brief		Reinterpret a 1D device pointer as another element type, enforcing binary compatibility at compile time.
 	template<typename DstType, typename SrcType> NS_CUDA_CALLABLE dev::Ptr<DstType> ptr_cast(dev::Ptr<SrcType> ptr)
 	{
 		static_assert(BinaryCompatible<DstType, SrcType>::value, "ptr_cast requires DstType and SrcType to be binary compatible");
@@ -300,7 +300,7 @@ namespace NS_NAMESPACE
 		return dev::Ptr<DstType>(reinterpret_cast<DstType*>(ptr.data()), ptr.width());
 	}
 
-	//	Reinterpret a 2D device pointer as another element type, enforcing binary compatibility at compile time.
+	//!	@brief		Reinterpret a 2D device pointer as another element type, enforcing binary compatibility at compile time.
 	template<typename DstType, typename SrcType> NS_CUDA_CALLABLE dev::Ptr2<DstType> ptr_cast(dev::Ptr2<SrcType> ptr)
 	{
 		static_assert(BinaryCompatible<DstType, SrcType>::value, "ptr_cast requires DstType and SrcType to be binary compatible");
@@ -308,7 +308,7 @@ namespace NS_NAMESPACE
 		return dev::Ptr2<DstType>(reinterpret_cast<DstType*>(ptr.data()), ptr.width(), ptr.height());
 	}
 
-	//	Reinterpret a 3D device pointer as another element type, enforcing binary compatibility at compile time.
+	//!	@brief		Reinterpret a 3D device pointer as another element type, enforcing binary compatibility at compile time.
 	template<typename DstType, typename SrcType> NS_CUDA_CALLABLE dev::Ptr3<DstType> ptr_cast(dev::Ptr3<SrcType> ptr)
 	{
 		static_assert(BinaryCompatible<DstType, SrcType>::value, "ptr_cast requires DstType and SrcType to be binary compatible");
@@ -316,7 +316,7 @@ namespace NS_NAMESPACE
 		return dev::Ptr3<DstType>(reinterpret_cast<DstType*>(ptr.data()), ptr.width(), ptr.height(), ptr.depth());
 	}
 
-	//	Reinterpret a 1D device pointer as another element type, enforcing binary compatibility at compile time.
+	//!	@brief		Reinterpret a 1D device pointer as another element type, enforcing binary compatibility at compile time.
 	template<typename DstType, typename SrcType> NS_CUDA_CALLABLE dev::Ptr<const DstType> ptr_cast(dev::Ptr<const SrcType> ptr)
 	{
 		static_assert(BinaryCompatible<DstType, SrcType>::value, "ptr_cast requires DstType and SrcType to be binary compatible");
@@ -324,7 +324,7 @@ namespace NS_NAMESPACE
 		return dev::Ptr<const DstType>(reinterpret_cast<const DstType*>(ptr.data()), ptr.width());
 	}
 
-	//	Reinterpret a 2D device pointer as another element type, enforcing binary compatibility at compile time.
+	//!	@brief		Reinterpret a 2D device pointer as another element type, enforcing binary compatibility at compile time.
 	template<typename DstType, typename SrcType> NS_CUDA_CALLABLE dev::Ptr2<const DstType> ptr_cast(dev::Ptr2<const SrcType> ptr)
 	{
 		static_assert(BinaryCompatible<DstType, SrcType>::value, "ptr_cast requires DstType and SrcType to be binary compatible");
@@ -332,7 +332,7 @@ namespace NS_NAMESPACE
 		return dev::Ptr2<const DstType>(reinterpret_cast<const DstType*>(ptr.data()), ptr.width(), ptr.height());
 	}
 
-	//	Reinterpret a 3D device pointer as another element type, enforcing binary compatibility at compile time.
+	//!	@brief		Reinterpret a 3D device pointer as another element type, enforcing binary compatibility at compile time.
 	template<typename DstType, typename SrcType> NS_CUDA_CALLABLE dev::Ptr3<const DstType> ptr_cast(dev::Ptr3<const SrcType> ptr)
 	{
 		static_assert(BinaryCompatible<DstType, SrcType>::value, "ptr_cast requires DstType and SrcType to be binary compatible");

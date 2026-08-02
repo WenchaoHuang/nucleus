@@ -24,7 +24,7 @@
 #include "fwd.h"
 #include "format.h"
 
-#ifdef __CUDACC__	//	For CUDA-based project.
+#ifdef __CUDACC__	//!	@brief		For CUDA-based project.
 	#include <texture_indirect_functions.h>
 #endif
 
@@ -34,24 +34,24 @@ namespace NS_NAMESPACE::dev
 	*******************************    Texture    ********************************
 	*****************************************************************************/
 
-	struct Texture		//	Base class for all Texture objects.
+	struct Texture		//!	@brief		Base class for all Texture objects.
 	{
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		NS_CUDA_CALLABLE Texture() {}
 
-		//	Constructor with nullptr.
+		//!	@brief		Constructor with nullptr.
 		NS_CUDA_CALLABLE Texture(std::nullptr_t) : m_hTexture(0) {}
 
-		//	Constructor with cudaTextureObject_t.
+		//!	@brief		Constructor with cudaTextureObject_t.
 		NS_CUDA_CALLABLE explicit Texture(cudaTextureObject_t hTexture) : m_hTexture(hTexture) {}
 
-		//	Return CUDA type of this object for compatibility.
+		//!	@brief		Return CUDA type of this object for compatibility.
 		NS_CUDA_CALLABLE cudaTextureObject_t handle() const { return m_hTexture; }
 
-		//	Bool conversion operator.
+		//!	@brief		Bool conversion operator.
 		NS_CUDA_CALLABLE operator bool() const { return m_hTexture != 0; }
 
-		//	Check if the surface is empty.
+		//!	@brief		Check if the surface is empty.
 		NS_CUDA_CALLABLE bool empty() const { return m_hTexture == 0; }
 
 	protected:
@@ -70,19 +70,19 @@ namespace NS_NAMESPACE::dev
 	 */
 	template<typename Type> struct Tex1D : public Texture
 	{
-		//	The base type without const or volatile qualifiers.
+		//!	@brief		The base type without const or volatile qualifiers.
 		using value_type = std::remove_cv_t<Type>;
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		NS_CUDA_CALLABLE Tex1D() {}
 
-		//	Constructor with nullptr.
+		//!	@brief		Constructor with nullptr.
 		NS_CUDA_CALLABLE Tex1D(std::nullptr_t) : Texture(nullptr) {}
 
-		//	Constructor with cudaTextureObject_t.
+		//!	@brief		Constructor with cudaTextureObject_t.
 		NS_CUDA_CALLABLE explicit Tex1D(cudaTextureObject_t hTexture) : Texture(hTexture) {}
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ value_type fetch(float x) const;
 	#else
@@ -108,19 +108,19 @@ namespace NS_NAMESPACE::dev
 	 */
 	template<typename Type> struct Tex1DLod : public Texture
 	{
-		//	The base type without const or volatile qualifiers.
+		//!	@brief		The base type without const or volatile qualifiers.
 		using value_type = std::remove_cv_t<Type>;
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		NS_CUDA_CALLABLE Tex1DLod() : Texture() {}
 
-		//	Constructor with nullptr.
+		//!	@brief		Constructor with nullptr.
 		NS_CUDA_CALLABLE Tex1DLod(std::nullptr_t) : Texture(nullptr) {}
 
-		//	Constructor with cudaTextureObject_t.
+		//!	@brief		Constructor with cudaTextureObject_t.
 		NS_CUDA_CALLABLE explicit Tex1DLod(cudaTextureObject_t hTexture) : Texture(hTexture) {}
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ value_type fetch(float x, float level) const;
 	#else
@@ -134,7 +134,7 @@ namespace NS_NAMESPACE::dev
 		}
 	#endif
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ value_type grad(float x, float dx, float dy) const;
 	#else
@@ -160,19 +160,19 @@ namespace NS_NAMESPACE::dev
 	 */
 	template<typename Type> struct Tex1DLayered : public Texture
 	{
-		//	The base type without const or volatile qualifiers.
+		//!	@brief		The base type without const or volatile qualifiers.
 		using value_type = std::remove_cv_t<Type>;
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		NS_CUDA_CALLABLE Tex1DLayered() : Texture() {}
 
-		//	Constructor with nullptr.
+		//!	@brief		Constructor with nullptr.
 		NS_CUDA_CALLABLE Tex1DLayered(std::nullptr_t) : Texture(nullptr) {}
 
-		//	Constructor with cudaTextureObject_t.
+		//!	@brief		Constructor with cudaTextureObject_t.
 		NS_CUDA_CALLABLE explicit Tex1DLayered(cudaTextureObject_t hTexture) : Texture(hTexture) {}
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ value_type fetch(float x, int layer) const;
 	#else
@@ -198,19 +198,19 @@ namespace NS_NAMESPACE::dev
 	 */
 	template<typename Type> struct Tex1DLayeredLod : public Texture
 	{
-		//	The base type without const or volatile qualifiers.
+		//!	@brief		The base type without const or volatile qualifiers.
 		using value_type = std::remove_cv_t<Type>;
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		NS_CUDA_CALLABLE Tex1DLayeredLod() : Texture() {}
 
-		//	Constructor with nullptr.
+		//!	@brief		Constructor with nullptr.
 		NS_CUDA_CALLABLE Tex1DLayeredLod(std::nullptr_t) : Texture(nullptr) {}
 
-		//	Constructor with cudaTextureObject_t.
+		//!	@brief		Constructor with cudaTextureObject_t.
 		NS_CUDA_CALLABLE explicit Tex1DLayeredLod(cudaTextureObject_t hTexture) : Texture(hTexture) {}
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ value_type fetch(float x, int layer, float level) const;
 	#else
@@ -224,7 +224,7 @@ namespace NS_NAMESPACE::dev
 		}
 	#endif
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ value_type grad(float x, int layer, float dx, float dy) const;
 	#else
@@ -250,19 +250,19 @@ namespace NS_NAMESPACE::dev
 	 */
 	template<typename Type> struct Tex2D : public Texture
 	{
-		//	The base type without const or volatile qualifiers.
+		//!	@brief		The base type without const or volatile qualifiers.
 		using value_type = std::remove_cv_t<Type>;
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		NS_CUDA_CALLABLE Tex2D() : Texture() {}
 
-		//	Constructor with nullptr.
+		//!	@brief		Constructor with nullptr.
 		NS_CUDA_CALLABLE Tex2D(std::nullptr_t) : Texture(nullptr) {}
 
-		//	Constructor with cudaTextureObject_t.
+		//!	@brief		Constructor with cudaTextureObject_t.
 		NS_CUDA_CALLABLE explicit Tex2D(cudaTextureObject_t hTexture) : Texture(hTexture) {}
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ value_type fetch(float x, float y) const;
 	#else
@@ -288,19 +288,19 @@ namespace NS_NAMESPACE::dev
 	 */
 	template<typename Type> struct Tex2DLod : public Texture
 	{
-		//	The base type without const or volatile qualifiers.
+		//!	@brief		The base type without const or volatile qualifiers.
 		using value_type = std::remove_cv_t<Type>;
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		NS_CUDA_CALLABLE Tex2DLod() : Texture() {}
 
-		//	Constructor with nullptr.
+		//!	@brief		Constructor with nullptr.
 		NS_CUDA_CALLABLE Tex2DLod(std::nullptr_t) : Texture(nullptr) {}
 
-		//	Constructor with cudaTextureObject_t.
+		//!	@brief		Constructor with cudaTextureObject_t.
 		NS_CUDA_CALLABLE explicit Tex2DLod(cudaTextureObject_t hTexture) : Texture(hTexture) {}
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ value_type fetch(float x, float y, float level) const;
 	#else
@@ -314,7 +314,7 @@ namespace NS_NAMESPACE::dev
 		}
 	#endif
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ value_type grad(float x, float y, NS_NAMESPACE::float2 dPdx, NS_NAMESPACE::float2 dPdy) const;
 	#else
@@ -340,19 +340,19 @@ namespace NS_NAMESPACE::dev
 	 */
 	template<typename Type> struct Tex2DLayered : public Texture
 	{
-		//	The base type without const or volatile qualifiers.
+		//!	@brief		The base type without const or volatile qualifiers.
 		using value_type = std::remove_cv_t<Type>;
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		NS_CUDA_CALLABLE Tex2DLayered() : Texture() {}
 
-		//	Constructor with nullptr.
+		//!	@brief		Constructor with nullptr.
 		NS_CUDA_CALLABLE Tex2DLayered(std::nullptr_t) : Texture(nullptr) {}
 
-		//	Constructor with cudaTextureObject_t.
+		//!	@brief		Constructor with cudaTextureObject_t.
 		NS_CUDA_CALLABLE explicit Tex2DLayered(cudaTextureObject_t hTexture) : Texture(hTexture) {}
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ value_type fetch(float x, float y, int layer) const;
 	#else
@@ -378,19 +378,19 @@ namespace NS_NAMESPACE::dev
 	 */
 	template<typename Type> struct Tex2DLayeredLod : public Texture
 	{
-		//	The base type without const or volatile qualifiers.
+		//!	@brief		The base type without const or volatile qualifiers.
 		using value_type = std::remove_cv_t<Type>;
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		NS_CUDA_CALLABLE Tex2DLayeredLod() : Texture() {}
 
-		//	Constructor with nullptr.
+		//!	@brief		Constructor with nullptr.
 		NS_CUDA_CALLABLE Tex2DLayeredLod(std::nullptr_t) : Texture(nullptr) {}
 
-		//	Constructor with cudaTextureObject_t.
+		//!	@brief		Constructor with cudaTextureObject_t.
 		NS_CUDA_CALLABLE explicit Tex2DLayeredLod(cudaTextureObject_t hTexture) : Texture(hTexture) {}
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ value_type fetch(float x, float y, int layer, float level) const;
 	#else
@@ -404,7 +404,7 @@ namespace NS_NAMESPACE::dev
 		}
 	#endif
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ value_type grad(float x, float y, int layer, NS_NAMESPACE::float2 dPdx, NS_NAMESPACE::float2 dPdy) const;
 	#else
@@ -430,19 +430,19 @@ namespace NS_NAMESPACE::dev
 	 */
 	template<typename Type> struct Tex3D : public Texture
 	{
-		//	The base type without const or volatile qualifiers.
+		//!	@brief		The base type without const or volatile qualifiers.
 		using value_type = std::remove_cv_t<Type>;
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		NS_CUDA_CALLABLE Tex3D() : Texture() {}
 
-		//	Constructor with nullptr.
+		//!	@brief		Constructor with nullptr.
 		NS_CUDA_CALLABLE Tex3D(std::nullptr_t) : Texture(nullptr) {}
 
-		//	Constructor with cudaTextureObject_t.
+		//!	@brief		Constructor with cudaTextureObject_t.
 		NS_CUDA_CALLABLE explicit Tex3D(cudaTextureObject_t hTexture) : Texture(hTexture) {}
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ value_type fetch(float x, float y, float z) const;
 	#else
@@ -468,19 +468,19 @@ namespace NS_NAMESPACE::dev
 	 */
 	template<typename Type> struct Tex3DLod : public Texture
 	{
-		//	The base type without const or volatile qualifiers.
+		//!	@brief		The base type without const or volatile qualifiers.
 		using value_type = std::remove_cv_t<Type>;
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		NS_CUDA_CALLABLE Tex3DLod() : Texture() {}
 
-		//	Constructor with nullptr.
+		//!	@brief		Constructor with nullptr.
 		NS_CUDA_CALLABLE Tex3DLod(std::nullptr_t) : Texture(nullptr) {}
 
-		//	Constructor with cudaTextureObject_t.
+		//!	@brief		Constructor with cudaTextureObject_t.
 		NS_CUDA_CALLABLE explicit Tex3DLod(cudaTextureObject_t hTexture) : Texture(hTexture) {}
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ value_type fetch(float x, float y, float z, float level) const;
 	#else
@@ -494,7 +494,7 @@ namespace NS_NAMESPACE::dev
 		}
 	#endif
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ value_type grad(float x, float y, float z, NS_NAMESPACE::float4 dPdx, NS_NAMESPACE::float4 dPdy) const;
 	#else
@@ -520,19 +520,19 @@ namespace NS_NAMESPACE::dev
 	 */
 	template<typename Type> struct TexCube : public Texture
 	{
-		//	The base type without const or volatile qualifiers.
+		//!	@brief		The base type without const or volatile qualifiers.
 		using value_type = std::remove_cv_t<Type>;
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		NS_CUDA_CALLABLE TexCube() : Texture() {}
 
-		//	Constructor with nullptr.
+		//!	@brief		Constructor with nullptr.
 		NS_CUDA_CALLABLE TexCube(std::nullptr_t) : Texture(nullptr) {}
 
-		//	Constructor with cudaTextureObject_t.
+		//!	@brief		Constructor with cudaTextureObject_t.
 		NS_CUDA_CALLABLE explicit TexCube(cudaTextureObject_t hTexture) : Texture(hTexture) {}
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ value_type fetch(float x, float y, float z) const;
 	#else
@@ -558,19 +558,19 @@ namespace NS_NAMESPACE::dev
 	 */
 	template<typename Type> struct TexCubeLod : public Texture
 	{
-		//	The base type without const or volatile qualifiers.
+		//!	@brief		The base type without const or volatile qualifiers.
 		using value_type = std::remove_cv_t<Type>;
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		NS_CUDA_CALLABLE TexCubeLod() : Texture() {}
 
-		//	Constructor with nullptr.
+		//!	@brief		Constructor with nullptr.
 		NS_CUDA_CALLABLE TexCubeLod(std::nullptr_t) : Texture(nullptr) {}
 
-		//	Constructor with cudaTextureObject_t.
+		//!	@brief		Constructor with cudaTextureObject_t.
 		NS_CUDA_CALLABLE explicit TexCubeLod(cudaTextureObject_t hTexture) : Texture(hTexture) {}
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ value_type fetch(float x, float y, float z, float level) const;
 	#else
@@ -584,7 +584,7 @@ namespace NS_NAMESPACE::dev
 		}
 	#endif
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ value_type grad(float x, float y, float z, NS_NAMESPACE::float4 dPdx, NS_NAMESPACE::float4 dPdy) const;
 	#else
@@ -610,19 +610,19 @@ namespace NS_NAMESPACE::dev
 	 */
 	template<typename Type> struct TexCubeLayered : public Texture
 	{
-		//	The base type without const or volatile qualifiers.
+		//!	@brief		The base type without const or volatile qualifiers.
 		using value_type = std::remove_cv_t<Type>;
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		NS_CUDA_CALLABLE TexCubeLayered() : Texture() {}
 
-		//	Constructor with nullptr.
+		//!	@brief		Constructor with nullptr.
 		NS_CUDA_CALLABLE TexCubeLayered(std::nullptr_t) : Texture(nullptr) {}
 
-		//	Constructor with cudaTextureObject_t.
+		//!	@brief		Constructor with cudaTextureObject_t.
 		NS_CUDA_CALLABLE explicit TexCubeLayered(cudaTextureObject_t hTexture) : Texture(hTexture) {}
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ value_type fetch(float x, float y, float z, int layer) const;
 	#else
@@ -648,19 +648,19 @@ namespace NS_NAMESPACE::dev
 	 */
 	template<typename Type> struct TexCubeLayeredLod : public Texture
 	{
-		//	The base type without const or volatile qualifiers.
+		//!	@brief		The base type without const or volatile qualifiers.
 		using value_type = std::remove_cv_t<Type>;
 
-		//	Default constructor.
+		//!	@brief		Default constructor.
 		NS_CUDA_CALLABLE TexCubeLayeredLod() : Texture() {}
 
-		//	Constructor with nullptr.
+		//!	@brief		Constructor with nullptr.
 		NS_CUDA_CALLABLE TexCubeLayeredLod(std::nullptr_t) : Texture(nullptr) {}
 
-		//	Constructor with cudaTextureObject_t.
+		//!	@brief		Constructor with cudaTextureObject_t.
 		NS_CUDA_CALLABLE explicit TexCubeLayeredLod(cudaTextureObject_t hTexture) : Texture(hTexture) {}
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ value_type fetch(float x, float y, float z, int layer, float level) const;
 	#else
@@ -674,7 +674,7 @@ namespace NS_NAMESPACE::dev
 		}
 	#endif
 
-		//	Read method for CUDA texture object.
+		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
 		__device__ Type grad(float x, float y, float z, int layer, NS_NAMESPACE::float4 dPdx, NS_NAMESPACE::float4 dPdy) const;
 	#else
