@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080b0a">
+  <meta name="description" content="Nucleus is a modern C++20 library providing type-safe, RAII-first abstractions over CUDA resources.">
+  <meta property="og:title" content="Nucleus — Modern C++ bindings for CUDA resources">
+  <meta property="og:description" content="Type-safe CUDA resources. Predictable lifetimes. A clean, fluent API.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://wenchaohuang.github.io/Nucleus/">
+  <title>Nucleus — Modern C++ bindings for CUDA resources</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header" data-header>
+    <div class="shell header-inner">
+      <a class="brand" href="#top" aria-label="Nucleus home">
+        <svg class="brand-mark" viewBox="0 0 36 36" aria-hidden="true">
+          <circle cx="18" cy="18" r="3.4"/>
+          <ellipse cx="18" cy="18" rx="15" ry="6.3"/>
+          <ellipse cx="18" cy="18" rx="15" ry="6.3" transform="rotate(60 18 18)"/>
+          <ellipse cx="18" cy="18" rx="15" ry="6.3" transform="rotate(120 18 18)"/>
+        </svg>
+        <span>Nucleus</span>
+      </a>
+
+      <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="site-nav" data-menu-toggle>
+        <span></span><span></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="Primary navigation" data-nav>
+        <a href="#features">Features</a>
+        <a href="#quickstart">Quick start</a>
+        <a href="#components">Components</a>
+        <a class="nav-github" href="https://github.com/WenchaoHuang/Nucleus" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .7a11.5 11.5 0 0 0-3.64 22.4c.58.1.79-.25.79-.56v-2.23c-3.22.7-3.9-1.37-3.9-1.37-.52-1.34-1.28-1.7-1.28-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.57-.29-5.27-1.28-5.27-5.69 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.16 1.18a10.99 10.99 0 0 1 5.76 0c2.2-1.49 3.16-1.18 3.16-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.42-2.71 5.39-5.29 5.68.42.36.79 1.06.79 2.14v3.18c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .7Z"/></svg>
+          GitHub
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="orb orb-one" aria-hidden="true"></div>
+      <div class="orb orb-two" aria-hidden="true"></div>
+      <div class="shell hero-layout">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="status-dot"></span> Open source · C++20 · CUDA 11+</div>
+          <h1>CUDA resources,<br><span>under control.</span></h1>
+          <p class="hero-lede">A modern C++ library for type-safe GPU memory, streams, events, textures, surfaces, and graphs—with predictable RAII lifetimes.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#quickstart">Get started <span aria-hidden="true">↘</span></a>
+            <a class="button button-ghost" href="https://github.com/WenchaoHuang/Nucleus" target="_blank" rel="noreferrer">View source <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="hero-meta" aria-label="Project highlights">
+            <div><strong>RAII</strong><span>by default</span></div>
+            <div><strong>Typed</strong><span>device pointers</span></div>
+            <div><strong>Zero</strong><span>CUDA header leaks</span></div>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-label="Nucleus code example">
+          <div class="atom" aria-hidden="true">
+            <span class="atom-core"></span>
+            <span class="orbit orbit-a"><i></i></span>
+            <span class="orbit orbit-b"><i></i></span>
+            <span class="orbit orbit-c"><i></i></span>
+          </div>
+          <div class="code-window floating-card">
+            <div class="window-bar">
+              <div class="window-dots"><i></i><i></i><i></i></div>
+              <span>vector_add.cu</span>
+            </div>
+            <pre><code><span class="c-muted">// Typed GPU memory with RAII</span>
+<span class="c-type">ns::Array</span>&lt;<span class="c-type">float</span>&gt; out(allocator, count);
+
+stream
+  .<span class="c-fn">fill</span>(out.<span class="c-fn">data</span>(), <span class="c-number">0.0f</span>, out.<span class="c-fn">size</span>())
+  .<span class="c-fn">launch</span>(kernel, grid, block)(out, count)
+  .<span class="c-fn">sync</span>();</code></pre>
+          </div>
+          <div class="type-chip chip-a">dev::Ptr&lt;T&gt;</div>
+          <div class="type-chip chip-b">ns::Stream</div>
+        </div>
+      </div>
+      <div class="shell scroll-cue" aria-hidden="true"><span></span> Explore the API</div>
+    </section>
+
+    <section class="trust-strip" aria-label="Core principles">
+      <div class="shell trust-inner">
+        <span>Built around</span>
+        <strong>TYPE SAFETY</strong><i></i>
+        <strong>RESOURCE OWNERSHIP</strong><i></i>
+        <strong>COMPOSABLE APIS</strong><i></i>
+        <strong>CUDA PERFORMANCE</strong>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <div class="shell">
+        <div class="section-heading reveal">
+          <div><span class="kicker">01 — WHY NUCLEUS</span><h2>Safer abstractions.<br>Native performance.</h2></div>
+          <p>Nucleus wraps the CUDA Runtime API without hiding how the GPU works. You keep explicit control while the type system handles the sharp edges.</p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card feature-wide reveal">
+            <div class="feature-index">01</div>
+            <div class="feature-icon icon-pointer" aria-hidden="true"><span></span></div>
+            <h3>Typed device pointers</h3>
+            <p><code>dev::Ptr&lt;T&gt;</code>, <code>Ptr2&lt;T&gt;</code>, and <code>Ptr3&lt;T&gt;</code> preserve element types and dimensional intent from host code all the way into kernels.</p>
+            <div class="mini-code"><span>dev::Ptr&lt;const float&gt;</span><span>compile-time checked</span></div>
+          </article>
+
+          <article class="feature-card reveal">
+            <div class="feature-index">02</div>
+            <div class="feature-icon icon-raii" aria-hidden="true"><span></span><span></span><span></span></div>
+            <h3>RAII everywhere</h3>
+            <p>Memory, streams, events, textures, surfaces, and graphs clean themselves up deterministically.</p>
+          </article>
+
+          <article class="feature-card reveal">
+            <div class="feature-index">03</div>
+            <div class="feature-icon icon-stream" aria-hidden="true"><span></span><span></span><span></span></div>
+            <h3>Fluent stream API</h3>
+            <p>Chain launches, copies, fills, callbacks, and synchronization into readable execution flows.</p>
+          </article>
+
+          <article class="feature-card feature-wide reveal">
+            <div class="feature-index">04</div>
+            <div class="feature-icon icon-isolation" aria-hidden="true"><span>CU</span><i></i></div>
+            <h3>CUDA header isolation</h3>
+            <p>Host-side translation units use clean Nucleus headers without pulling CUDA headers into every consumer. Keep builds lean and toolchains predictable.</p>
+            <div class="isolation-diagram" aria-label="Application includes Nucleus which isolates CUDA">
+              <span>YOUR APP</span><b>→</b><span>NUCLEUS</span><b>→</b><span>CUDA</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section quickstart-section" id="quickstart">
+      <div class="shell quickstart-layout">
+        <div class="quickstart-copy reveal">
+          <span class="kicker">02 — QUICK START</span>
+          <h2>From clone to kernel in minutes.</h2>
+          <p>Nucleus builds with CMake and works as a standalone library or an embedded submodule.</p>
+          <div class="requirements">
+            <div><span>01</span><p><strong>CUDA Toolkit</strong>11.0 or newer</p></div>
+            <div><span>02</span><p><strong>CMake</strong>3.18 or newer</p></div>
+            <div><span>03</span><p><strong>C++ compiler</strong>C++20 support</p></div>
+          </div>
+        </div>
+
+        <div class="terminal reveal" data-terminal>
+          <div class="terminal-tabs" role="tablist" aria-label="Installation method">
+            <button role="tab" aria-selected="true" aria-controls="clone-panel" id="clone-tab" data-tab="clone">Clone</button>
+            <button role="tab" aria-selected="false" aria-controls="submodule-panel" id="submodule-tab" data-tab="submodule" tabindex="-1">Submodule</button>
+            <span class="terminal-label">powershell / bash</span>
+          </div>
+          <div class="terminal-panel" id="clone-panel" role="tabpanel" aria-labelledby="clone-tab" data-panel="clone">
+            <button class="copy-button" type="button" aria-label="Copy clone commands" data-copy="git clone https://github.com/WenchaoHuang/Nucleus.git&#10;cd Nucleus&#10;cmake -B build -DNUCLEUS_BUILD_SHARED_LIB=ON&#10;cmake --build build --config Release"><span>Copy</span></button>
+            <pre><code><span class="prompt">$</span> git clone https://github.com/WenchaoHuang/Nucleus.git
+<span class="prompt">$</span> cd Nucleus
+<span class="prompt">$</span> cmake -B build <span class="flag">-DNUCLEUS_BUILD_SHARED_LIB=ON</span>
+<span class="prompt">$</span> cmake --build build <span class="flag">--config Release</span></code></pre>
+            <div class="terminal-success"><span>✓</span> Ready to link <code>nucleus</code></div>
+          </div>
+          <div class="terminal-panel" id="submodule-panel" role="tabpanel" aria-labelledby="submodule-tab" data-panel="submodule" hidden>
+            <button class="copy-button" type="button" aria-label="Copy submodule commands" data-copy="git submodule add https://github.com/WenchaoHuang/Nucleus.git third_party/nucleus&#10;# CMakeLists.txt&#10;add_subdirectory(third_party/nucleus)&#10;target_link_libraries(my_app PRIVATE nucleus)"><span>Copy</span></button>
+            <pre><code><span class="prompt">$</span> git submodule add https://github.com/WenchaoHuang/Nucleus.git third_party/nucleus
+
+<span class="c-muted"># CMakeLists.txt</span>
+add_subdirectory(third_party/nucleus)
+target_link_libraries(my_app <span class="flag">PRIVATE</span> nucleus)</code></pre>
+            <div class="terminal-success"><span>✓</span> Embedded in your build tree</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="components">
+      <div class="shell">
+        <div class="section-heading components-heading reveal">
+          <div><span class="kicker">03 — THE TOOLKIT</span><h2>One coherent model<br>for the CUDA runtime.</h2></div>
+          <p>Use only what you need. Each component shares the same ownership model, naming conventions, and device-aware design.</p>
+        </div>
+
+        <div class="component-list">
+          <article class="component-row reveal">
+            <span class="component-number">01</span>
+            <div><h3>Memory</h3><p>Typed arrays, buffers, spans, and pluggable host or device allocators.</p></div>
+            <div class="component-tags"><code>Array&lt;T&gt;</code><code>Buffer</code><code>Allocator</code></div>
+            <span class="row-arrow" aria-hidden="true">↗</span>
+          </article>
+          <article class="component-row reveal">
+            <span class="component-number">02</span>
+            <div><h3>Execution</h3><p>Streams, events, timers, kernel helpers, and reusable CUDA graphs.</p></div>
+            <div class="component-tags"><code>Stream</code><code>Event</code><code>Graph</code></div>
+            <span class="row-arrow" aria-hidden="true">↗</span>
+          </article>
+          <article class="component-row reveal">
+            <span class="component-number">03</span>
+            <div><h3>Images</h3><p>Dimension-aware CUDA arrays with texture and surface access.</p></div>
+            <div class="component-tags"><code>Image2D</code><code>Texture</code><code>Surface</code></div>
+            <span class="row-arrow" aria-hidden="true">↗</span>
+          </article>
+          <article class="component-row reveal">
+            <span class="component-number">04</span>
+            <div><h3>Runtime</h3><p>Device discovery, properties, memory reporting, and diagnostics.</p></div>
+            <div class="component-tags"><code>Runtime</code><code>Device</code><code>Logger</code></div>
+            <span class="row-arrow" aria-hidden="true">↗</span>
+          </article>
+        </div>
+
+        <div class="cta-panel reveal">
+          <div class="cta-atom" aria-hidden="true">
+            <svg viewBox="0 0 180 180"><circle cx="90" cy="90" r="8"/><ellipse cx="90" cy="90" rx="78" ry="29"/><ellipse cx="90" cy="90" rx="78" ry="29" transform="rotate(60 90 90)"/><ellipse cx="90" cy="90" rx="78" ry="29" transform="rotate(120 90 90)"/></svg>
+          </div>
+          <div><span class="kicker">BUILD CLOSER TO THE METAL</span><h2>Give your CUDA code<br>a stronger foundation.</h2></div>
+          <a class="button button-light" href="https://github.com/WenchaoHuang/Nucleus" target="_blank" rel="noreferrer">Explore on GitHub <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-main">
+      <a class="brand footer-brand" href="#top">
+        <svg class="brand-mark" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="3.4"/><ellipse cx="18" cy="18" rx="15" ry="6.3"/><ellipse cx="18" cy="18" rx="15" ry="6.3" transform="rotate(60 18 18)"/><ellipse cx="18" cy="18" rx="15" ry="6.3" transform="rotate(120 18 18)"/></svg>
+        <span>Nucleus</span>
+      </a>
+      <p>Modern C++ bindings for CUDA resources.</p>
+      <div class="footer-links">
+        <a href="https://github.com/WenchaoHuang/Nucleus">Repository</a>
+        <a href="https://github.com/WenchaoHuang/Nucleus/tree/main/examples">Examples</a>
+        <a href="https://github.com/WenchaoHuang/Nucleus/issues">Issues</a>
+        <a href="https://github.com/WenchaoHuang/Nucleus/blob/main/LICENSE">MIT License</a>
+      </div>
+    </div>
+    <div class="shell footer-bottom"><span>© <span data-year>2026</span> Wenchao Huang</span><span>Engineered for explicit control.</span></div>
+  </footer>
+</body>
+</html>

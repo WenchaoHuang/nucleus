@@ -3,6 +3,7 @@
 [![License](https://img.shields.io/github/license/WenchaoHuang/Nucleus)](LICENSE)
 [![Build (Linux)](https://github.com/WenchaoHuang/Nucleus/actions/workflows/build-linux.yml/badge.svg)](https://github.com/WenchaoHuang/Nucleus/actions/workflows/build-linux.yml)
 [![Build (Windows)](https://github.com/WenchaoHuang/Nucleus/actions/workflows/build-windows.yml/badge.svg)](https://github.com/WenchaoHuang/Nucleus/actions/workflows/build-windows.yml)
+[![GitHub Pages](https://img.shields.io/badge/docs-GitHub%20Pages-8cff56?logo=github)](https://wenchaohuang.github.io/nucleus/)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/y/WenchaoHuang/Nucleus/main)](https://github.com/WenchaoHuang/Nucleus/commits/main)
 
 > [!WARNING]
