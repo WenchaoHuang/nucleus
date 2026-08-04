@@ -24,6 +24,7 @@
 #include "fwd.h"
 #include "buffer.h"
 #include "logger.h"
+#include "runtime.h"
 #include "buffer_view.h"
 #include "device_pointer.h"
 
@@ -44,6 +45,9 @@ namespace NS_NAMESPACE
 
 		//!	@brief		Construct an empty array.
 		Array2D() noexcept : dev::Ptr2<Type>(nullptr), m_buffer() {}
+
+		//!	@brief		Allocates a 2D array with specified dimensions using the default allocator.
+		explicit Array2D(size_t width, size_t height) : Array2D(Runtime::defaultAllocator(), width, height) {}
 
 		//!	@brief		Constructs and allocates a 2D array with specified dimensions.
 		explicit Array2D(std::shared_ptr<Allocator> alloctor, size_t width, size_t height) : Array2D() { this->resize(alloctor, width, height); }
@@ -84,16 +88,18 @@ namespace NS_NAMESPACE
 
 
 		/**
-		 *	@brief		Resizes the array maintaining current allocator.
+		 *	@brief		Resizes the array maintaining default allocator.
 		 *	@param[in]	width - New column count
 		 *	@param[in]	height - New row count
 		 *	@note		If the size changes, existing data will be lost.
 		 */
 		void resize(size_t width, size_t height)
 		{
-			NS_ASSERT_LOG_IF(!m_buffer, "Empty allocator!");
+			auto allocator = Runtime::defaultAllocator();
 
-			this->resize(m_buffer.allocator(), width, height);
+			NS_ASSERT_LOG_IF(!allocator, "No default allocator!");
+
+			this->resize(allocator, width, height);
 		}
 
 

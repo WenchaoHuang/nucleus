@@ -22,6 +22,7 @@
 #pragma once
 
 #include "image.h"
+#include "runtime.h"
 
 namespace NS_NAMESPACE
 {
@@ -38,8 +39,11 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		Image1D() = default;
+
 
 		/**
 		 *	@brief		Constructs a 1D image.
@@ -48,6 +52,14 @@ namespace NS_NAMESPACE
 		 *	@param[in]	width - Width of the image.
 		 */
 		NS_API explicit Image1D(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width);
+
+
+		/**
+		 *	@brief		Constructs a 1D image with default allocator.
+		 *	@param[in]	format - Texel format of the image.
+		 *	@param[in]	width - Width of the image.
+		 */
+		explicit Image1D(Format format, size_t width) : Image1D(Runtime::defaultAllocator(), format, width) {}
 
 	protected:
 
@@ -68,8 +80,18 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		Image1D() = default;
+
+
+		/**
+		 *	@brief		Constructs a 1D image with default allocator.
+		 * 	@param[in]	width - Width of the image.
+		 */
+		explicit Image1D(size_t width) : Image1D(Runtime::defaultAllocator(), width) {}
+
 
 		/**
 		 *	@brief		Constructs a 1D image.
@@ -105,8 +127,11 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		Image1DLayered() = default;
+
 
 		/**
 		 *	@brief		Constructs a 1D layered image.
@@ -116,6 +141,15 @@ namespace NS_NAMESPACE
 		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
 		 */
 		NS_API explicit Image1DLayered(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t numLayers);
+
+
+		/**
+		 *	@brief		Constructs a 1D layered image with default allocator.
+		 *	@param[in]	format - Texel format of the image.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
+		 */
+		explicit Image1DLayered(Format format, size_t width, size_t numLayers) : Image1DLayered(Runtime::defaultAllocator(), format, width, numLayers) {}
 
 	protected:
 
@@ -141,8 +175,19 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		Image1DLayered() = default;
+
+
+		/**
+		 *	@brief		Constructs a 1D layered image with default allocator.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	numLayers - Number of layers.
+		 */
+		explicit Image1DLayered(size_t width, size_t numLayers) : Image1DLayered(Runtime::defaultAllocator(), width, numLayers) {}
+
 
 		/**
 		 *	@brief		Constructs a 1D layered image.
@@ -178,7 +223,9 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		Image1DLod() = default;
 
 		/**
@@ -190,6 +237,16 @@ namespace NS_NAMESPACE
 		 *	@throw		cudaError_t - In case of failure.
 		 */
 		NS_API explicit Image1DLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, unsigned int numLevels);
+
+
+		/**
+		 *	@brief		Constructs a 1D mipmapped image with default allocator.
+		 *	@param[in]	format - Texel format of the image.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(width))].
+		 * 	@throw		cudaError_t - In case of failure.
+		 */
+		explicit Image1DLod(Format format, size_t width, unsigned int numLevels) : Image1DLod(Runtime::defaultAllocator(), format, width, numLevels) {}
 
 	public:
 
@@ -209,8 +266,20 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		Image1DLod() = default;
+
+
+		/**
+		 *	@brief		Constructs a 1D mipmapped image with default allocator.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(width))].
+		 *	@throw		cudaError_t - In case of failure.
+		 */
+		explicit Image1DLod(size_t width, unsigned int numLevels) : Image1DLod(Runtime::defaultAllocator(), width, numLevels) {}
+
 
 		/**
 		 *	@brief		Constructs a 1D mipmapped image.
@@ -242,8 +311,11 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		Image1DLayeredLod() = default;
+
 
 		/**
 		 *	@brief		Constructs a 1D layered mipmapped image.
@@ -255,6 +327,17 @@ namespace NS_NAMESPACE
 		 *	@throw		cudaError_t - In case of failure.
 		 */
 		NS_API explicit Image1DLayeredLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t numLayers, unsigned int numLevels);
+
+
+		/**
+		 *	@brief		Constructs a 1D layered mipmapped image with default allocator.
+		 *	@param[in]	format - Texel format of the image.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
+		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(width))].
+		 *	@throw		cudaError_t - In case of failure.
+		 */
+		explicit Image1DLayeredLod(Format format, size_t width, size_t numLayers, unsigned int numLevels) : Image1DLayeredLod(Runtime::defaultAllocator(), format, width, numLayers, numLevels) {}
 
 	public:
 
@@ -277,8 +360,21 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		Image1DLayeredLod() = default;
+
+
+		/**
+		 *	@brief		Constructs a 1D layered mipmapped image with default allocator.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
+		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(width))].
+		 *	@throw		cudaError_t - In case of failure.
+		 */
+		explicit Image1DLayeredLod(size_t width, size_t numLayers, unsigned int numLevels) : Image1DLayeredLod(Runtime::defaultAllocator(), width, numLayers, numLevels) {}
+
 
 		/**
 		 *	@brief		Constructs a 1D layered mipmapped image.

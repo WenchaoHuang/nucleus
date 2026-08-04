@@ -22,6 +22,7 @@
 #pragma once
 
 #include "image.h"
+#include "runtime.h"
 
 namespace NS_NAMESPACE
 {
@@ -38,8 +39,11 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		Image2D() = default;
+
 
 		/**
 		 *	@brief		Constructs a 2D image.
@@ -50,6 +54,16 @@ namespace NS_NAMESPACE
 		 *	@throw		cudaError_t - In case of failure.
 		 */
 		NS_API explicit Image2D(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height);
+
+
+		/**
+		 *	@brief		Constructs a 2D image with default allocator.
+		 *	@param[in]	format - Texel format of the image.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	height - height of the image.
+		 *	@throw		cudaError_t - In case of failure.
+		 */
+		explicit Image2D(Format format, size_t width, size_t height) : Image2D(Runtime::defaultAllocator(), format, width, height) {}
 
 	protected:
 
@@ -75,8 +89,21 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		Image2D() = default;
+
+
+		/**
+		 *	@brief		Constructs a 2D image with default allocator.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	height - height of the image.
+		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
+		 *	@throw		cudaError_t - In case of failure.
+		 */
+		explicit Image2D(size_t width, size_t height) : Image2D(Runtime::defaultAllocator(), width, height) {}
+
 
 		/**
 		 *	@brief		Constructs a 2D image.
@@ -115,8 +142,11 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		Image2DLayered() = default;
+
 
 		/**
 		 *	@brief		Constructs a layered 2D image.
@@ -128,6 +158,17 @@ namespace NS_NAMESPACE
 		 *	@throw		cudaError_t - In case of failure.
 		 */
 		NS_API explicit Image2DLayered(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t numLayers);
+
+
+		/**
+		 *	@brief		Constructs a layered 2D image with default allocator.
+		 *	@param[in]	format - Texel format of the image.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	height - height of the image.
+		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
+		 *	@throw		cudaError_t - In case of failure.
+		 */
+		explicit Image2DLayered(Format format, size_t width, size_t height, size_t numLayers) : Image2DLayered(Runtime::defaultAllocator(), format, width, height, numLayers) {}
 
 	protected:
 
@@ -156,8 +197,21 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		Image2DLayered() = default;
+
+
+		/**
+		 *	@brief		Constructs a layered 2D image with default allocator.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	height - height of the image.
+		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
+		 *	@throw		cudaError_t - In case of failure.
+		 */
+		explicit Image2DLayered(size_t width, size_t height, size_t numLayers) : Image2DLayered(Runtime::defaultAllocator(), width, height, numLayers) {}
+
 
 		/**
 		 *	@brief		Constructs a layered 2D image.
@@ -195,8 +249,11 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		Image2DLod() = default;
+
 
 		/**
 		 *	@brief		Constructs a 2D mipmapped image.
@@ -208,6 +265,17 @@ namespace NS_NAMESPACE
 		 *	@throw		cudaError_t - In case of failure.
 		 */
 		NS_API explicit Image2DLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, unsigned int numLevels);
+
+
+		/**
+		 *	@brief		Constructs a 2D mipmapped image with default allocator.
+		 *	@param[in]	format - Texel format of the image.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	height - height of the image.
+		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(max(width, height)))].
+		 *	@throw		cudaError_t - In case of failure.
+		 */
+		explicit Image2DLod(Format format, size_t width, size_t height, unsigned int numLevels) : Image2DLod(Runtime::defaultAllocator(), format, width, height, numLevels) {}
 
 	public:
 
@@ -230,8 +298,21 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		Image2DLod() = default;
+
+
+		/**
+		 *	@brief		Constructs a 2D mipmapped image with default allocator.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	height - height of the image.
+		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(max(width, height)))].
+		 *	@throw		cudaError_t - In case of failure.
+		 */
+		explicit Image2DLod(size_t width, size_t height, unsigned int numLevels) : Image2DLod(Runtime::defaultAllocator(), width, height, numLevels) {}
+
 
 		/**
 		 *	@brief		Constructs a 2D mipmapped image.
@@ -264,8 +345,11 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		Image2DLayeredLod() = default;
+
 
 		/**
 		 *	@brief		Constructs a 2D layered mipmapped image.
@@ -278,6 +362,18 @@ namespace NS_NAMESPACE
 		 *	@throw		cudaError_t - In case of failure.
 		 */
 		NS_API explicit Image2DLayeredLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t numLayers, unsigned int numLevels);
+
+
+		/**
+		 *	@brief		Constructs a 2D layered mipmapped image with default allocator.
+		 *	@param[in]	format - Texel format of the image.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	height - height of the image.
+		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
+		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(max(width, height)))].
+		 *	@throw		cudaError_t - In case of failure.
+		 */
+		explicit Image2DLayeredLod(Format format, size_t width, size_t height, size_t numLayers, unsigned int numLevels) : Image2DLayeredLod(Runtime::defaultAllocator(), format, width, height, numLayers, numLevels) {}
 
 	public:
 
@@ -303,8 +399,22 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		Image2DLayeredLod() = default;
+
+
+		/**
+		 *	@brief		Constructs a 2D layered mipmapped image with default allocator.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	height - height of the image.
+		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
+		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(max(width, height)))].
+		 *	@throw		cudaError_t - In case of failure.
+		 */
+		explicit Image2DLayeredLod(size_t width, size_t height, size_t numLayers, unsigned int numLevels) : Image2DLayeredLod(Runtime::defaultAllocator(), width, height, numLayers, numLevels) {}
+
 
 		/**
 		 *	@brief		Constructs a 2D layered mipmapped image.

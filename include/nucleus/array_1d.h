@@ -24,6 +24,7 @@
 #include "fwd.h"
 #include "buffer.h"
 #include "logger.h"
+#include "runtime.h"
 #include "buffer_view.h"
 #include "device_pointer.h"
 
@@ -44,6 +45,9 @@ namespace NS_NAMESPACE
 
 		//!	@brief		Construct an empty array.
 		Array() noexcept : dev::Ptr<Type>(nullptr) {}
+
+		//!	@brief		Allocates array with \p width elements using the default allocator.
+		explicit Array(size_t width) : Array(Runtime::defaultAllocator(), width) {}
 
 		//!	@brief		Allocates array with \p width elements.
 		explicit Array(std::shared_ptr<Allocator> alloctor, size_t width) : Array() { this->resize(alloctor, width); }
@@ -75,15 +79,17 @@ namespace NS_NAMESPACE
 
 
 		/**
-		 *	@brief		Resizes the array using the current allocator.
+		 *	@brief		Resizes the array using the default allocator.
 		 *	@param[in]	width - The new number of elements.
 		 *	@note		If the size changes, existing data will be lost.
 		 */
 		void resize(size_t width)
 		{
-			NS_ASSERT_LOG_IF(!m_buffer, "Empty allocator!");
+			auto allocator = Runtime::defaultAllocator();
 
-			this->resize(m_buffer.allocator(), width);
+			NS_ASSERT_LOG_IF(!allocator, "No default allocator!");
+
+			this->resize(allocator, width);
 		}
 
 

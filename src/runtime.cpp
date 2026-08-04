@@ -80,6 +80,11 @@ Runtime::Runtime()
 		NS_INFO_LOG("CUDA device(%d): %s, compute capability: %d.%d", i, devProp.name, devProp.major, devProp.minor);
 
 		m_cudaDevices[i] = new Device(i, devProp);
+
+		if (i == 0)
+		{
+			m_defaultAlloc = m_cudaDevices[0]->defaultAllocator();
+		}
 	}
 
 	cudaGetLastError();

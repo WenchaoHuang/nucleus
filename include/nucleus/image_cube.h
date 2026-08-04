@@ -22,6 +22,7 @@
 #pragma once
 
 #include "image.h"
+#include "runtime.h"
 
 namespace NS_NAMESPACE
 {
@@ -38,8 +39,11 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		ImageCube() = default;
+
 
 		/**
 		 *	@brief		Constructs a cubemap image.
@@ -49,6 +53,15 @@ namespace NS_NAMESPACE
 		 *	@throw		cudaError_t - In case of failure.
 		 */
 		NS_API explicit ImageCube(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width);
+
+
+		/**
+		 *	@brief		Constructs a cubemap image with default allocator.
+		 *	@param[in]	format - Texel format of the image.
+		 *	@param[in]	width - Width of the image.
+		 *	@throw		cudaError_t - In case of failure.
+		 */
+		explicit ImageCube(Format format, size_t width) : ImageCube(Runtime::defaultAllocator(), format, width) {}
 
 	protected:
 
@@ -69,8 +82,20 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		ImageCube() = default;
+
+
+		/**
+		 *	@brief		Constructs a cubemap image with default allocator.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
+		 *	@throw		cudaError_t - In case of failure.
+		 */
+		explicit ImageCube(size_t width) : ImageCube(Runtime::defaultAllocator(), width) {}
+
 
 		/**
 		 *	@brief		Constructs a cubemap image.
@@ -108,8 +133,11 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		ImageCubeLayered() = default;
+
 
 		/**
 		 *	@brief		Constructs a layered cubemap image.
@@ -120,6 +148,16 @@ namespace NS_NAMESPACE
 		 *	@throw		cudaError_t - In case of failure.
 		 */
 		NS_API explicit ImageCubeLayered(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t numLayers);
+
+
+		/**
+		 *	@brief		Constructs a layered cubemap image with default allocator.
+		 *	@param[in]	format - Texel format of the image.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
+		 *	@throw		cudaError_t - In case of failure.
+		 */
+		explicit ImageCubeLayered(Format format, size_t width, size_t numLayers) : ImageCubeLayered(Runtime::defaultAllocator(), format, width, numLayers) {}
 
 	protected:
 
@@ -145,8 +183,20 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		ImageCubeLayered() = default;
+
+
+		/**
+		 *	@brief		Constructs a layered cubemap image with default allocator.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
+		 *	@throw		cudaError_t - In case of failure.
+		 */
+		explicit ImageCubeLayered(size_t width, size_t numLayers) : ImageCubeLayered(Runtime::defaultAllocator(), width, numLayers) {}
+
 
 		/**
 		 *	@brief		Constructs a layered cubemap image.
@@ -183,8 +233,11 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		ImageCubeLod() = default;
+
 
 		/**
 		 *	@brief		Constructs a cube mipmapped image.
@@ -195,6 +248,16 @@ namespace NS_NAMESPACE
 		 *	@throw		cudaError_t - In case of failure.
 		 */
 		NS_API explicit ImageCubeLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, unsigned int numLevels);
+
+
+		/**
+		 *	@brief		Constructs a cube mipmapped image with default allocator.
+		 *	@param[in]	format - Texel format of the image.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(width))].
+		 *	@throw		cudaError_t - In case of failure.
+		 */
+		explicit ImageCubeLod(Format format, size_t width, unsigned int numLevels) : ImageCubeLod(Runtime::defaultAllocator(), format, width, numLevels) {}
 
 	public:
 
@@ -214,8 +277,20 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		ImageCubeLod() = default;
+
+
+		/**
+		 *	@brief		Constructs a cube mipmapped image with default allocator.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(width))].
+		 *	@throw		cudaError_t - In case of failure.
+		 */
+		explicit ImageCubeLod(size_t width, unsigned int numLevels) : ImageCubeLod(Runtime::defaultAllocator(), width, numLevels) {}
+
 
 		/**
 		 *	@brief		Constructs a cube mipmapped image.
@@ -247,8 +322,11 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		ImageCubeLayeredLod() = default;
+
 
 		/**
 		 *	@brief		Constructs a cube layered mipmapped image.
@@ -260,6 +338,17 @@ namespace NS_NAMESPACE
 		 *	@throw		cudaError_t - In case of failure.
 		 */
 		NS_API explicit ImageCubeLayeredLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t numLayers, unsigned int numLevels);
+
+
+		/**
+		 *	@brief		Constructs a cube layered mipmapped image with default allocator.
+		 *	@param[in]	format - Texel format of the image.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
+		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(width))].
+		 *	@throw		cudaError_t - In case of failure.
+		 */
+		explicit ImageCubeLayeredLod(Format format, size_t width, size_t numLayers, unsigned int numLevels) : ImageCubeLayeredLod(Runtime::defaultAllocator(), format, width, numLayers, numLevels) {}
 
 	public:
 
@@ -282,8 +371,21 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Default constructor.
+		/**
+		 *	@brief		Default constructor.
+		 */
 		ImageCubeLayeredLod() = default;
+
+
+		/**
+		 *	@brief		Constructs a cube layered mipmapped image with default allocator.
+		 *	@param[in]	width - Width of the image.
+		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
+		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(width))].
+		 *	@throw		cudaError_t - In case of failure.
+		 */
+		explicit ImageCubeLayeredLod(size_t width, size_t numLayers, unsigned int numLevels) : ImageCubeLayeredLod(Runtime::defaultAllocator(), width, numLayers, numLevels) {}
+
 
 		/**
 		 *	@brief		Constructs a cube layered mipmapped image.

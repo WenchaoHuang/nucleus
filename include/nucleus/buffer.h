@@ -21,6 +21,7 @@
  */
 #pragma once
 
+#include "runtime.h"
 #include "allocator.h"
 
 namespace NS_NAMESPACE
@@ -43,6 +44,12 @@ namespace NS_NAMESPACE
 		 *	@note		No memory allocation is performed.
 		 */
 		Buffer() noexcept = default;
+
+
+		/**
+		 *	@brief		Constructs a buffer with specified capacity using the default allocator.
+		 */
+		explicit Buffer(size_t capacity) : Buffer(ns::Runtime::defaultAllocator(), capacity) {}
 
 
 		/**

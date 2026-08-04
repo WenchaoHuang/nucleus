@@ -54,6 +54,10 @@ void array_test()
 	ns::Array3D<float>	array5(allocator, 100, 100, 100);
 	ns::Array3D<float>	array55 = std::move(array5);
 
+	ns::Array<int>		array1Default(100);
+	ns::Array2D<int>	array2Default(100, 100);
+	ns::Array3D<int>	array3Default(100, 100, 100);
+
 	std::vector<ns::Array<int>>		arrArray0;
 	std::vector<ns::Array<int>>		arrArray1(200);
 
@@ -64,6 +68,9 @@ void array_test()
 	assert(array1.empty());
 	assert(!array11.empty());
 	assert(arrArray1[0].size() == 10);
+	assert(array1Default.allocator() == ns::Runtime::defaultAllocator());
+	assert(array2Default.allocator() == ns::Runtime::defaultAllocator());
+	assert(array3Default.allocator() == ns::Runtime::defaultAllocator());
 
 	if (!array11.empty())
 	{

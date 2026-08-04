@@ -24,6 +24,7 @@
 #include "fwd.h"
 #include "buffer.h"
 #include "logger.h"
+#include "runtime.h"
 #include "buffer_view.h"
 #include "device_pointer.h"
 
@@ -44,6 +45,9 @@ namespace NS_NAMESPACE
 
 		//!	@brief		Construct an empty array.
 		Array3D() noexcept : dev::Ptr3<Type>(nullptr), m_buffer() {}
+
+		//!	@brief		Allocates a 3D array with specified dimensions using the default allocator.
+		explicit Array3D(size_t width, size_t height, size_t depth) : Array3D(Runtime::defaultAllocator(), width, height, depth) {}
 
 		//!	@brief		Constructs and allocates a 2D array with specified dimensions.
 		explicit Array3D(std::shared_ptr<Allocator> allocator, size_t width, size_t height, size_t depth) : Array3D() { this->resize(allocator, width, height, depth); }
@@ -90,16 +94,18 @@ namespace NS_NAMESPACE
 
 
 		/**
-		 *	@brief		Resizes the array maintaining current allocator.
+		 *	@brief		Resizes the array maintaining default allocator.
 		 *	@param[in]	width - New column count.
 		 *	@param[in]	height - New row count.
 		 *	@param[in]	depth - New layer count.
 		 */
 		void resize(size_t width, size_t height, size_t depth)
 		{
-			NS_ASSERT_LOG_IF(!m_buffer, "Empty allocator!");
+			auto allocator = Runtime::defaultAllocator();
+
+			NS_ASSERT_LOG_IF(!allocator, "No default allocator!");
 			
-			this->resize(m_buffer.allocator(), width, height, depth);
+			this->resize(allocator, width, height, depth);
 		}
 
 

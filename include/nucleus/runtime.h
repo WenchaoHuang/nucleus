@@ -106,10 +106,25 @@ namespace NS_NAMESPACE
 		 */
 		static const std::vector<Device*> & devices() { return Runtime::getInstance()->m_cudaDevices; }
 
+
+		/**
+		 *	@brief		Return the default device allocator.
+		 *	@note		The default device allocator is used for allocating device memory when no allocator is specified.
+		 *	@note		The default device allocator is initialized to the default allocator of the first device.
+		 */
+		static std::shared_ptr<DeviceAllocator> defaultAllocator() { return Runtime::getInstance()->m_defaultAlloc; }
+
+
+		/**
+		 *	@brief		Set the default device allocator.
+		 */
+		static void setDefaultAllocator(std::shared_ptr<DeviceAllocator> alloc) { Runtime::getInstance()->m_defaultAlloc = alloc; }
+
 	private:
 
-		Version						m_driverVersion;
-		Version						m_runtimeVersion;
-		std::vector<Device*>		m_cudaDevices;
+		Version									m_driverVersion;
+		Version									m_runtimeVersion;
+		std::vector<Device*>					m_cudaDevices;
+		std::shared_ptr<DeviceAllocator>		m_defaultAlloc;
 	};
 }

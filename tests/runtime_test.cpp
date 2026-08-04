@@ -35,8 +35,11 @@ void runtime_test()
 	assert(ns::Version(10, 5) <= ns::Version(10, 5));
 
 	auto runtime = ns::Runtime::getInstance();
+	auto allocator = ns::Runtime::defaultAllocator();
 	auto driverVersion = ns::Runtime::driverVersion();
 	auto runtimeVersion = ns::Runtime::version();
 	auto devices = ns::Runtime::devices();
 	auto device = ns::Runtime::device(0);
+
+	ns::Runtime::setDefaultAllocator(allocator);
 }
