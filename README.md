@@ -78,7 +78,6 @@ target_link_libraries(my_app PRIVATE nucleus)
 | `NUCLEUS_BUILD_SHARED_LIB` | `ON` | Build as a shared library; set to `OFF` for a static library |
 | `NUCLEUS_BUILD_TESTS` | `OFF` | Build the test suite (`tests/`) |
 | `NUCLEUS_BUILD_EXAMPLES` | `OFF` | Build the bundled examples (`examples/`) |
-| `NUCLEUS_CPP_STANDARD` | `20` | C++ standard to use (`20`, `23`, or `26`) |
 
 Example — build in static mode with tests and examples:
 
@@ -86,8 +85,7 @@ Example — build in static mode with tests and examples:
 cmake -B build \
   -DNUCLEUS_BUILD_SHARED_LIB=OFF \
   -DNUCLEUS_BUILD_TESTS=ON \
-  -DNUCLEUS_BUILD_EXAMPLES=ON \
-  -DNUCLEUS_CPP_STANDARD=20
+  -DNUCLEUS_BUILD_EXAMPLES=ON
 cmake --build build
 ```
 

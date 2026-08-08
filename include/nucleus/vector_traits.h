@@ -22,20 +22,15 @@
 #pragma once
 
 #include "fwd.h"
+#include <utility>
+#include <concepts>
 #include <type_traits>
-
-#if NS_HAS_CXX_20
-	#include <utility>
-	#include <concepts>
-#endif
 
 namespace NS_NAMESPACE
 {
 	/*****************************************************************************
 	****************************    Vector Concepts    ***************************
 	*****************************************************************************/
-
-#if NS_HAS_CXX_20
 
 	/**
 	 *	@brief	Concept that matches types with exactly two same-typed `x` and `y` components.
@@ -142,6 +137,4 @@ namespace NS_NAMESPACE
 	template<typename Type> concept ushort2_like = vec2_like<Type, unsigned short>;
 	template<typename Type> concept ushort3_like = vec3_like<Type, unsigned short>;
 	template<typename Type> concept ushort4_like = vec4_like<Type, unsigned short>;
-
-#endif	//	NS_HAS_CXX_20
 }

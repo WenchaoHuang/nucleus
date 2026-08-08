@@ -153,21 +153,13 @@ namespace NS_NAMESPACE
 	 */
 	template<typename... Args> auto Stream::launch(KernelFunc<Args...> func, const dim3 & gridDim, const dim3 & blockDim, size_t sharedMem)
 	{
-	#if NS_HAS_CXX_20
-		return [=, this](Args... args) -> Stream& { void * params[] = { &args... };		return this->launchKernelImpl(reinterpret_cast<const void*>(func), gridDim, blockDim, sharedMem, params); };
-	#else
-		return [=](Args... args) -> Stream& { void * params[] = { &args... };	return this->launchKernelImpl(reinterpret_cast<const void*>(func), gridDim, blockDim, sharedMem, params); };
-	#endif
+		return [=, this](Args... args) -> Stream& { void * params[] = { &args... }; return this->launchKernelImpl(reinterpret_cast<const void*>(func), gridDim, blockDim, sharedMem, params); };
 	}
 
 	//	Specialization for parameterless kernels
 	template<> inline auto Stream::launch(KernelFunc<> func, const dim3 & gridDim, const dim3 & blockDim, size_t sharedMem)
 	{
-	#if NS_HAS_CXX_20
 		return [=, this]() -> Stream& { return this->launchKernelImpl(reinterpret_cast<const void*>(func), gridDim, blockDim, sharedMem, nullptr); };
-	#else
-		return [=]() -> Stream& { return this->launchKernelImpl(reinterpret_cast<const void*>(func), gridDim, blockDim, sharedMem, nullptr); };
-	#endif
 	}
 
 
@@ -374,19 +366,11 @@ namespace NS_NAMESPACE
 
 	template<typename... Args> NS_NODISCARD auto Graph::launch(KernelFunc<Args...> func, Span<const ExecDep> dependencies, const dim3 & gridDim, const dim3 & blockDim, unsigned int sharedMem)
 	{
-	#if NS_HAS_CXX_20
 		return [=, this](Args... args) -> ExecDep { return this->launchKernel(func, dependencies, gridDim, blockDim, sharedMem, args...); };
-	#else
-		return [=](Args... args) -> ExecDep { return this->launchKernel(func, dependencies, gridDim, blockDim, sharedMem, args...); };
-	#endif
 	}
 
 	template<typename... Args> NS_NODISCARD auto Graph::launch(KernelFunc<Args...> func, const dim3 & gridDim, const dim3 & blockDim, unsigned int sharedMem)
 	{
-	#if NS_HAS_CXX_20
 		return [=, this](Args... args) -> ExecDep { return this->launchKernel(func, nullptr, gridDim, blockDim, sharedMem, args...); };
-	#else
-		return [=](Args... args) -> ExecDep { return this->launchKernel(func, nullptr, gridDim, blockDim, sharedMem, args...); };
-	#endif
 	}
 }

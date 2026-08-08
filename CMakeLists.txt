@@ -34,17 +34,13 @@ option(NUCLEUS_BUILD_TESTS "Build tests for Nucleus library" OFF)
 option(NUCLEUS_BUILD_EXAMPLES "Build examples for Nucleus library" OFF)
 option(NUCLEUS_BUILD_SHARED_LIB "Build Nucleus as shared library" ON)
 
-# C++ standard options (adjust as needed)
-set(NUCLEUS_CPP_STANDARD "20" CACHE STRING "C++ standard (20/23/26)")
-set_property(CACHE NUCLEUS_CPP_STANDARD PROPERTY STRINGS 20 23 26)
-
 # Target name
 set(TARGET_NAME nucleus)
 
 # Set C++ standard
-set(CMAKE_CXX_STANDARD ${NUCLEUS_CPP_STANDARD})
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CUDA_STANDARD ${NUCLEUS_CPP_STANDARD})
+set(CMAKE_CUDA_STANDARD 20)
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 
 # Source files
