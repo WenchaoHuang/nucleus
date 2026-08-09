@@ -368,11 +368,10 @@ Nucleus/
 │   ├── allocator.h         # ns::Allocator, DeviceAllocator, HostAllocator
 │   ├── buffer.h            # ns::Buffer   (raw RAII memory block)
 │   ├── span.h              # ns::Span<T> (lightweight non-owning array view)
-│   ├── buffer_view.h       # ns::BufferView/BufferView2D/BufferView3D (non-owning views)
+│   ├── buffer_slice.h      # ns::BufferSlice<T>, BufferSlice2D<T>, BufferSlice3D<T> (owning typed slices)
 │   ├── array_1d.h          # ns::Array<T>
 │   ├── array_2d.h          # ns::Array2D<T>
 │   ├── array_3d.h          # ns::Array3D<T>
-│   ├── array_proxy.h       # ns::ArrayProxy<T> (span-like argument helper)
 │   ├── device_pointer.h    # dev::Ptr<T>, dev::Ptr2<T>, dev::Ptr3<T>
 │   ├── device_texture.h    # dev::Tex1D/2D/3D/Cube<T> (device-side sampling)
 │   ├── device_surface.h    # dev::Surf1D/2D/3D/Cube<T> (device-side r/w)

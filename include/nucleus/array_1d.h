@@ -25,7 +25,7 @@
 #include "buffer.h"
 #include "logger.h"
 #include "runtime.h"
-#include "buffer_view.h"
+#include "buffer_slice.h"
 #include "device_pointer.h"
 
 namespace NS_NAMESPACE
@@ -160,15 +160,15 @@ namespace NS_NAMESPACE
 
 
 		/**
-		 *	@brief		Returns a non-owning 1D view of the entire array.
+		 *	@brief		Returns a slice of the entire array.
 		 */
-		BufferView<const Type> view() const { return m_buffer ? BufferView<const Type>(m_buffer) : BufferView<const Type>(); }
+		BufferSlice<const Type> slice() const { return m_buffer ? BufferSlice<const Type>(m_buffer) : BufferSlice<const Type>(); }
 
 
 		/**
-		 *	@brief		Returns a non-owning 1D view of the entire array.
+		 *	@brief		Returns a slice of the entire array.
 		 */
-		BufferView<Type> view() { return m_buffer ? BufferView<Type>(m_buffer) : BufferView<Type>(); }
+		BufferSlice<Type> slice() { return m_buffer ? BufferSlice<Type>(m_buffer) : BufferSlice<Type>(); }
 
 
 		/**

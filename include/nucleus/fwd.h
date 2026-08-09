@@ -103,9 +103,9 @@ namespace NS_NAMESPACE
 	template<typename Type> class Array2D;
 	template<typename Type> class Array3D;
 
-	template<typename Type> class BufferView;
-	template<typename Type> class BufferView2D;
-	template<typename Type> class BufferView3D;
+	template<typename Type> class BufferSlice;
+	template<typename Type> class BufferSlice2D;
+	template<typename Type> class BufferSlice3D;
 
 	template<typename Type> class Image1D;
 	template<typename Type> class Image2D;

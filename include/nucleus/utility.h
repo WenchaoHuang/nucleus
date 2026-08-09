@@ -76,14 +76,14 @@ namespace NS_NAMESPACE
 	***************************    BinaryCompatible    ***************************
 	*****************************************************************************/
 
-	//!	Utility functions to reinterpret buffer views as another compatible element type.
-	template<typename DstType, typename SrcType> BufferView<DstType> view_cast(BufferView<SrcType> view);
-	template<typename DstType, typename SrcType> BufferView2D<DstType> view_cast(BufferView2D<SrcType> view);
-	template<typename DstType, typename SrcType> BufferView3D<DstType> view_cast(BufferView3D<SrcType> view);
+	//!	Utility functions to reinterpret buffer slices as another compatible element type.
+	template<typename DstType, typename SrcType> BufferSlice<DstType> slice_cast(BufferSlice<SrcType> view);
+	template<typename DstType, typename SrcType> BufferSlice2D<DstType> slice_cast(BufferSlice2D<SrcType> view);
+	template<typename DstType, typename SrcType> BufferSlice3D<DstType> slice_cast(BufferSlice3D<SrcType> view);
 
-	template<typename DstType, typename SrcType> BufferView<const DstType> view_cast(BufferView<const SrcType> view);
-	template<typename DstType, typename SrcType> BufferView2D<const DstType> view_cast(BufferView2D<const SrcType> view);
-	template<typename DstType, typename SrcType> BufferView3D<const DstType> view_cast(BufferView3D<const SrcType> view);
+	template<typename DstType, typename SrcType> BufferSlice<const DstType> slice_cast(BufferSlice<const SrcType> view);
+	template<typename DstType, typename SrcType> BufferSlice2D<const DstType> slice_cast(BufferSlice2D<const SrcType> view);
+	template<typename DstType, typename SrcType> BufferSlice3D<const DstType> slice_cast(BufferSlice3D<const SrcType> view);
 
 	//! Utility functions to reinterpret device pointers as another compatible element type.
 	template<typename DstType, typename SrcType> NS_CUDA_CALLABLE dev::Ptr<const DstType> ptr_cast(dev::Ptr<const SrcType> ptr);

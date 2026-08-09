@@ -38,7 +38,7 @@ extern void dev_ptr_test();
 extern void surface_test();
 extern void texture_test();
 extern void allocator_test();
-extern void buffer_view_test();
+extern void buffer_slice_test();
 extern void shared_handle_test();
 
 int main()
@@ -55,7 +55,7 @@ int main()
 	stream_test();
 	surface_test();
 	texture_test();
-	buffer_view_test();
+	buffer_slice_test();
 	shared_handle_test();
 	logger_test();
 	span_test();

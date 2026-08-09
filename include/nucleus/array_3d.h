@@ -25,7 +25,7 @@
 #include "buffer.h"
 #include "logger.h"
 #include "runtime.h"
-#include "buffer_view.h"
+#include "buffer_slice.h"
 #include "device_pointer.h"
 
 namespace NS_NAMESPACE
@@ -213,15 +213,15 @@ namespace NS_NAMESPACE
 
 
 		/**
-		 *	@brief		Returns a non-owning 3D view of the entire array.
+		 *	@brief		Returns a 3D slice of the entire array.
 		 */
-		BufferView3D<const Type> view() const { return m_buffer ? BufferView3D<const Type>(m_buffer, 0, this->width(), this->height(), this->depth()) : BufferView3D<const Type>(); }
+		BufferSlice3D<const Type> slice() const { return m_buffer ? BufferSlice3D<const Type>(m_buffer, 0, this->width(), this->height(), this->depth()) : BufferSlice3D<const Type>(); }
 
 
 		/**
-		 *	@brief		Returns a non-owning 3D view of the entire array.
+		 *	@brief		Returns a 3D slice of the entire array.
 		 */
-		BufferView3D<Type> view() { return m_buffer ? BufferView3D<Type>(m_buffer, 0, this->width(), this->height(), this->depth()) : BufferView3D<Type>(); }
+		BufferSlice3D<Type> slice() { return m_buffer ? BufferSlice3D<Type>(m_buffer, 0, this->width(), this->height(), this->depth()) : BufferSlice3D<Type>(); }
 
 
 		/**

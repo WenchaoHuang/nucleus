@@ -22,31 +22,31 @@
 
 #include <nucleus/device.h>
 #include <nucleus/runtime.h>
-#include <nucleus/buffer_view.h>
+#include <nucleus/buffer_slice.h>
 
  /*********************************************************************************
- *****************************    buffer_view_test    *****************************
+ ****************************    buffer_slice_test    *****************************
  *********************************************************************************/
 
-void buffer_view_test()
+void buffer_slice_test()
 {
 	auto device = ns::Runtime::device(0);
 	auto allocator = device->defaultAllocator();
 	ns::Buffer buffer(allocator, sizeof(int) * 1024);
 
-	ns::BufferView<int> bufferView0;
-	ns::BufferView<int> bufferView1 = nullptr;
-	ns::BufferView<int> bufferView2(buffer);
-	ns::BufferView<int> bufferView3(buffer, 0, sizeof(int) * 10);
-	ns::BufferView<int> bufferView3b = bufferView3.subview(0, 5);
+	ns::BufferSlice<int> bufferSlice0;
+	ns::BufferSlice<int> bufferSlice1 = nullptr;
+	ns::BufferSlice<int> bufferSlice2(buffer);
+	ns::BufferSlice<int> bufferSlice3(buffer, 0, sizeof(int) * 10);
+	ns::BufferSlice<int> bufferSlice3b = bufferSlice3.subslice(0, 5);
 
-	ns::BufferView2D<int> bufferView4;
-	ns::BufferView2D<int> bufferView5 = nullptr;
+	ns::BufferSlice2D<int> bufferSlice4;
+	ns::BufferSlice2D<int> bufferSlice5 = nullptr;
 
-	ns::BufferView3D<int> bufferView6;
-	ns::BufferView3D<int> bufferView7 = nullptr;
+	ns::BufferSlice3D<int> bufferSlice6;
+	ns::BufferSlice3D<int> bufferSlice7 = nullptr;
 
-	ns::view_cast<int>(bufferView0);
-	ns::view_cast<float>(bufferView4);
-	ns::view_cast<unsigned int>(bufferView6);
+	ns::slice_cast<int>(bufferSlice0);
+	ns::slice_cast<float>(bufferSlice4);
+	ns::slice_cast<unsigned int>(bufferSlice6);
 }
