@@ -25,10 +25,10 @@
 #include <nucleus/buffer_slice.h>
 
  /*********************************************************************************
- ****************************    buffer_slice_test    *****************************
+ ****************************    test_buffer_slice    *****************************
  *********************************************************************************/
 
-void buffer_slice_test()
+void test_buffer_slice()
 {
 	auto device = ns::Runtime::device(0);
 	auto allocator = device->defaultAllocator();

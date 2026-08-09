@@ -31,7 +31,7 @@
 #include <nucleus/launch_utils.cuh>
 
 /*********************************************************************************
-*******************************    texture_test    *******************************
+*******************************    test_texture    *******************************
 *********************************************************************************/
 
 __global__ void test_device_texture(dev::Tex1D<int> tex0, dev::Tex1DLod<int> tex1, dev::Tex1DLayered<int> tex2, dev::Tex1DLayeredLod<int> tex3,
@@ -108,7 +108,7 @@ __global__ void test_device_texture(dev::Tex1D<int> tex0, dev::Tex1DLod<int> tex
 }
 
 
-void texture_test()
+void test_texture()
 {
 	auto device = ns::Runtime::device(0);
 	auto allocator = device->defaultAllocator();

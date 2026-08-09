@@ -28,7 +28,7 @@
 #include <nucleus/array_3d.h>
 
 /*********************************************************************************
-********************************    array_test    ********************************
+********************************    test_array    ********************************
 *********************************************************************************/
 
 static void test(dev::Ptr<int> a, dev::Ptr2<const float> b, dev::Ptr3<float> c)
@@ -37,7 +37,7 @@ static void test(dev::Ptr<int> a, dev::Ptr2<const float> b, dev::Ptr3<float> c)
 }
 
 
-void array_test()
+void test_array()
 {
 	auto device = ns::Runtime::device(0);
 	auto allocator = device->defaultAllocator();

@@ -24,7 +24,7 @@
 #include <device_launch_parameters.h>
 
 /*********************************************************************************
-*******************************    dev_ptr_test    *******************************
+*******************************    test_dev_ptr    *******************************
 *********************************************************************************/
 
 NS_CUDA_CALLABLE void test(dev::Ptr<int> arr0, dev::Ptr<const int> arr1,
@@ -128,7 +128,7 @@ NS_CUDA_CALLABLE void test(dev::Ptr<int> arr0, dev::Ptr<const int> arr1,
 }
 
 
-void dev_ptr_test()
+void test_dev_ptr()
 {
 	dev::Ptr<int> devPtr0;
 	dev::Ptr<int> devPtr1 = nullptr;

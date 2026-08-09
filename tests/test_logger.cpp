@@ -20,19 +20,28 @@
  *	SOFTWARE.
  */
 
-#include <nucleus/device.h>
-#include <nucleus/runtime.h>
+#include <nucleus/logger.h>
 
 /*********************************************************************************
-*******************************    device_test    ********************************
+*******************************    test_logger    ********************************
 *********************************************************************************/
 
-void device_test()
+void test_logger()
 {
-	auto device = ns::Runtime::device(0);
+	NS_INFO_LOG("This is info log.");
+	NS_DEBUG_LOG("This is debug log.");
+	NS_ERROR_LOG("This is error log.");
+	NS_ASSERT_LOG("This is assert log");
+	NS_WARNING_LOG("This is warning log.");
 
-	device->init();
-	device->properties();
-	device->freeMemorySize();
-	device->sync();
+	ns::Logger::getInstance()->registerCallback([](const char * fileName, int line, const char * funcName, ns::Logger::Level level, const char * logMsg)
+	{
+		int a = 0;
+	});
+
+	NS_INFO_LOG_IF(true, "This is info log.");
+	NS_DEBUG_LOG_IF(true, "This is debug log.");
+	NS_ERROR_LOG_IF(true, "This is error log.");
+//	NS_ASSERT_LOG_IF(true, "This is assert log");
+	NS_WARNING_LOG_IF(true, "This is warning log.");
 }

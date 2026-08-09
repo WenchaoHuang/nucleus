@@ -21,27 +21,48 @@
  */
 
 #include <nucleus/logger.h>
+#include <nucleus/format.h>
+#include <nucleus/device.h>
+#include <nucleus/runtime.h>
+#include <nucleus/allocator.h>
 
 /*********************************************************************************
-*******************************    logger_test    ********************************
+******************************    test_allocator    ******************************
 *********************************************************************************/
 
-void logger_test()
+class MyHostAllocator : public ns::HostAllocator
 {
-	NS_INFO_LOG("This is info log.");
-	NS_DEBUG_LOG("This is debug log.");
-	NS_ERROR_LOG("This is error log.");
-	NS_ASSERT_LOG("This is assert log");
-	NS_WARNING_LOG("This is warning log.");
-
-	ns::Logger::getInstance()->registerCallback([](const char * fileName, int line, const char * funcName, ns::Logger::Level level, const char * logMsg)
+	virtual void * doAllocateMemory(size_t bytes) override
 	{
-		int a = 0;
-	});
+		NS_INFO_LOG("Allocate host memory: %lld.", bytes);
 
-	NS_INFO_LOG_IF(true, "This is info log.");
-	NS_DEBUG_LOG_IF(true, "This is debug log.");
-	NS_ERROR_LOG_IF(true, "This is error log.");
-//	NS_ASSERT_LOG_IF(true, "This is assert log");
-	NS_WARNING_LOG_IF(true, "This is warning log.");
+		return ns::HostAllocator::doAllocateMemory(bytes);
+	}
+	virtual void doDeallocateMemory(void * ptr) override
+	{
+		ns::HostAllocator::doDeallocateMemory(ptr);
+
+		NS_INFO_LOG("Deallocate host memory.");
+	}
+};
+
+
+void test_allocator()
+{
+	auto device = ns::Runtime::device(0);
+
+	MyHostAllocator hostAlloc;
+	auto hostPtr = hostAlloc.allocateMemory(110);
+	hostAlloc.deallocateMemory(hostPtr);
+
+	ns::DeviceAllocator devAlloc(device);
+	auto Ptr = devAlloc.allocateMemory(128);
+	devAlloc.deallocateMemory(Ptr);
+
+	auto pAlloc = device->defaultAllocator();
+	auto texMem = pAlloc->allocateTextureMemory(ns::Format::Float, 100, 100, 100);
+	devAlloc.deallocateTextureMemory(texMem);
+
+	auto mipTexMem = pAlloc->allocateMipmapTextureMemory(ns::Format::Int, 100, 100, 100, 5);
+	devAlloc.deallocateMipmapTextureMemory(mipTexMem);
 }

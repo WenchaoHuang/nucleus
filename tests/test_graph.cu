@@ -20,37 +20,59 @@
  *	SOFTWARE.
  */
 
-#include <nucleus/event.h>
+#include <nucleus/graph.h>
 #include <nucleus/device.h>
 #include <nucleus/stream.h>
 #include <nucleus/runtime.h>
-#include <nucleus/scoped_timer.h>
+#include <nucleus/launch_utils.cuh>
 
 /*********************************************************************************
-********************************    event_test    ********************************
+********************************    test_graph    ********************************
 *********************************************************************************/
 
-void event_test()
+__global__ void Test(unsigned int num, unsigned int num2)
+{
+	CUDA_for(i, num);
+}
+
+__global__ void Test0()
+{
+	CUDA_for(i, 1);
+}
+
+void test_graph()
 {
 	auto device = ns::Runtime::device(0);
-	auto & stream = device->defaultStream();
+	auto stream = &device->defaultStream();
 
-	ns::Event		event0(device);
-	ns::TimedEvent	event1(device);
-	ns::TimedEvent	event2(device);
-	ns::ScopedTimer	timer(stream, [](std::chrono::nanoseconds ns) { printf("ScopedTime: %fus\n", ns.count() * 1e-3); });
+	std::vector<int>	input(100, 5);
+	std::vector<int>	output(100);
 
-	stream.record(event0);
-	stream.record(event1);
-	stream.record(event2);
-	stream.waitFor(event1).sync();
+	ns::Graph graph;
+	graph.restart();
+	auto d1 = graph.memcpy(output.data(), input.data(), input.size());
+	auto d2 = graph.barrier({ d1 });
+	auto d3 = graph.launch(Test, { d2 }, 1, 128)(2, 10);
+	auto d4 = graph.launch(Test, { d2 }, 1, 128)(2, 20);
+	auto d5 = graph.launch(Test, { d3 }, 1, 128)(2, 30);
+	auto d6 = graph.launch(Test0, { d2, d3 }, 1, 128)();
+	auto d7 = graph.memcpy(output.data(), input.data(), 1, { d6, d5 });
 
-	auto time = ns::TimedEvent::elapsedTime(event1, event2);
+	graph.execute(stream);
+	graph.execute(stream);
+	graph.execute(stream);
 
-	if (event1.query())
-	{
-		event1.sync();
-		event1.device();
-		event1.handle();
-	}
+	device->sync();
+
+	graph.restart();
+	d1 = graph.memcpy(output.data(), input.data(), input.size());
+	d2 = graph.barrier({ d1 });
+	d3 = graph.launch(Test, { d2 }, 1, 128)(2, 22);
+	d4 = graph.launch(Test, { d2 }, 1, 128)(2, 20);
+	d5 = graph.launch(Test, { d3 }, 1, 128)(2, 30);
+	d6 = graph.launch(Test0, { d2, d3 }, 1, 128)();
+	d7 = graph.memcpy(output.data(), input.data(), 1, { d5 });
+	graph.execute(stream);
+
+	device->sync();
 }

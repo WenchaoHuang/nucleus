@@ -143,7 +143,7 @@ __global__ void test_device_surface(dev::Surf1D<int> surface0, dev::Surf1D<const
 }
 
 
-void surface_test()
+void test_surface()
 {
 	auto device = ns::Runtime::device(0);
 	auto allocator = device->defaultAllocator();

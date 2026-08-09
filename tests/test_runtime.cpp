@@ -1,4 +1,4 @@
-/**
+﻿/**
  *	Copyright (c) 2025 Wenchao Huang <physhuangwenchao@gmail.com>
  *
  *	Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,49 +20,26 @@
  *	SOFTWARE.
  */
 
-#include <nucleus/logger.h>
-#include <nucleus/format.h>
-#include <nucleus/device.h>
 #include <nucleus/runtime.h>
-#include <nucleus/allocator.h>
 
 /*********************************************************************************
-******************************    allocator_test    ******************************
+*******************************    test_runtime    *******************************
 *********************************************************************************/
 
-class MyHostAllocator : public ns::HostAllocator
+void test_runtime()
 {
-	virtual void * doAllocateMemory(size_t bytes) override
-	{
-		NS_INFO_LOG("Allocate host memory: %lld.", bytes);
+	assert(ns::Version(10, 2) < ns::Version(10, 3));
+	assert(ns::Version(10, 4) > ns::Version(10, 3));
+	assert(ns::Version(10, 5) == ns::Version(10, 5));
+	assert(ns::Version(10, 5) >= ns::Version(10, 5));
+	assert(ns::Version(10, 5) <= ns::Version(10, 5));
 
-		return ns::HostAllocator::doAllocateMemory(bytes);
-	}
-	virtual void doDeallocateMemory(void * ptr) override
-	{
-		ns::HostAllocator::doDeallocateMemory(ptr);
-
-		NS_INFO_LOG("Deallocate host memory.");
-	}
-};
-
-
-void allocator_test()
-{
+	auto runtime = ns::Runtime::getInstance();
+	auto allocator = ns::Runtime::defaultAllocator();
+	auto driverVersion = ns::Runtime::driverVersion();
+	auto runtimeVersion = ns::Runtime::version();
+	auto devices = ns::Runtime::devices();
 	auto device = ns::Runtime::device(0);
 
-	MyHostAllocator hostAlloc;
-	auto hostPtr = hostAlloc.allocateMemory(110);
-	hostAlloc.deallocateMemory(hostPtr);
-
-	ns::DeviceAllocator devAlloc(device);
-	auto Ptr = devAlloc.allocateMemory(128);
-	devAlloc.deallocateMemory(Ptr);
-
-	auto pAlloc = device->defaultAllocator();
-	auto texMem = pAlloc->allocateTextureMemory(ns::Format::Float, 100, 100, 100);
-	devAlloc.deallocateTextureMemory(texMem);
-
-	auto mipTexMem = pAlloc->allocateMipmapTextureMemory(ns::Format::Int, 100, 100, 100, 5);
-	devAlloc.deallocateMipmapTextureMemory(mipTexMem);
+	ns::Runtime::setDefaultAllocator(allocator);
 }

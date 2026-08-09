@@ -1,4 +1,4 @@
-﻿/**
+/**
  *	Copyright (c) 2025 Wenchao Huang <physhuangwenchao@gmail.com>
  *
  *	Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,26 +20,41 @@
  *	SOFTWARE.
  */
 
-#include <nucleus/runtime.h>
+#include <nucleus/fwd.h>
 
 /*********************************************************************************
-*******************************    runtime_test    *******************************
+****************************    test_shared_handle    ****************************
 *********************************************************************************/
 
-void runtime_test()
+void test_shared_handle()
 {
-	assert(ns::Version(10, 2) < ns::Version(10, 3));
-	assert(ns::Version(10, 4) > ns::Version(10, 3));
-	assert(ns::Version(10, 5) == ns::Version(10, 5));
-	assert(ns::Version(10, 5) >= ns::Version(10, 5));
-	assert(ns::Version(10, 5) <= ns::Version(10, 5));
+	struct TestObject
+	{
+		explicit TestObject(size_t value) : value(value) {}
 
-	auto runtime = ns::Runtime::getInstance();
-	auto allocator = ns::Runtime::defaultAllocator();
-	auto driverVersion = ns::Runtime::driverVersion();
-	auto runtimeVersion = ns::Runtime::version();
-	auto devices = ns::Runtime::devices();
-	auto device = ns::Runtime::device(0);
+		size_t value;
+	};
 
-	ns::Runtime::setDefaultAllocator(allocator);
+	using TestHandle = ns::SharedHandle<TestObject>;
+
+	TestHandle handle0;
+	TestHandle handle1 = nullptr;
+	TestHandle handle2(100);
+
+	assert(handle2->value == 100);
+	TestHandle handle3 = std::move(handle2);
+	assert(handle3->value == 100);
+
+	TestHandle handle4 = TestHandle{ 200 };
+	assert(handle4->value == 200);
+
+	TestHandle handle5 = std::make_unique<TestObject>(300);
+	assert(handle5->value == 300);
+
+	TestHandle handle6 = std::make_shared<TestObject>(400);
+	assert(handle6->value == 400);
+	assert(handle6);
+
+	handle6.reset();
+	assert(handle6 == nullptr);
 }

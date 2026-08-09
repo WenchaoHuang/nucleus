@@ -20,41 +20,19 @@
  *	SOFTWARE.
  */
 
-#include <nucleus/fwd.h>
+#include <nucleus/device.h>
+#include <nucleus/runtime.h>
 
 /*********************************************************************************
-****************************    shared_handle_test    ****************************
+*******************************    test_device    ********************************
 *********************************************************************************/
 
-void shared_handle_test()
+void test_device()
 {
-	struct TestObject
-	{
-		explicit TestObject(size_t value) : value(value) {}
+	auto device = ns::Runtime::device(0);
 
-		size_t value;
-	};
-
-	using TestHandle = ns::SharedHandle<TestObject>;
-
-	TestHandle handle0;
-	TestHandle handle1 = nullptr;
-	TestHandle handle2(100);
-
-	assert(handle2->value == 100);
-	TestHandle handle3 = std::move(handle2);
-	assert(handle3->value == 100);
-
-	TestHandle handle4 = TestHandle{ 200 };
-	assert(handle4->value == 200);
-
-	TestHandle handle5 = std::make_unique<TestObject>(300);
-	assert(handle5->value == 300);
-
-	TestHandle handle6 = std::make_shared<TestObject>(400);
-	assert(handle6->value == 400);
-	assert(handle6);
-
-	handle6.reset();
-	assert(handle6 == nullptr);
+	device->init();
+	device->properties();
+	device->freeMemorySize();
+	device->sync();
 }

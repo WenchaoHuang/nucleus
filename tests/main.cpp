@@ -24,41 +24,41 @@
 ***********************************    main    ***********************************
 *********************************************************************************/
 
-extern void span_test();
-extern void event_test();
-extern void array_test();
-extern void image_test();
-extern void graph_test();
-extern void logger_test();
-extern void device_test();
-extern void buffer_test();
-extern void stream_test();
-extern void runtime_test();
-extern void dev_ptr_test();
-extern void surface_test();
-extern void texture_test();
-extern void allocator_test();
-extern void buffer_slice_test();
-extern void shared_handle_test();
+extern void test_span();
+extern void test_event();
+extern void test_array();
+extern void test_image();
+extern void test_graph();
+extern void test_logger();
+extern void test_device();
+extern void test_buffer();
+extern void test_stream();
+extern void test_runtime();
+extern void test_dev_ptr();
+extern void test_surface();
+extern void test_texture();
+extern void test_allocator();
+extern void test_buffer_slice();
+extern void test_shared_handle();
 
 int main()
 {
-	runtime_test();
-	device_test();
-	event_test();
-	graph_test();
-	allocator_test();
-	buffer_test();
-	dev_ptr_test();
-	array_test();
-	image_test();
-	stream_test();
-	surface_test();
-	texture_test();
-	buffer_slice_test();
-	shared_handle_test();
-	logger_test();
-	span_test();
+	test_runtime();
+	test_device();
+	test_event();
+	test_graph();
+	test_allocator();
+	test_buffer();
+	test_dev_ptr();
+	test_array();
+	test_image();
+	test_stream();
+	test_surface();
+	test_texture();
+	test_buffer_slice();
+	test_shared_handle();
+	test_logger();
+	test_span();
 
 	return 0;
 }
