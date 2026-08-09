@@ -29,6 +29,7 @@ For OptiX ray-tracing functionality, see the companion [Photon](https://github.c
 - CUDA stream management with a fluent API (`stream.launch(…)(args…)`, `stream.memcpy(…)`, `stream.sync()`)
 - Typed 1-D, 2-D, and 3-D device arrays (`ns::Array<T>`, `ns::Array2D<T>`, `ns::Array3D<T>`)
 - Pluggable allocator interface (`ns::Allocator`, `ns::DeviceAllocator`, `ns::HostAllocator`)
+- Reusable temporary memory backed by a cached buffer (`ns::ScratchArena`)
 - CUDA events and timing (`ns::Event`, `ns::TimedEvent`, `ns::ScopedTimer`)
 - CUDA graph support with automatic topology caching and parameter update (`ns::Graph`)
 - Texture and surface objects with full dimensionality support (1-D/2-D/3-D, cubemap, layered, mipmapped)
@@ -237,6 +238,29 @@ a1.data();            // raw device pointer (Type*)
 a1.ptr();             // dev::Ptr<float> — typed device pointer
 ```
 
+### `ns::ScratchArena`
+
+A reusable linear allocation arena for temporary memory. It keeps the largest reserved buffer and divides it into typed, non-owning device pointers, avoiding repeated allocations between sequential operations.
+
+```cpp
+#include <nucleus/scratch_arena.h>
+
+size_t requiredCapacity = 0;
+requiredCapacity = ns::aligned_end_offset<float>(requiredCapacity, count);
+requiredCapacity = ns::aligned_end_offset<uint32_t>(requiredCapacity, count);
+
+ns::ScratchArena arena(allocator);
+arena.reserve(requiredCapacity);
+arena.reuse();
+
+auto values  = arena.allocate<float>(count);
+auto indices = arena.allocate<uint32_t>(count);
+```
+
+Call `reserve()` before allocating when the required capacity may grow, then call `reuse()` at the start of each operation to make the whole buffer available again. `allocate2D()` and `allocate3D()` provide packed multidimensional temporary arrays.
+
+Pointers returned by a scratch arena are non-owning and become invalid when the arena is reused, cleared, destroyed, or its buffer grows. For asynchronous work, reuse the same scratch arena only for operations ordered on one stream, or synchronize explicitly before reusing it across streams.
+
 ### `dev::Ptr<T>` — Typed Device Pointer
 
 A lightweight, typed wrapper for a device pointer that carries array bounds. It is both host- and device-callable and supports optional runtime bounds checking.
@@ -369,6 +393,7 @@ Nucleus/
 │   ├── buffer.h            # ns::Buffer   (raw RAII memory block)
 │   ├── span.h              # ns::Span<T> (lightweight non-owning array view)
 │   ├── buffer_slice.h      # ns::BufferSlice<T>, BufferSlice2D<T>, BufferSlice3D<T> (owning typed slices)
+│   ├── scratch_arena.h     # ns::ScratchArena (reusable temporary memory)
 │   ├── array_1d.h          # ns::Array<T>
 │   ├── array_2d.h          # ns::Array2D<T>
 │   ├── array_3d.h          # ns::Array3D<T>
@@ -393,7 +418,8 @@ Nucleus/
 │   ├── julia_set/              GPU fractal rendering
 │   ├── multi_gpu/              Multi-GPU workload distribution
 │   ├── pinned_memory/          Page-locked (pinned) host memory
-│   └── random_access/          Texture-based random access
+│   ├── random_access/          Texture-based random access
+│   └── scratch_arena/          Reusable temporary memory
 ├── tests/                  # Unit and integration tests
 ├── cmake/                  # CMake helper scripts and export headers
 └── CMakeLists.txt

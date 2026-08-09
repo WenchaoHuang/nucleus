@@ -48,6 +48,20 @@ namespace NS_NAMESPACE
 
 
 	/**
+	 *	@brief		Computes the end offset after appending an aligned array of elements.
+	 *	@param[in]	offset -The current buffer offset.
+	 *	@param[in]	count - The number of elements to append.
+	 *	@return		The offset immediately after the appended elements.
+	 *	@note		The starting offset is first aligned to the alignment requirement of Type,
+	 *				then advanced by the size of count elements.
+	 */
+	template<typename Type> constexpr size_t aligned_end_offset(size_t offset, size_t count)
+	{
+		return align_up(offset, alignof(Type)) + sizeof(Type) * count;
+	}
+
+
+	/**
 	 *	@brief		Converts cubemap face coordinates to a unnormalized 3D direction vector.
 	 *	@tparam		Type - The vector type to return (must be compatible with float3).
 	 *	@param[in]	face - Cubemap face index (0 to 5).

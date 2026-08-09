@@ -53,6 +53,7 @@ namespace NS_NAMESPACE
 	class Allocator;
 	class TimedEvent;
 	class ScopedTimer;
+	class ScratchArena;
 	class HostAllocator;
 	class DeviceAllocator;
 	using Error_t = int;

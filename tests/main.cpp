@@ -40,6 +40,7 @@ extern void test_texture();
 extern void test_allocator();
 extern void test_buffer_slice();
 extern void test_shared_handle();
+extern void test_scratch_arena();
 
 int main()
 {
@@ -57,6 +58,7 @@ int main()
 	test_texture();
 	test_buffer_slice();
 	test_shared_handle();
+	test_scratch_arena();
 	test_logger();
 	test_span();
 
