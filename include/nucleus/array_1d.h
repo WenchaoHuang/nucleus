@@ -25,7 +25,6 @@
 #include "buffer.h"
 #include "logger.h"
 #include "runtime.h"
-#include "buffer_slice.h"
 #include "device_pointer.h"
 
 namespace NS_NAMESPACE
@@ -157,18 +156,6 @@ namespace NS_NAMESPACE
 				m_buffer = Buffer();
 			}
 		}
-
-
-		/**
-		 *	@brief		Returns a slice of the entire array.
-		 */
-		BufferSlice<const Type> slice() const { return m_buffer ? BufferSlice<const Type>(m_buffer) : BufferSlice<const Type>(); }
-
-
-		/**
-		 *	@brief		Returns a slice of the entire array.
-		 */
-		BufferSlice<Type> slice() { return m_buffer ? BufferSlice<Type>(m_buffer) : BufferSlice<Type>(); }
 
 
 		/**
