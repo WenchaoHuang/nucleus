@@ -66,10 +66,31 @@ namespace NS_NAMESPACE
 
 	public:
 
-		/**
-		 *	@brief		Gets the associated memory allocator.
-		 *	@return		Shared pointer to the Allocator instance.
-		 */
+		//!	@brief		Checks if buffer is empty.
+		bool empty() const noexcept { return m_storage == nullptr; }
+
+
+		//!	@brief		Checks whether this handle references a buffer body.
+		explicit operator bool() const noexcept { return m_storage != nullptr; }
+
+
+		//!	@brief		Gets the buffer capacity.
+		size_t capacity() const noexcept { return m_storage ? m_storage->capacity : 0; }
+
+
+		//!	@brief		Retrun logical address of the memory.
+		std::uintptr_t address() const noexcept { return reinterpret_cast<std::uintptr_t>(this->data()); }
+
+
+		//!	@brief		Gets constant pointer to the underlying data.
+		const void * data() const noexcept { return m_storage ? m_storage->data : nullptr; }
+
+
+		//!	@brief		Gets mutable pointer to the underlying data.
+		void * data() noexcept { return m_storage ? m_storage->data : nullptr; }
+
+
+		//!	@brief		Gets the associated memory allocator.
 		const std::shared_ptr<Allocator> & allocator() const noexcept
 		{
 			static const std::shared_ptr<Allocator> nullAllocator;
@@ -77,53 +98,9 @@ namespace NS_NAMESPACE
 			return m_storage ? m_storage->allocator : nullAllocator;
 		}
 
-
-		/**
-		 *	@brief		Checks if buffer is empty.
-		 *	@return		Returns `true` if storage is empty (nullptr), `false` otherwise.
-		 */
-		bool empty() const noexcept { return m_storage == nullptr; }
-
-
-		/**
-		 *	@brief		Checks whether this handle references a buffer body.
-		 */
-		explicit operator bool() const noexcept { return m_storage != nullptr; }
-
-
-		/**
-		 *	@brief		Gets the buffer capacity.
-		 *	@return		Returns the total number of bytes allocated for this buffer.
-		 */
-		size_t capacity() const noexcept { return m_storage ? m_storage->capacity : 0; }
-
-
-		/**
-		 *	@brief		Retrun logical address of the memory.
-		 */
-		std::uintptr_t address() const noexcept { return reinterpret_cast<std::uintptr_t>(this->data()); }
-
-
-		/**
-		 *	@brief		Gets constant pointer to the underlying data.
-		 *	@return		Const pointer to the buffer data.
-		 *	@note		The returned pointer remains valid until the last sharing Buffer handle is destroyed.
-		 */
-		const void * data() const noexcept { return m_storage ? m_storage->data : nullptr; }
-
-
-		/**
-		 *	@brief		Gets mutable pointer to the underlying data.
-		 *	@return		Pointer to the buffer data.
-		 *	@note		The returned pointer remains valid until the last sharing Buffer handle is destroyed.
-		 */
-		void * data() noexcept { return m_storage ? m_storage->data : nullptr; }
-
 	private:
 
-		/**
-		 *	@brief		Internal storage structure for buffer data and allocator.
-		 */
+		//!	@brief		Internal storage structure for buffer data and allocator.
 		struct Storage
 		{
 			const std::shared_ptr<Allocator>		allocator;
