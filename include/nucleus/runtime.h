@@ -108,11 +108,11 @@ namespace NS_NAMESPACE
 
 
 		/**
-		 *	@brief		Return the default device allocator.
+		 *	@brief		Return constant reference of the default device allocator.
 		 *	@note		The default device allocator is used for allocating device memory when no allocator is specified.
 		 *	@note		The default device allocator is initialized to the default allocator of the first device.
 		 */
-		static std::shared_ptr<DeviceAllocator> defaultAllocator() { return Runtime::getInstance()->m_defaultAlloc; }
+		static const std::shared_ptr<DeviceAllocator> & defaultAllocator() { return Runtime::getInstance()->m_defaultAlloc; }
 
 
 		/**

@@ -49,7 +49,7 @@ namespace NS_NAMESPACE
 		explicit Array(size_t width) : Array(Runtime::defaultAllocator(), width) {}
 
 		//!	@brief		Allocates array with \p width elements.
-		explicit Array(std::shared_ptr<Allocator> alloctor, size_t width) : Array() { this->resize(alloctor, width); }
+		explicit Array(std::shared_ptr<Allocator> alloctor, size_t width) : Array() { this->resize(std::move(alloctor), width); }
 
 		//!	@brief		Move constructor. Transfers ownership from another array.
 		Array(Array && rhs) : dev::Ptr<Type>(std::exchange(rhs.m_data, nullptr), std::exchange(rhs.m_width, 0)), m_buffer(std::move(rhs.m_buffer)) {}
@@ -68,7 +68,7 @@ namespace NS_NAMESPACE
 
 			if ((this->allocator() != allocator) || (this->size() != width))
 			{
-				m_buffer = Buffer(allocator, sizeof(Type) * width);
+				m_buffer = Buffer(std::move(allocator), sizeof(Type) * width);
 					
 				dev::Ptr<Type>::m_data = reinterpret_cast<Type*>(m_buffer.data());
 
@@ -95,7 +95,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Gets the allocator associated with.
 		 */
-		 std::shared_ptr<Allocator> allocator() const
+		 const std::shared_ptr<Allocator> & allocator() const
 		 {
 			 return m_buffer.allocator();
 		 }

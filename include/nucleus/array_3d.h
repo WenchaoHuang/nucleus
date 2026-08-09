@@ -49,7 +49,7 @@ namespace NS_NAMESPACE
 		explicit Array3D(size_t width, size_t height, size_t depth) : Array3D(Runtime::defaultAllocator(), width, height, depth) {}
 
 		//!	@brief		Constructs and allocates a 2D array with specified dimensions.
-		explicit Array3D(std::shared_ptr<Allocator> allocator, size_t width, size_t height, size_t depth) : Array3D() { this->resize(allocator, width, height, depth); }
+		explicit Array3D(std::shared_ptr<Allocator> allocator, size_t width, size_t height, size_t depth) : Array3D() { this->resize(std::move(allocator), width, height, depth); }
 
 		//!	@brief		Move constructor. Transfers ownership from another array.
 		Array3D(Array3D && rhs) : m_buffer(std::move(rhs.m_buffer)),
@@ -71,7 +71,7 @@ namespace NS_NAMESPACE
 
 			if ((this->allocator() != allocator) || (this->size() != width * height * depth))
 			{
-				m_buffer = Buffer(allocator, sizeof(Type) * width * height * depth);
+				m_buffer = Buffer(std::move(allocator), sizeof(Type) * width * height * depth);
 
 				dev::Ptr3<Type>::m_data = reinterpret_cast<Type*>(m_buffer.data());
 
@@ -132,7 +132,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Gets the allocator associated with.
 		 */
-		std::shared_ptr<Allocator> allocator() const
+		const std::shared_ptr<Allocator> & allocator() const
 		{
 			return m_buffer.allocator();
 		}

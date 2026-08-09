@@ -98,7 +98,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	allocator - Pointer to the associated allocator.
 		 *	@param[in]	width - Width of the image.
 		 */
-		explicit Image1D(std::shared_ptr<DeviceAllocator> allocator, size_t width) : Image1D<void>(allocator, FormatOf<Type>::value, width) {}
+		explicit Image1D(std::shared_ptr<DeviceAllocator> allocator, size_t width) : Image1D<void>(std::move(allocator), FormatOf<Type>::value, width) {}
 
 	protected:
 
@@ -195,7 +195,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	width - Width of the image.
 		 *	@param[in]	numLayers - Number of layers.
 		 */
-		explicit Image1DLayered(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t numLayers) : Image1DLayered<void>(allocator, FormatOf<Type>::value, width, numLayers) {}
+		explicit Image1DLayered(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t numLayers) : Image1DLayered<void>(std::move(allocator), FormatOf<Type>::value, width, numLayers) {}
 	
 	protected:
 
@@ -288,7 +288,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(width))].
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit Image1DLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, unsigned int numLevels) : Image1DLod<void>(allocator, FormatOf<Type>::value, width, numLevels) {}
+		explicit Image1DLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, unsigned int numLevels) : Image1DLod<void>(std::move(allocator), FormatOf<Type>::value, width, numLevels) {}
 
 	public:
 
@@ -384,7 +384,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(width))].
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit Image1DLayeredLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t numLayers, unsigned int numLevels) : Image1DLayeredLod<void>(allocator, FormatOf<Type>::value, width, numLayers, numLevels) {}
+		explicit Image1DLayeredLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t numLayers, unsigned int numLevels) : Image1DLayeredLod<void>(std::move(allocator), FormatOf<Type>::value, width, numLayers, numLevels) {}
 
 	public:
 

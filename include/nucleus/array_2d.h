@@ -49,7 +49,7 @@ namespace NS_NAMESPACE
 		explicit Array2D(size_t width, size_t height) : Array2D(Runtime::defaultAllocator(), width, height) {}
 
 		//!	@brief		Constructs and allocates a 2D array with specified dimensions.
-		explicit Array2D(std::shared_ptr<Allocator> alloctor, size_t width, size_t height) : Array2D() { this->resize(alloctor, width, height); }
+		explicit Array2D(std::shared_ptr<Allocator> alloctor, size_t width, size_t height) : Array2D() { this->resize(std::move(alloctor), width, height); }
 
 		//!	@brief		Move constructor. Transfers ownership from another array.
 		Array2D(Array2D && rhs) : dev::Ptr2<Type>(std::exchange(rhs.m_data, nullptr), std::exchange(rhs.m_width, 0), std::exchange(rhs.m_height, 0)),  m_buffer(std::move(rhs.m_buffer)) {}
@@ -69,7 +69,7 @@ namespace NS_NAMESPACE
 
 			if ((this->allocator() != allocator) || (this->size() != width * height))
 			{
-				m_buffer = Buffer(allocator, sizeof(Type) * width * height);
+				m_buffer = Buffer(std::move(allocator), sizeof(Type) * width * height);
 
 				dev::Ptr2<Type>::m_data = reinterpret_cast<Type*>(m_buffer.data());
 
@@ -123,7 +123,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Gets the allocator associated with.
 		 */
-		std::shared_ptr<Allocator> allocator() const
+		const std::shared_ptr<Allocator> & allocator() const
 		{
 			return m_buffer.allocator();
 		}

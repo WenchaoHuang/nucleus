@@ -113,7 +113,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit Image2D(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height) : Image2D<void>(allocator, FormatOf<Type>::value, width, height) {}
+		explicit Image2D(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height) : Image2D<void>(std::move(allocator), FormatOf<Type>::value, width, height) {}
 
 	protected:
 
@@ -221,7 +221,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	numLayers - Layers of the image, is clamped down to 1.
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit Image2DLayered(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t numLayers) : Image2DLayered<void>(allocator, FormatOf<Type>::value, width, height, numLayers) {}
+		explicit Image2DLayered(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t numLayers) : Image2DLayered<void>(std::move(allocator), FormatOf<Type>::value, width, height, numLayers) {}
 
 	protected:
 
@@ -322,7 +322,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(max(width, height)))].
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit Image2DLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, unsigned int numLevels) : Image2DLod<void>(allocator, FormatOf<Type>::value, width, height, numLevels) {}
+		explicit Image2DLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, unsigned int numLevels) : Image2DLod<void>(std::move(allocator), FormatOf<Type>::value, width, height, numLevels) {}
 
 	public:
 
@@ -425,7 +425,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(max(width, height)))].
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit Image2DLayeredLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t numLayers, unsigned int numLevels) : Image2DLayeredLod<void>(allocator, FormatOf<Type>::value, width, height, numLayers, numLevels) {}
+		explicit Image2DLayeredLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t numLayers, unsigned int numLevels) : Image2DLayeredLod<void>(std::move(allocator), FormatOf<Type>::value, width, height, numLayers, numLevels) {}
 
 	public:
 
