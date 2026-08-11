@@ -30,7 +30,7 @@ namespace NS_NAMESPACE
 	inline constexpr size_t dynamic_extent = static_cast<size_t>(-1);
 	template<typename Type, size_t Extent = dynamic_extent> class Span;
 	template<typename Type, size_t Extent> NS_CUDA_CALLABLE constexpr auto as_bytes(const Span<const Type, Extent> & span) noexcept;
-	template<typename Type, size_t Extent> NS_CUDA_CALLABLE constexpr auto as_writeable_bytes(Span<Type, Extent> & span) noexcept;
+	template<typename Type, size_t Extent> NS_CUDA_CALLABLE constexpr auto as_writable_bytes(Span<Type, Extent> & span) noexcept;
 
 	namespace details
 	{

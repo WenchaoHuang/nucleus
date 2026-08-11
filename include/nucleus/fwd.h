@@ -205,8 +205,8 @@ namespace NS_NAMESPACE
 	//!	Type aliases for commonly shared image objects.
 	using SharedEvent											= SharedHandle<Event>;
 	using SharedStream											= SharedHandle<Stream>;
-	using SharedAlloctor										= SharedHandle<Allocator>;
-	using SharedHostAlloctor									= SharedHandle<HostAllocator>;
+	using SharedAllocator										= SharedHandle<Allocator>;
+	using SharedHostAllocator									= SharedHandle<HostAllocator>;
 	using SharedDeviceAlloctor									= SharedHandle<DeviceAllocator>;
 
 	template<typename Type> using SharedTexture1D				= SharedHandle<Texture1D<Type>>;
