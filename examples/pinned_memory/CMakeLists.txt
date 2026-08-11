@@ -1,4 +1,4 @@
-﻿# Copyright (c) 2025 Wenchao Huang <physhuangwenchao@gmail.com>
+# Copyright (c) 2025 Wenchao Huang <physhuangwenchao@gmail.com>
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -31,8 +31,8 @@ target_link_libraries(${TARGET_NAME} PRIVATE Nucleus::nucleus)
 
 # CMake properties
 set_target_properties(${TARGET_NAME} PROPERTIES
-    CUDA_RESOLVE_DEVICE_SYMBOLS ON
-    CUDA_SEPARABLE_COMPILATION ON
-    CUDA_ARCHITECTURES "75"
-    FOLDER "Examples"
+	CUDA_RESOLVE_DEVICE_SYMBOLS ON
+	CUDA_SEPARABLE_COMPILATION ON
+	CUDA_ARCHITECTURES "75"
+	FOLDER "Examples"
 )

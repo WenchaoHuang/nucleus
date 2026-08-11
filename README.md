@@ -114,42 +114,42 @@ Or include individual headers as needed (see [Project Structure](#project-struct
 // CUDA_for(i, count) expands to:
 //   const auto i = ns::tid(); if (i >= count) return;
 __global__ void add_kernel(dev::Ptr<int> out,
-                           dev::Ptr<const int> x,
-                           dev::Ptr<const int> y,
-                           unsigned int count)
+						   dev::Ptr<const int> x,
+						   dev::Ptr<const int> y,
+						   unsigned int count)
 {
-    CUDA_for(i, count);
-    out[i] = x[i] + y[i];
+	CUDA_for(i, count);
+	out[i] = x[i] + y[i];
 }
 
 int main()
 {
-    const int count = 1 << 20;
+	const int count = 1 << 20;
 
-    // Obtain device, allocator, and default stream from the runtime singleton.
-    auto * device    = ns::Runtime::device(0);
-    auto   allocator = device->defaultAllocator();
-    auto & stream    = device->defaultStream();
+	// Obtain device, allocator, and default stream from the runtime singleton.
+	auto * device    = ns::Runtime::device(0);
+	auto   allocator = device->defaultAllocator();
+	auto & stream    = device->defaultStream();
 
-    // Allocate typed device arrays (RAII — freed automatically).
-    ns::Array<int> A(allocator, count);
-    ns::Array<int> B(allocator, count);
-    ns::Array<int> C(allocator, count);
+	// Allocate typed device arrays (RAII — freed automatically).
+	ns::Array<int> A(allocator, count);
+	ns::Array<int> B(allocator, count);
+	ns::Array<int> C(allocator, count);
 
-    // Initialize device memory (type-safe typed fill).
-    stream.fill(A.data(), 1, A.size());
-    stream.fill(B.data(), 2, B.size());
+	// Initialize device memory (type-safe typed fill).
+	stream.fill(A.data(), 1, A.size());
+	stream.fill(B.data(), 2, B.size());
 
-    // Launch the kernel — grid size is computed with ceil_div.
-    constexpr int blockSize = 256;
-    stream.launch(add_kernel, ns::ceil_div(count, blockSize), blockSize)(C, A, B, count);
+	// Launch the kernel — grid size is computed with ceil_div.
+	constexpr int blockSize = 256;
+	stream.launch(add_kernel, ns::ceil_div(count, blockSize), blockSize)(C, A, B, count);
 
-    // Copy result back to host and synchronize.
-    std::vector<int> host_result(count);
-    stream.memcpy(host_result.data(), C.data(), C.size());
-    stream.sync();
+	// Copy result back to host and synchronize.
+	std::vector<int> host_result(count);
+	stream.memcpy(host_result.data(), C.data(), C.size());
+	stream.sync();
 
-    return 0;
+	return 0;
 }
 ```
 
@@ -161,11 +161,11 @@ int main()
 class MyPoolAllocator : public ns::DeviceAllocator
 {
 public:
-    explicit MyPoolAllocator(ns::Device * device) : ns::DeviceAllocator(device) {}
+	explicit MyPoolAllocator(ns::Device * device) : ns::DeviceAllocator(device) {}
 
 protected:
-    void * doAllocateMemory(size_t bytes) override { /* pool logic */ }
-    void   doDeallocateMemory(void * ptr)  override { /* pool logic */ }
+	void * doAllocateMemory(size_t bytes) override { /* pool logic */ }
+	void   doDeallocateMemory(void * ptr)  override { /* pool logic */ }
 };
 
 auto myAlloc = std::make_shared<MyPoolAllocator>(device);
@@ -272,8 +272,8 @@ stream.launch(my_kernel, grid, block)(array.ptr(), count);
 // Device side (in .cu): element access with optional bounds check
 __global__ void my_kernel(dev::Ptr<float> data, unsigned int n)
 {
-    CUDA_for(i, n);   // auto bounds-check; returns if i >= n
-    data[i] *= 2.0f;
+	CUDA_for(i, n);   // auto bounds-check; returns if i >= n
+	data[i] *= 2.0f;
 }
 
 // Type-safe reinterpret cast between binary-compatible types
@@ -370,11 +370,11 @@ stream.launch(my_kernel, grid, block)(tex.handle(), width, height);
 // Device side (in .cu):
 __global__ void my_kernel(dev::Tex2D<float4> tex, int width, int height)
 {
-    CUDA_for(tid, width * height);
-    float u = (tid % width + 0.5f) / width;
-    float v = (tid / width + 0.5f) / height;
-    float4 color = tex.fetch(u, v);   // hardware-interpolated sample
-    // ...
+	CUDA_for(tid, width * height);
+	float u = (tid % width + 0.5f) / width;
+	float v = (tid / width + 0.5f) / height;
+	float4 color = tex.fetch(u, v);   // hardware-interpolated sample
+	// ...
 }
 ```
 

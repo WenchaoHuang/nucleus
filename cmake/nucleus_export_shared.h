@@ -28,7 +28,7 @@
 #if defined(_WIN32)
 	#ifdef NS_API_BUILD
 		#define NS_API			__declspec(dllexport)
-  	#else
+	#else
 		#define NS_API			__declspec(dllimport)
 	#endif
 #else
