@@ -1,4 +1,4 @@
-﻿/**
+/**
  *	Copyright (c) 2025 Wenchao Huang <physhuangwenchao@gmail.com>
  *
  *	Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,7 +22,7 @@
 #pragma once
 
 #include "fwd.h"
-#include "host_types.h"
+#include "version.h"
 #include <vector>
 
 namespace NS_NAMESPACE

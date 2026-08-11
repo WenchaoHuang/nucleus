@@ -19,21 +19,32 @@
  *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *	SOFTWARE.
  */
+#pragma once
 
-#include <nucleus/runtime.h>
+#include "fwd.h"
 
-/*********************************************************************************
-*******************************    test_runtime    *******************************
-*********************************************************************************/
-
-void test_runtime()
+namespace NS_NAMESPACE
 {
-	auto runtime = ns::Runtime::getInstance();
-	auto allocator = ns::Runtime::defaultAllocator();
-	auto driverVersion = ns::Runtime::driverVersion();
-	auto runtimeVersion = ns::Runtime::version();
-	auto devices = ns::Runtime::devices();
-	auto device = ns::Runtime::device(0);
+	/*****************************************************************************
+	*******************************    Version    ********************************
+	*****************************************************************************/
 
-	ns::Runtime::setDefaultAllocator(allocator);
+	/**
+	 *	@brief		Represents a version number with major, minor, and patch components.
+	 *	@note		Versions are compared lexicographically by major, then minor, then patch.
+	 */
+	struct Version
+	{
+		//! @brief		Major component identifying the primary release series.
+		int major{ 0 };
+
+		//! @brief		Minor component identifying a release within the major series.
+		int minor{ 0 };
+
+		//! @brief		Patch component identifying an update within the minor release.
+		int patch{ 0 };
+
+		//! @brief		Provides equality and ordered comparisons between version numbers.
+		constexpr auto operator<=>(const Version &) const = default;
+	};
 }

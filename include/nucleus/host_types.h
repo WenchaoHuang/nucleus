@@ -27,34 +27,6 @@
 namespace NS_NAMESPACE
 {
 	/*****************************************************************************
-	*******************************    Version    ********************************
-	*****************************************************************************/
-
-	/**
-	 *	@brief		CUDA version number.
-	 */
-	struct Version
-	{
-		union
-		{
-			struct { int Minor, Major; };
-			struct { long long Encoded; };
-		};
-
-		//!	@brief		Constructors
-		constexpr Version() : Major(0), Minor(0) {}
-		constexpr Version(int major, int minor) : Major(major), Minor(minor) {}
-
-		//!	@brief		Compare operators
-		constexpr bool operator==(Version rhs) const { return Encoded == rhs.Encoded; }
-		constexpr bool operator!=(Version rhs) const { return Encoded != rhs.Encoded; }
-		constexpr bool operator<=(Version rhs) const { return Encoded <= rhs.Encoded; }
-		constexpr bool operator>=(Version rhs) const { return Encoded >= rhs.Encoded; }
-		constexpr bool operator<(Version rhs) const { return Encoded < rhs.Encoded; }
-		constexpr bool operator>(Version rhs) const { return Encoded > rhs.Encoded; }
-	};
-
-	/*****************************************************************************
 	****************************    ImageAccessor    *****************************
 	*****************************************************************************/
 

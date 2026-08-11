@@ -20,20 +20,16 @@
  *	SOFTWARE.
  */
 
-#include <nucleus/runtime.h>
+#include <string_view>
+#include <nucleus/version.h>
 
 /*********************************************************************************
-*******************************    test_runtime    *******************************
+*******************************    test_version    *******************************
 *********************************************************************************/
 
-void test_runtime()
-{
-	auto runtime = ns::Runtime::getInstance();
-	auto allocator = ns::Runtime::defaultAllocator();
-	auto driverVersion = ns::Runtime::driverVersion();
-	auto runtimeVersion = ns::Runtime::version();
-	auto devices = ns::Runtime::devices();
-	auto device = ns::Runtime::device(0);
-
-	ns::Runtime::setDefaultAllocator(allocator);
-}
+static_assert(ns::Version() == ns::Version{ 0, 0, 0 });
+static_assert(ns::Version{ 10, 2, 0 } < ns::Version{ 10, 3, 1 });
+static_assert(ns::Version{ 10, 4, 2 } > ns::Version{ 10, 3, 0 });
+static_assert(ns::Version{ 10, 5, 5 } == ns::Version{ 10, 5, 5 });
+static_assert(ns::Version{ 10, 5, 3 } >= ns::Version{ 10, 5, 2 });
+static_assert(ns::Version{ 10, 5, 0 } <= ns::Version{ 10, 5, 1 });

@@ -22,6 +22,7 @@
 #pragma once
 
 #include "fwd.h"
+#include "vector_types.h"
 #include "vector_traits.h"
 
 namespace NS_NAMESPACE

@@ -384,6 +384,7 @@ __global__ void my_kernel(dev::Tex2D<float4> tex, int width, int height)
 Nucleus/
 ├── include/nucleus/        # Public headers (add to your include path)
 │   ├── nucleus.h           # Convenience header — includes everything
+│   ├── version.h           # ns::Version (major/minor/patch value)
 │   ├── runtime.h           # ns::Runtime  (device enumeration, singleton)
 │   ├── device.h            # ns::Device   (GPU handle, properties, allocator)
 │   ├── stream.h            # ns::Stream   (async work, kernel launch, memcpy)
