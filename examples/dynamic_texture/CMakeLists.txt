@@ -32,7 +32,7 @@ if(MSVC AND NUCLEUS_BUILD_SHARED_LIB)
 endif()
 
 # Link directories
-target_link_libraries(${TARGET_NAME} PRIVATE nucleus)
+target_link_libraries(${TARGET_NAME} PRIVATE Nucleus::nucleus)
 
 # CMake properties
 set_target_properties(${TARGET_NAME} PROPERTIES

@@ -31,7 +31,7 @@ file(GLOB TEST_CUDA_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cu"
 add_executable(${TARGET_NAME} ${TEST_CPP_SOURCES} ${TEST_CUDA_SOURCES})
 
 # Link directories
-target_link_libraries(${TARGET_NAME} PRIVATE nucleus)
+target_link_libraries(${TARGET_NAME} PRIVATE Nucleus::nucleus)
 
 # MSVC settings
 if(MSVC)

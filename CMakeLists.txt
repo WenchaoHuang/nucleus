@@ -45,45 +45,48 @@ set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 
 # Source files
 file(GLOB NUCLEUS_SOURCES CONFIGURE_DEPENDS
-    "${PROJECT_SOURCE_DIR}/include/nucleus/*.h"
-    "${PROJECT_SOURCE_DIR}/include/nucleus/*.cuh"
-    "${PROJECT_SOURCE_DIR}/src/*.cpp"
-    "${PROJECT_SOURCE_DIR}/src/*.cu"
+	"${PROJECT_SOURCE_DIR}/include/nucleus/*.h"
+	"${PROJECT_SOURCE_DIR}/include/nucleus/*.cuh"
+	"${PROJECT_SOURCE_DIR}/src/*.cpp"
+	"${PROJECT_SOURCE_DIR}/src/*.cu"
 )
 
 # Build library
 if(NUCLEUS_BUILD_SHARED_LIB)
-    # Create the shared library
-    add_library(${TARGET_NAME} SHARED ${NUCLEUS_SOURCES})
+	# Create the shared library
+	add_library(${TARGET_NAME} SHARED ${NUCLEUS_SOURCES})
 
-    # Export macro
-    target_compile_definitions(${TARGET_NAME} PRIVATE NS_API_BUILD)
+	# Export macro
+	target_compile_definitions(${TARGET_NAME} PRIVATE NS_API_BUILD)
 
-    # Export header
-    configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/${TARGET_NAME}_export_shared.h
-        ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}_export.h
-        COPYONLY
-    )
+	# Export header
+	configure_file(
+		${CMAKE_CURRENT_SOURCE_DIR}/cmake/${TARGET_NAME}_export_shared.h
+		${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}_export.h
+		COPYONLY
+	)
 else()
-    # Create the static library
-    add_library(${TARGET_NAME} STATIC ${NUCLEUS_SOURCES})
+	# Create the static library
+	add_library(${TARGET_NAME} STATIC ${NUCLEUS_SOURCES})
 
-    # Export header
-    configure_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/${TARGET_NAME}_export_static.h
-        ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}_export.h
-        COPYONLY
-    )
+	# Export header
+	configure_file(
+		${CMAKE_CURRENT_SOURCE_DIR}/cmake/${TARGET_NAME}_export_static.h
+		${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}_export.h
+		COPYONLY
+	)
 
-    # Warn about potential issues with static library linking
-     message(WARNING
-        "NUCLEUS_BUILD_SHARED_LIB is OFF. When the static Nucleus library is linked "
-        "into multiple shared libraries or modules, each may have its own singleton "
-        "instances. Ensure singleton state remains consistent across module boundaries."
-     )
+	# Warn about potential issues with static library linking
+	 message(WARNING
+		"NUCLEUS_BUILD_SHARED_LIB is OFF. When the static Nucleus library is linked "
+		"into multiple shared libraries or modules, each may have its own singleton "
+		"instances. Ensure singleton state remains consistent across module boundaries."
+	 )
 endif()
-    
+
+# Public namespaced alias
+add_library(Nucleus::nucleus ALIAS ${TARGET_NAME})
+
 # Link directories
 target_link_libraries(${TARGET_NAME} PUBLIC CUDA::cudart)
 
@@ -94,26 +97,26 @@ target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/in
 
 # MSVC settings
 if(MSVC)
-    target_compile_options(${TARGET_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/MP /W4 /WX /utf-8>)
+	target_compile_options(${TARGET_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/MP /W4 /WX /utf-8>)
 
-    # CUDA 13.2+ (CCCL) requires the conforming preprocessor; propagate to all consumers via PUBLIC
-    target_compile_options(${TARGET_NAME} PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=/Zc:preprocessor>)
+	# CUDA 13.2+ (CCCL) requires the conforming preprocessor; propagate to all consumers via PUBLIC
+	target_compile_options(${TARGET_NAME} PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=/Zc:preprocessor>)
 
-    # Ensure UTF-8 encoding for CUDA compilation as well; propagate to all consumers via PUBLIC
-    target_compile_options(${TARGET_NAME} PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=/utf-8>)
+	# Ensure UTF-8 encoding for CUDA compilation as well; propagate to all consumers via PUBLIC
+	target_compile_options(${TARGET_NAME} PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=/utf-8>)
 endif()
 
 # Load the custom helper that adds a dummy.cpp source file
 if(MSVC)
-    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/add_dummy_cpp.cmake)
+	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/add_dummy_cpp.cmake)
 endif()
 
 # Optional: Add tests if enabled
 if(NUCLEUS_BUILD_TESTS)
-    add_subdirectory(tests)
+	add_subdirectory(tests)
 endif()
 
 # Optional: Add examples if enabled
 if(NUCLEUS_BUILD_EXAMPLES)
-    add_subdirectory(examples)
+	add_subdirectory(examples)
 endif()

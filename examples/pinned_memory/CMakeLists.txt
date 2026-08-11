@@ -27,7 +27,7 @@ set(TARGET_NAME pinned_memory)
 add_executable(${TARGET_NAME} main.cpp)
 
 # Link directories
-target_link_libraries(${TARGET_NAME} PRIVATE nucleus)
+target_link_libraries(${TARGET_NAME} PRIVATE Nucleus::nucleus)
 
 # CMake properties
 set_target_properties(${TARGET_NAME} PROPERTIES
