@@ -47,4 +47,14 @@ namespace NS_NAMESPACE
 		//! @brief		Provides equality and ordered comparisons between version numbers.
 		constexpr auto operator<=>(const Version &) const = default;
 	};
+
+	/*****************************************************************************
+	*******************************    VERSION    ********************************
+	*****************************************************************************/
+
+	/**
+	 *	@brief		Version of the Nucleus library represented as numeric components.
+	 *	@example	if constexpr (ns::VERSION >= ns::Version(0, 1, 0))
+	 */
+	inline constexpr Version VERSION{ NS_VERSION_MAJOR, NS_VERSION_MINOR, NS_VERSION_PATCH };
 }

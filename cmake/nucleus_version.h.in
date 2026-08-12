@@ -19,18 +19,13 @@
  *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *	SOFTWARE.
  */
-
-#include <string_view>
-#include <nucleus/version.h>
+#pragma once
 
 /*********************************************************************************
-*******************************    test_version    *******************************
+*****************************    Library Version     *****************************
 *********************************************************************************/
 
-static_assert(ns::Version() == ns::Version{ 0, 0, 0 });
-static_assert(ns::Version{ 10, 2, 0 } < ns::Version{ 10, 3, 1 });
-static_assert(ns::Version{ 10, 4, 2 } > ns::Version{ 10, 3, 0 });
-static_assert(ns::Version{ 10, 5, 5 } == ns::Version{ 10, 5, 5 });
-static_assert(ns::Version{ 10, 5, 3 } >= ns::Version{ 10, 5, 2 });
-static_assert(ns::Version{ 10, 5, 0 } <= ns::Version{ 10, 5, 1 });
-static_assert(ns::VERSION == ns::Version{ NS_VERSION_MAJOR, NS_VERSION_MINOR, NS_VERSION_PATCH });
+#define NS_VERSION_MAJOR	@PROJECT_VERSION_MAJOR@
+#define NS_VERSION_MINOR	@PROJECT_VERSION_MINOR@
+#define NS_VERSION_PATCH	@PROJECT_VERSION_PATCH@
+#define NS_VERSION_STR		"@PROJECT_VERSION@"

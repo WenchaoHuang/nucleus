@@ -24,6 +24,7 @@
 #include <cstdio>
 #include <assert.h>
 #include "nucleus_export.h"
+#include "nucleus_version.h"
 
 #ifdef _MSC_VER
 	#pragma warning(disable: 4201)		//!	Nonstandard extension used: nameless struct/union.

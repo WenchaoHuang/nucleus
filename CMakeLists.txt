@@ -21,7 +21,7 @@
 cmake_minimum_required(VERSION 3.18)
 
 # Project name: Nucleus
-project(Nucleus LANGUAGES CXX CUDA)
+project(Nucleus VERSION 0.1.0 LANGUAGES CXX CUDA)
 
 # Find CUDA Toolkit (needed to expose include dirs to C++ compilation units)
 find_package(CUDAToolkit REQUIRED)
@@ -49,6 +49,13 @@ file(GLOB NUCLEUS_SOURCES CONFIGURE_DEPENDS
 	"${PROJECT_SOURCE_DIR}/include/nucleus/*.cuh"
 	"${PROJECT_SOURCE_DIR}/src/*.cpp"
 	"${PROJECT_SOURCE_DIR}/src/*.cu"
+)
+
+# Generate public compile-time version definitions.
+configure_file(
+	${CMAKE_CURRENT_SOURCE_DIR}/cmake/nucleus_version.h.in
+	${CMAKE_CURRENT_BINARY_DIR}/nucleus_version.h
+	@ONLY
 )
 
 # Build library
