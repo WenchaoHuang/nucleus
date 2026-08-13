@@ -20,16 +20,24 @@
 
 cmake_minimum_required(VERSION 3.18)
 
-# Add samples
-add_subdirectory(scratch_arena)
-add_subdirectory(random_access)
-add_subdirectory(pinned_memory)
-add_subdirectory(default_allocator)
-add_subdirectory(customized_allocator)
-add_subdirectory(customized_pixel_type)
+# Target name
+set(TARGET_NAME default_allocator)
 
-if(MSVC)
-	add_subdirectory(julia_set)
-	add_subdirectory(multi_gpu)
-	add_subdirectory(dynamic_texture)
+# Create the executable target
+add_executable(${TARGET_NAME} main.cu)
+
+# Ensure the target has at least one C++ source file.
+if(MSVC AND NUCLEUS_BUILD_SHARED_LIB)
+	add_dummy_cpp(${TARGET_NAME})
 endif()
+
+# Link directories
+target_link_libraries(${TARGET_NAME} PRIVATE Nucleus::nucleus)
+
+# CMake properties
+set_target_properties(${TARGET_NAME} PROPERTIES
+	CUDA_RESOLVE_DEVICE_SYMBOLS ON
+	CUDA_SEPARABLE_COMPILATION ON
+	CUDA_ARCHITECTURES "75"
+	FOLDER "Examples"
+)

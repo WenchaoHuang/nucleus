@@ -414,6 +414,7 @@ Nucleus/
 ├── src/                    # Library implementation (.cpp / .cu)
 ├── examples/               # Standalone example programs
 │   ├── customized_allocator/   Custom allocator implementation
+│   ├── default_allocator/      Allocation without explicit allocator arguments
 │   ├── customized_pixel_type/  Struct-based pixel types in kernels
 │   ├── dynamic_texture/        Dynamic texture creation and binding
 │   ├── julia_set/              GPU fractal rendering
