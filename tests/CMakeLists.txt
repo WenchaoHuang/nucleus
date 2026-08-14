@@ -41,6 +41,9 @@ endif()
 # NVCC flags
 target_compile_options(${TARGET_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--expt-relaxed-constexpr>)
 
+# Add test
+add_test(NAME ${TARGET_NAME} COMMAND ${TARGET_NAME})
+
 # CMake properties
 set_target_properties(${TARGET_NAME} PROPERTIES
 	CUDA_RESOLVE_DEVICE_SYMBOLS ON

@@ -118,12 +118,13 @@ if(MSVC)
 	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/add_dummy_cpp.cmake)
 endif()
 
-# Optional: Add tests if enabled
-if(NUCLEUS_BUILD_TESTS)
-	add_subdirectory(tests)
-endif()
-
 # Optional: Add examples if enabled
 if(NUCLEUS_BUILD_EXAMPLES)
 	add_subdirectory(examples)
+endif()
+
+# Optional: Add tests if enabled
+if(NUCLEUS_BUILD_TESTS)
+	enable_testing()
+	add_subdirectory(tests)
 endif()
