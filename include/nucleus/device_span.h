@@ -31,15 +31,21 @@ namespace NS_NAMESPACE
 	//!	@brief		A special value indicating that the extent of a span is dynamic.
 	inline constexpr size_t dynamic_extent = static_cast<size_t>(-1);
 
-	//!	@brief		A non-owning view over a contiguous sequence of objects.
-	template<typename Type, size_t Extent = dynamic_extent> class Span;
+	namespace dev
+	{
+		//!	@brief		A non-owning view over a contiguous sequence of objects.
+		template<typename Type, size_t Extent = dynamic_extent> class Span;
+	}
 
 	//!	@brief		Returns a span viewing the same data as `const byte` (non-modifiable).
-	template<typename Type, size_t Extent> NS_CUDA_CALLABLE constexpr auto as_bytes(const Span<const Type, Extent> & span) noexcept { return span._as_bytes(); }
+	template<typename Type, size_t Extent> NS_CUDA_CALLABLE constexpr auto as_bytes(const dev::Span<const Type, Extent> & span) noexcept { return span._as_bytes(); }
 
 	//!	@brief		Returns a span viewing the same data as writable `byte`.
-	template<typename Type, size_t Extent> NS_CUDA_CALLABLE constexpr auto as_writable_bytes(Span<Type, Extent> & span) noexcept { return span._as_writable_bytes(); }
+	template<typename Type, size_t Extent> NS_CUDA_CALLABLE constexpr auto as_writable_bytes(dev::Span<Type, Extent> & span) noexcept { return span._as_writable_bytes(); }
+}
 
+namespace NS_NAMESPACE::dev
+{
 	namespace detail
 	{
 		/*************************************************************************

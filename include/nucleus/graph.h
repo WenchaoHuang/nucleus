@@ -22,12 +22,14 @@
 #pragma once
 
 #include "fwd.h"
-#include "span.h"
+#include "device_span.h"
 #include <unordered_set>
 #include <functional>
 
 namespace NS_NAMESPACE
 {
+	using dev::Span;
+
 	struct ExecDep { uint64_t ID = 0; int Index = -1; };
 
 	/*****************************************************************************

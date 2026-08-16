@@ -21,29 +21,29 @@
  */
 
 #include <algorithm>
-#include <nucleus/span.h>
 #include <nucleus/device.h>
 #include <nucleus/stream.h>
 #include <nucleus/runtime.h>
 #include <nucleus/array_1d.h>
+#include <nucleus/device_span.h>
 #include <nucleus/launch_utils.cuh>
 
 /*********************************************************************************
-********************************    test_span    *********************************
+******************************    test_dev_span    *******************************
 *********************************************************************************/
 
 // Device-side constant span for testing.
-__constant__ ns::Span<int> d_const_span;
+__constant__ ns::dev::Span<int> d_const_span;
 
 
-// Device-side kernel to verify ns::Span compiles and works on GPU.
+// Device-side kernel to verify ns::dev::Span compiles and works on GPU.
 __global__ void span_test_kernel(int * d_output)
 {
 	// Default construction in device code.
-	ns::Span<int> s0;
+	ns::dev::Span<int> s0;
 
 	// Fixed-extent default construction.
-	ns::Span<int, 0> s1;
+	ns::dev::Span<int, 0> s1;
 
 	//!	`size()` on device.
 	if (s1.size() == 0)
@@ -55,14 +55,14 @@ __global__ void span_test_kernel(int * d_output)
 
 	// Pointer+size construction on device.
 	int local[3] = { 7, 8, 9 };
-	ns::Span<int> s2(local, 3);
+	ns::dev::Span<int> s2(local, 3);
 	if (s2.size() == 3 && s2[1] == 8)
 		d_output[2] = 3;
 }
 
 
 // Helper to verify read-only access through const span.
-static int sum_const_span(ns::Span<const int> s)
+static int sum_const_span(ns::dev::Span<const int> s)
 {
 	int total = 0;
 
@@ -73,38 +73,38 @@ static int sum_const_span(ns::Span<const int> s)
 }
 
 
-void test_span()
+void test_dev_span()
 {
 	/*****************************************************************************
 	***************************    Type definitions    ***************************
 	*****************************************************************************/
 
 	// pointer
-	static_assert(std::is_same_v<ns::Span<int>::pointer, int*>);
-	static_assert(std::is_same_v<ns::Span<const int>::pointer, const int*>);
+	static_assert(std::is_same_v<ns::dev::Span<int>::pointer, int*>);
+	static_assert(std::is_same_v<ns::dev::Span<const int>::pointer, const int*>);
 
 	// reference
-	static_assert(std::is_same_v<ns::Span<int>::reference, int&>);
-	static_assert(std::is_same_v<ns::Span<const int>::reference, const int&>);
+	static_assert(std::is_same_v<ns::dev::Span<int>::reference, int&>);
+	static_assert(std::is_same_v<ns::dev::Span<const int>::reference, const int&>);
 
 	// element_type
-	static_assert(std::is_same_v<ns::Span<int>::element_type, int>);
-	static_assert(std::is_same_v<ns::Span<const int>::element_type, const int>);
+	static_assert(std::is_same_v<ns::dev::Span<int>::element_type, int>);
+	static_assert(std::is_same_v<ns::dev::Span<const int>::element_type, const int>);
 
 	// value_type
-	static_assert(std::is_same_v<ns::Span<int>::value_type, int>);
-	static_assert(std::is_same_v<ns::Span<const int>::value_type, int>);
+	static_assert(std::is_same_v<ns::dev::Span<int>::value_type, int>);
+	static_assert(std::is_same_v<ns::dev::Span<const int>::value_type, int>);
 
 	// iterator
-	static_assert(std::is_same_v<ns::Span<int>::iterator, int*>);
-	static_assert(std::is_same_v<ns::Span<const int>::iterator, const int*>);
+	static_assert(std::is_same_v<ns::dev::Span<int>::iterator, int*>);
+	static_assert(std::is_same_v<ns::dev::Span<const int>::iterator, const int*>);
 
 	/*****************************************************************************
-	************************    Fixed-extent ns::Span    *************************
+	**********************    Fixed-extent ns::dev::Span    **********************
 	*****************************************************************************/
 
 	//!	`size()` for fixed extent.
-	static_assert(ns::Span<int, 10>::size() == 10);
+	static_assert(ns::dev::Span<int, 10>::size() == 10);
 
 	//!	Default construction for fixed zero-extent.
 	{
@@ -115,7 +115,7 @@ void test_span()
 	//!	Construct from C-array.
 	{
 		const int arr[4] = { 1, 2, 3, 4 };
-		ns::Span<const int, 4> s(arr);
+		ns::dev::Span<const int, 4> s(arr);
 		assert(s.size() == 4);
 		assert(s.data() == arr);
 		assert(s[0] == 1);
@@ -127,32 +127,32 @@ void test_span()
 	//!	Construct from `std::array`.
 	{
 		const std::array<int, 3> arr = { 10, 20, 30 };
-		ns::Span<const int, 3> s(arr);
+		ns::dev::Span<const int, 3> s(arr);
 		assert(s[0] == 10);
 		assert(s[1] == 20);
 		assert(s[2] == 30);
 	}
 
 	/*****************************************************************************
-	***********************    Dynamic-extent ns::Span    ************************
+	*********************    Dynamic-extent ns::dev::Span    *********************
 	*****************************************************************************/
 
 	//!	Default construction.
 	{
-		ns::Span<int> s;
+		ns::dev::Span<int> s;
 		assert(s.empty());
 		assert(s.size() == 0);
 		assert(s.size_bytes() == 0);
 		assert(s.data() == nullptr);
 	}
 
-	ns::Span<const int> sc;
+	ns::dev::Span<const int> sc;
 	assert(sc.empty());
 
 	//!	Construct from pointer + size.
 	{
 		int data[6] = { 0, 1, 2, 3, 4, 5 };
-		ns::Span<int> s(data, 6);
+		ns::dev::Span<int> s(data, 6);
 		assert(!s.empty());
 		assert(s.size() == 6);
 		assert(s.size_bytes() == 6 * sizeof(int));
@@ -162,7 +162,7 @@ void test_span()
 	//!	Construct from C-array (mutable).
 	{
 		int data[5] = { 0, 0, 0, 0, 0 };
-		ns::Span<int> s(data);
+		ns::dev::Span<int> s(data);
 		s[2] = 99;
 		assert(data[2] == 99);
 	}
@@ -170,28 +170,28 @@ void test_span()
 	//!	Construct from `std::vector`.
 	{
 		std::vector<int> vec = { 7, 8, 9 };
-		ns::Span<int> s(vec);
+		ns::dev::Span<int> s(vec);
 		assert(s.size() == 3);
 		assert(s[0] == 7);
 		assert(s[2] == 9);
 
-		//!	const ns::Span from const `std::vector`.
+		//!	const ns::dev::Span from const `std::vector`.
 		const std::vector<int> cvec = { 1, 2 };
-		ns::Span<const int> scv(cvec);
+		ns::dev::Span<const int> scv(cvec);
 		assert(scv.size() == 2);
 	}
 
 	//!	Construct from `std::array` (mutable).
 	{
 		std::array<int, 4> arr = { 0, 0, 0, 0 };
-		ns::Span<int> s(arr);
+		ns::dev::Span<int> s(arr);
 		s[0] = 42;
 		assert(arr[0] == 42);
 	}
 
 	//!	Construct from `std::initializer_list`.
 	{
-		ns::Span<const int> s = { 0, 1, 2, 3 };
+		ns::dev::Span<const int> s = { 0, 1, 2, 3 };
 		assert(s.size() == 4);
 		assert(s[0] == 0);
 		assert(s[3] == 3);
@@ -203,7 +203,7 @@ void test_span()
 
 	{
 		int data[4] = { 10, 20, 30, 40 };
-		ns::Span<int> s(data, 4);
+		ns::dev::Span<int> s(data, 4);
 
 		assert(s[0] == 10);
 		assert(s[2] == 30);
@@ -222,7 +222,7 @@ void test_span()
 	//!	Const element access.
 	{
 		const int data[3] = { 1, 2, 3 };
-		ns::Span<const int> s(data, 3);
+		ns::dev::Span<const int> s(data, 3);
 
 		assert(s[0] == 1);
 		assert(s.front() == 1);
@@ -236,7 +236,7 @@ void test_span()
 	//!	Forward iteration on mutable span.
 	{
 		int data[4] = { 1, 2, 3, 4 };
-		ns::Span<int> s(data, 4);
+		ns::dev::Span<int> s(data, 4);
 
 		int sum = 0;
 		for (auto it = s.begin(); it != s.end(); ++it)
@@ -258,7 +258,7 @@ void test_span()
 	//!	Forward iteration on const span.
 	{
 		const int data[4] = { 5, 6, 7, 8 };
-		ns::Span<const int> s(data, 4);
+		ns::dev::Span<const int> s(data, 4);
 
 		int sum = 0;
 		for (auto it = s.begin(); it != s.end(); ++it)
@@ -274,7 +274,7 @@ void test_span()
 	//!	cbegin/cend.
 	{
 		int data[3] = { 1, 2, 3 };
-		ns::Span<int> s(data, 3);
+		ns::dev::Span<int> s(data, 3);
 		int sum = 0;
 		for (auto it = s.cbegin(); it != s.cend(); ++it)
 			sum += *it;
@@ -284,7 +284,7 @@ void test_span()
 	//!	STL algorithm compatibility.
 	{
 		int data[5] = { 3, 1, 4, 1, 5 };
-		ns::Span<int> s(data, 5);
+		ns::dev::Span<int> s(data, 5);
 
 		auto minIt = std::min_element(s.begin(), s.end());
 		assert(*minIt == 1);
@@ -294,18 +294,18 @@ void test_span()
 	*************************    Implicit conversion    **************************
 	*****************************************************************************/
 
-	//!	`ns::Span<T>` implicitly converts to `ns::Span<const T>`.
+	//!	`ns::dev::Span<T>` implicitly converts to `ns::dev::Span<const T>`.
 	{
 		int data[3] = { 1, 2, 3 };
-		ns::Span<int> s(data, 3);
+		ns::dev::Span<int> s(data, 3);
 		assert(sum_const_span(s) == 6);
 	}
 
-	//!	`ns::Span<T>` can be assigned to `ns::Span<const T>`.
+	//!	`ns::dev::Span<T>` can be assigned to `ns::dev::Span<const T>`.
 	{
 		int data[2] = { 5, 10 };
-		ns::Span<int> ms(data, 2);
-		ns::Span<const int> cs = ms;
+		ns::dev::Span<int> ms(data, 2);
+		ns::dev::Span<const int> cs = ms;
 		assert(cs[0] == 5);
 		assert(cs[1] == 10);
 	}
@@ -313,8 +313,8 @@ void test_span()
 	//!	conversion from fixed-extent to dynamic-extent span.
 	{
 		int data[3] = { 1, 2, 3 };
-		ns::Span<int, 3> a(data);
-		ns::Span<const int> b = a;
+		ns::dev::Span<int, 3> a(data);
+		ns::dev::Span<const int> b = a;
 	};
 
 	/*****************************************************************************
@@ -324,9 +324,9 @@ void test_span()
 	//!	`first()` on mutable span.
 	{
 		int data[6] = { 0, 1, 2, 3, 4, 5 };
-		ns::Span<int> s(data, 6);
+		ns::dev::Span<int> s(data, 6);
 		auto sub = s.first(3);
-		static_assert(std::is_same_v<decltype(sub), ns::Span<int>>);
+		static_assert(std::is_same_v<decltype(sub), ns::dev::Span<int>>);
 
 		assert(sub.size() == 3);
 		assert(sub[0] == 0);
@@ -340,7 +340,7 @@ void test_span()
 	//!	`last()` on const span.
 	{
 		const int data[5] = { 10, 20, 30, 40, 50 };
-		ns::Span<const int> s(data, 5);
+		ns::dev::Span<const int> s(data, 5);
 		auto sub = s.last(2);
 		assert(sub.size() == 2);
 		assert(sub[0] == 40);
@@ -350,7 +350,7 @@ void test_span()
 	//!	`subspan()` with offset only.
 	{
 		int data[5] = { 1, 2, 3, 4, 5 };
-		ns::Span<int> s(data, 5);
+		ns::dev::Span<int> s(data, 5);
 		auto sub = s.subspan(2);
 		assert(sub.size() == 3);
 		assert(sub[0] == 3);
@@ -360,7 +360,7 @@ void test_span()
 	//!	`subspan()` with offset + count.
 	{
 		int data[8] = { 0, 1, 2, 3, 4, 5, 6, 7 };
-		ns::Span<const int> s(data, 8);
+		ns::dev::Span<const int> s(data, 8);
 		auto sub = s.subspan(3, 3);
 		assert(sub.size() == 3);
 		assert(sub[0] == 3);
@@ -370,7 +370,7 @@ void test_span()
 	//!	Chain subviews.
 	{
 		int data[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-		ns::Span<int> s(data, 10);
+		ns::dev::Span<int> s(data, 10);
 		auto sub = s.subspan(1, 8).first(4).last(2);
 		assert(sub.size() == 2);
 		assert(sub[0] == 3);
@@ -383,28 +383,28 @@ void test_span()
 
 	//!	`empty()`.
 	{
-		ns::Span<int> s0;
+		ns::dev::Span<int> s0;
 		assert(s0.empty());
 
 		int data[1] = { 0 };
-		ns::Span<int> s1(data, 1);
+		ns::dev::Span<int> s1(data, 1);
 		assert(!s1.empty());
 	}
 
 	//!	`size_bytes()`.
 	{
 		int data[4] = { 0 };
-		ns::Span<int> s(data, 4);
+		ns::dev::Span<int> s(data, 4);
 		assert(s.size_bytes() == 4 * sizeof(int));
 
-		ns::Span<short> ss(nullptr, 0);
+		ns::dev::Span<short> ss(nullptr, 0);
 		assert(ss.size_bytes() == 0);
 	}
 
 	//!	`data()` returns non-null for non-empty span.
 	{
 		int data[1] = { 42 };
-		ns::Span<int> s(data, 1);
+		ns::dev::Span<int> s(data, 1);
 		assert(s.data() != nullptr);
 		assert(*s.data() == 42);
 	}
@@ -412,9 +412,9 @@ void test_span()
 	//!	`as_bytes()` on mutable span -> const byte view.
 	{
 		int data[2] = { 0x01020304, 0x05060708 };
-		ns::Span<int> s(data, 2);
+		ns::dev::Span<int> s(data, 2);
 		auto bytes = ns::as_bytes(s);
-		static_assert(std::is_same_v<decltype(bytes), ns::Span<const ns::byte>>);
+		static_assert(std::is_same_v<decltype(bytes), ns::dev::Span<const ns::byte>>);
 
 		assert(bytes.size() == 2 * sizeof(int));
 		// Verify byte-level access (little-endian).
@@ -425,7 +425,7 @@ void test_span()
 	//!	`as_bytes()` on const span.
 	{
 		const int data[1] = { 0x0A0B0C0D };
-		ns::Span<const int> s(data, 1);
+		ns::dev::Span<const int> s(data, 1);
 		auto bytes = ns::as_bytes(s);
 		assert(bytes.size() == sizeof(int));
 		assert(bytes[0] == 0x0D);
@@ -434,9 +434,9 @@ void test_span()
 	//!	`as_writable_bytes()` allows modification through byte view.
 	{
 		int data[1] = { 0 };
-		ns::Span<int> s(data, 1);
+		ns::dev::Span<int> s(data, 1);
 		auto bytes = ns::as_writable_bytes(s);
-		static_assert(std::is_same_v<decltype(bytes), ns::Span<ns::byte>>);
+		static_assert(std::is_same_v<decltype(bytes), ns::dev::Span<ns::byte>>);
 
 		assert(bytes.size() == sizeof(int));
 		bytes[0] = 0x42;
@@ -446,14 +446,14 @@ void test_span()
 	//!	`as_bytes()` on fixed-extent span.
 	{
 		int data[3] = { 0, 0, 0 };
-		ns::Span<int, 3> s(data);
+		ns::dev::Span<int, 3> s(data);
 		auto bytes = ns::as_bytes(s);
 		assert(bytes.size() == 3 * sizeof(int));
 	}
 
 	//!	`as_bytes()` on empty span.
 	{
-		ns::Span<int> s;
+		ns::dev::Span<int> s;
 		auto bytes = ns::as_bytes(s);
 		assert(bytes.empty());
 		assert(bytes.size() == 0);

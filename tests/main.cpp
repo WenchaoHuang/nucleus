@@ -24,7 +24,6 @@
 ***********************************    main    ***********************************
 *********************************************************************************/
 
-extern void test_span();
 extern void test_event();
 extern void test_array();
 extern void test_image();
@@ -37,6 +36,7 @@ extern void test_runtime();
 extern void test_dev_ptr();
 extern void test_surface();
 extern void test_texture();
+extern void test_dev_span();
 extern void test_allocator();
 extern void test_buffer_slice();
 extern void test_scratch_arena();
@@ -55,10 +55,10 @@ int main()
 	test_stream();
 	test_surface();
 	test_texture();
+	test_dev_span();
 	test_buffer_slice();
 	test_scratch_arena();
 	test_logger();
-	test_span();
 
 	return 0;
 }
