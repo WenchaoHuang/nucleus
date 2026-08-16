@@ -25,7 +25,7 @@
 #include "buffer.h"
 #include "logger.h"
 #include "runtime.h"
-#include "device_pointer.h"
+#include "device_span.h"
 
 namespace NS_NAMESPACE
 {
@@ -36,14 +36,16 @@ namespace NS_NAMESPACE
 	/**
 	 *	@brief		A 1D array template that provides device-accessible memory management.
 	 */
-	template<typename Type> class Array : public dev::Ptr<Type>
+	template<typename Type> class Array : public dev::Span<Type>
 	{
 		NS_NONCOPYABLE(Array)
+
+		using _Base = dev::Span<Type>;
 
 	public:
 
 		//!	@brief		Construct an empty array.
-		Array() noexcept : dev::Ptr<Type>(nullptr) {}
+		Array() noexcept : _Base(nullptr, 0) {}
 
 		//!	@brief		Allocates array with \p width elements using the default allocator.
 		explicit Array(size_t width) : Array(Runtime::defaultAllocator(), width) {}
@@ -52,7 +54,7 @@ namespace NS_NAMESPACE
 		explicit Array(std::shared_ptr<Allocator> alloctor, size_t width) : Array() { this->resize(std::move(alloctor), width); }
 
 		//!	@brief		Move constructor. Transfers ownership from another array.
-		Array(Array && rhs) : dev::Ptr<Type>(std::exchange(rhs.m_data, nullptr), std::exchange(rhs.m_width, 0)), m_buffer(std::move(rhs.m_buffer)) {}
+		Array(Array && rhs) : _Base(const_cast<Type*>(std::exchange(rhs.m_data, nullptr)), std::exchange(rhs.m_size, 0)), m_buffer(std::move(rhs.m_buffer)) {}
 
 	public:
 
@@ -69,10 +71,9 @@ namespace NS_NAMESPACE
 			if ((this->allocator() != allocator) || (this->size() != width))
 			{
 				m_buffer = Buffer(std::move(allocator), sizeof(Type) * width);
-					
-				dev::Ptr<Type>::m_data = reinterpret_cast<Type*>(m_buffer.data());
 
-				dev::Ptr<Type>::m_width = width;
+				_Base::m_data = reinterpret_cast<Type*>(m_buffer.data());
+				_Base::m_size = width;
 			}
 		}
 
@@ -108,9 +109,8 @@ namespace NS_NAMESPACE
 		 */
 		Buffer releaseBuffer() noexcept
 		{
-			dev::Ptr<Type>::m_width = 0;
-
-			dev::Ptr<Type>::m_data = nullptr;
+			_Base::m_size = 0;
+			_Base::m_data = nullptr;
 
 			return std::exchange(m_buffer, Buffer());
 		}
@@ -121,9 +121,8 @@ namespace NS_NAMESPACE
 		 */
 		void operator=(Array && rhs) noexcept
 		{
-			dev::Ptr<Type>::m_data = std::exchange(rhs.m_data, nullptr);
-
-			dev::Ptr<Type>::m_width = std::exchange(rhs.m_width, 0);
+			_Base::m_data = std::exchange(rhs.m_data, nullptr);
+			_Base::m_size = std::exchange(rhs.m_size, 0);
 
 			m_buffer = std::move(rhs.m_buffer);
 		}
@@ -134,10 +133,8 @@ namespace NS_NAMESPACE
 		 */
 		void swap(Array & rhs) noexcept
 		{
-			std::swap(dev::Ptr<Type>::m_width, rhs.m_width);
-
-			std::swap(dev::Ptr<Type>::m_data, rhs.m_data);
-
+			std::swap(_Base::m_size, rhs.m_size);
+			std::swap(_Base::m_data, rhs.m_data);
 			std::swap(m_buffer, rhs.m_buffer);
 		}
 
@@ -147,14 +144,10 @@ namespace NS_NAMESPACE
 		 */
 		void clear() noexcept
 		{
-			if (m_buffer)
-			{
-				dev::Ptr<Type>::m_data = nullptr;
-
-				dev::Ptr<Type>::m_width = 0;
-
+			if (!m_buffer.empty())
 				m_buffer = Buffer();
-			}
+			_Base::m_data = nullptr;
+			_Base::m_size = 0;
 		}
 
 
@@ -162,14 +155,14 @@ namespace NS_NAMESPACE
 		 *	@brief		Return constant version of device pointer.
 		 *	@note		Provides an explicit method to get device pointer. 
 		 */
-		dev::Ptr<const Type> ptr() const { return *this; }
+		const dev::Span<const Type> & span() const { return *this; }
 
 
 		/**
 		 *	@brief		Returns device pointer.
 		 *	@note		Provides an explicit method to get device pointer. 
 		 */
-		dev::Ptr<Type> ptr() { return *this; }
+		const dev::Span<Type> & span() { return *this; }
 
 	private:
 

@@ -35,7 +35,7 @@
 ****************************    default_allocator    *****************************
 *********************************************************************************/
 
-__global__ void initialize(dev::Ptr<int> values, dev::Ptr<int> offsets, size_t count)
+__global__ void initialize(dev::Span<int> values, dev::Span<int> offsets, size_t count)
 {
 	CUDA_for(i, count);
 
@@ -44,7 +44,7 @@ __global__ void initialize(dev::Ptr<int> values, dev::Ptr<int> offsets, size_t c
 }
 
 
-__global__ void transform(dev::Ptr<int> outputs, dev::Ptr<const int> values, dev::Ptr<const int> offsets, size_t count)
+__global__ void transform(dev::Span<int> outputs, dev::Span<const int> values, dev::Span<const int> offsets, size_t count)
 {
 	CUDA_for(i, count);
 

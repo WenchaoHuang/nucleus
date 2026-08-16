@@ -47,7 +47,7 @@ __device__ Complex complex_sqr(Complex z)
 }
 
 
-__global__ void paint_kernel(dev::Ptr<ColorRGB> pixels, int width, float invN, float t, int num, int deviceId)
+__global__ void paint_kernel(dev::Span<ColorRGB> pixels, int width, float invN, float t, int num, int deviceId)
 {
 	CUDA_for(tid, num);
 

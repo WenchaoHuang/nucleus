@@ -23,6 +23,7 @@
 
 #include "buffer.h"
 #include "utility.h"
+#include "device_span.h"
 #include "device_pointer.h"
 
 namespace NS_NAMESPACE
@@ -83,13 +84,13 @@ namespace NS_NAMESPACE
 		 *	@warning	The returned pointer becomes invalid when the scratch arena is reused,
 		 *				cleared, destroyed, or its buffer grows.
 		 */
-		template<typename Type> dev::Ptr<Type> allocate(size_t count)
+		template<typename Type> dev::Span<Type> allocate(size_t count)
 		{
 			static_assert(!std::is_void_v<Type>, "ScratchArena cannot allocate void elements!");
 			static_assert(!std::is_const_v<Type> && !std::is_volatile_v<Type>, "ScratchArena allocations must be mutable!");
 
 			if (count == 0)
-				return dev::Ptr<Type>(nullptr);
+				return dev::Span<Type>(nullptr, 0);
 
 			const size_t alignedOffset = align_up(m_offset, alignof(Type));
 			const size_t allocationEnd = alignedOffset + sizeof(Type) * count;
@@ -100,7 +101,7 @@ namespace NS_NAMESPACE
 
 			auto address = m_buffer.address() + alignedOffset;
 
-			return dev::Ptr<Type>(reinterpret_cast<Type*>(address), count);
+			return dev::Span<Type>(reinterpret_cast<Type*>(address), count);
 		}
 
 

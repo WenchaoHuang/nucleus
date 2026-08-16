@@ -35,7 +35,7 @@
 ******************************    scratch_arena    *******************************
 *********************************************************************************/
 
-__global__ void initialize(dev::Ptr<float> values, dev::Ptr<uint32_t> indices, size_t count)
+__global__ void initialize(dev::Span<float> values, dev::Span<uint32_t> indices, size_t count)
 {
 	CUDA_for(i, count);
 
@@ -44,7 +44,7 @@ __global__ void initialize(dev::Ptr<float> values, dev::Ptr<uint32_t> indices, s
 }
 
 
-__global__ void reorder(dev::Ptr<float> outputs, dev::Ptr<const float> values, dev::Ptr<const uint32_t> indices, size_t count)
+__global__ void reorder(dev::Span<float> outputs, dev::Span<const float> values, dev::Span<const uint32_t> indices, size_t count)
 {
 	CUDA_for(i, count);
 
@@ -54,7 +54,7 @@ __global__ void reorder(dev::Ptr<float> outputs, dev::Ptr<const float> values, d
 
 struct TemporaryOperation
 {
-	void execute(ns::Stream & stream, ns::ScratchArena & arena, dev::Ptr<float> outputs, size_t count)
+	void execute(ns::Stream & stream, ns::ScratchArena & arena, dev::Span<float> outputs, size_t count)
 	{
 		NS_ASSERT(outputs.size() >= count);
 

@@ -31,7 +31,7 @@
 ********************************    test_array    ********************************
 *********************************************************************************/
 
-static void test(dev::Ptr<int> a, dev::Ptr2<const float> b, dev::Ptr3<float> c)
+static void test(dev::Span<int> a, dev::Ptr2<const float> b, dev::Ptr3<float> c)
 {
 
 }
@@ -75,16 +75,14 @@ void test_array()
 	if (!array11.empty())
 	{
 		assert(array11.size() == 100);
-		assert(array11.width() == 100);
-		assert(array11.bytes() == 100 * sizeof(int));
-		assert(array11.pitch() == 100 * sizeof(int));
+		assert(array11.size_bytes() == 100 * sizeof(int));
 		assert(!array11.releaseBuffer().empty());
 		assert(array11.allocator() == nullptr);
 		array11.resize(allocator, 200);
 		array11.resize(300);
 		array11.resize(300);
 		array11.clear();
-		array11.ptr();
+		array11.span();
 		assert(array11.data() == nullptr);
 	}
 
