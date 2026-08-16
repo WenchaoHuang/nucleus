@@ -32,25 +32,28 @@
 ********************************    test_span    *********************************
 *********************************************************************************/
 
-//!	Device-side kernel to verify ns::Span compiles and works on GPU.
+// Device-side constant span for testing.
+__constant__ ns::Span<int> d_const_span;
+
+
+// Device-side kernel to verify ns::Span compiles and works on GPU.
 __global__ void span_test_kernel(int * d_output)
 {
-	//!	Default construction in device code.
+	// Default construction in device code.
 	ns::Span<int> s0;
-	ns::Span<const int> s0c;
 
-	//!	Fixed-extent default construction.
-	ns::Span<int, 4> s1;
+	// Fixed-extent default construction.
+	ns::Span<int, 0> s1;
 
-	//!	size() on device.
-	if (s1.size() == 4)
+	//!	`size()` on device.
+	if (s1.size() == 0)
 		d_output[0] = 1;
 
-	//!	empty() on device.
+	//!	`empty()` on device.
 	if (s0.empty())
 		d_output[1] = 2;
 
-	//!	Pointer+size construction on device.
+	// Pointer+size construction on device.
 	int local[3] = { 7, 8, 9 };
 	ns::Span<int> s2(local, 3);
 	if (s2.size() == 3 && s2[1] == 8)
@@ -58,7 +61,7 @@ __global__ void span_test_kernel(int * d_output)
 }
 
 
-//!	Helper to verify read-only access through const span.
+// Helper to verify read-only access through const span.
 static int sum_const_span(ns::Span<const int> s)
 {
 	int total = 0;
@@ -76,23 +79,23 @@ void test_span()
 	***************************    Type definitions    ***************************
 	*****************************************************************************/
 
-	//!	pointer
+	// pointer
 	static_assert(std::is_same_v<ns::Span<int>::pointer, int*>);
 	static_assert(std::is_same_v<ns::Span<const int>::pointer, const int*>);
 
-	//!	reference
+	// reference
 	static_assert(std::is_same_v<ns::Span<int>::reference, int&>);
 	static_assert(std::is_same_v<ns::Span<const int>::reference, const int&>);
 
-	//!	element_type
+	// element_type
 	static_assert(std::is_same_v<ns::Span<int>::element_type, int>);
 	static_assert(std::is_same_v<ns::Span<const int>::element_type, const int>);
 
-	//!	value_type
+	// value_type
 	static_assert(std::is_same_v<ns::Span<int>::value_type, int>);
 	static_assert(std::is_same_v<ns::Span<const int>::value_type, int>);
 
-	//!	iterator
+	// iterator
 	static_assert(std::is_same_v<ns::Span<int>::iterator, int*>);
 	static_assert(std::is_same_v<ns::Span<const int>::iterator, const int*>);
 
@@ -100,13 +103,13 @@ void test_span()
 	************************    Fixed-extent ns::Span    *************************
 	*****************************************************************************/
 
-	//!	size() for fixed extent.
+	//!	`size()` for fixed extent.
 	static_assert(ns::Span<int, 10>::size() == 10);
 
-	//!	Default construction for fixed extent.
+	//!	Default construction for fixed zero-extent.
 	{
-		ns::Span<const int, 5> s;
-		assert(s.size() == 5);
+		ns::Span<const int, 0> s;
+		assert(s.size() == 0);
 	}
 
 	//!	Construct from C-array.
@@ -240,7 +243,7 @@ void test_span()
 			sum += *it;
 		assert(sum == 10);
 
-		//!	Range-for on mutable span with modification.
+		// Range-for on mutable span with modification.
 		sum = 0;
 		for (auto & v : s)
 		{
@@ -262,7 +265,7 @@ void test_span()
 			sum += *it;
 		assert(sum == 26);
 
-		//!	Range-for on const span.
+		// Range-for on const span.
 		sum = 0;
 		for (const auto & v : s) sum += v;
 		assert(sum == 26);
@@ -291,14 +294,14 @@ void test_span()
 	*************************    Implicit conversion    **************************
 	*****************************************************************************/
 
-	//!	ns::Span<T> implicitly converts to ns::Span<const T>.
+	//!	`ns::Span<T>` implicitly converts to `ns::Span<const T>`.
 	{
 		int data[3] = { 1, 2, 3 };
 		ns::Span<int> s(data, 3);
 		assert(sum_const_span(s) == 6);
 	}
 
-	//!	ns::Span<T> can be assigned to ns::Span<const T>.
+	//!	`ns::Span<T>` can be assigned to `ns::Span<const T>`.
 	{
 		int data[2] = { 5, 10 };
 		ns::Span<int> ms(data, 2);
@@ -307,11 +310,18 @@ void test_span()
 		assert(cs[1] == 10);
 	}
 
+	//!	conversion from fixed-extent to dynamic-extent span.
+	{
+		int data[3] = { 1, 2, 3 };
+		ns::Span<int, 3> a(data);
+		ns::Span<const int> b = a;
+	};
+
 	/*****************************************************************************
 	******************************    Subviews    ********************************
 	*****************************************************************************/
 
-	//!	first() on mutable span.
+	//!	`first()` on mutable span.
 	{
 		int data[6] = { 0, 1, 2, 3, 4, 5 };
 		ns::Span<int> s(data, 6);
@@ -322,12 +332,12 @@ void test_span()
 		assert(sub[0] == 0);
 		assert(sub[2] == 2);
 
-		//!	Modifying through subview modifies original.
+		// Modifying through subview modifies original.
 		sub[0] = 99;
 		assert(data[0] == 99);
 	}
 
-	//!	last() on const span.
+	//!	`last()` on const span.
 	{
 		const int data[5] = { 10, 20, 30, 40, 50 };
 		ns::Span<const int> s(data, 5);
@@ -337,7 +347,7 @@ void test_span()
 		assert(sub[1] == 50);
 	}
 
-	//!	subspan() with offset only.
+	//!	`subspan()` with offset only.
 	{
 		int data[5] = { 1, 2, 3, 4, 5 };
 		ns::Span<int> s(data, 5);
@@ -347,7 +357,7 @@ void test_span()
 		assert(sub[2] == 5);
 	}
 
-	//!	subspan() with offset + count.
+	//!	`subspan()` with offset + count.
 	{
 		int data[8] = { 0, 1, 2, 3, 4, 5, 6, 7 };
 		ns::Span<const int> s(data, 8);
@@ -371,7 +381,7 @@ void test_span()
 	******************************    Observers    *******************************
 	*****************************************************************************/
 
-	//!	empty().
+	//!	`empty()`.
 	{
 		ns::Span<int> s0;
 		assert(s0.empty());
@@ -381,7 +391,7 @@ void test_span()
 		assert(!s1.empty());
 	}
 
-	//!	size_bytes().
+	//!	`size_bytes()`.
 	{
 		int data[4] = { 0 };
 		ns::Span<int> s(data, 4);
@@ -391,7 +401,7 @@ void test_span()
 		assert(ss.size_bytes() == 0);
 	}
 
-	//!	data() returns non-null for non-empty span.
+	//!	`data()` returns non-null for non-empty span.
 	{
 		int data[1] = { 42 };
 		ns::Span<int> s(data, 1);
@@ -399,7 +409,7 @@ void test_span()
 		assert(*s.data() == 42);
 	}
 
-	//!	as_bytes() on mutable span → const byte view.
+	//!	`as_bytes()` on mutable span -> const byte view.
 	{
 		int data[2] = { 0x01020304, 0x05060708 };
 		ns::Span<int> s(data, 2);
@@ -407,12 +417,12 @@ void test_span()
 		static_assert(std::is_same_v<decltype(bytes), ns::Span<const ns::byte>>);
 
 		assert(bytes.size() == 2 * sizeof(int));
-		//!	Verify byte-level access (little-endian).
+		// Verify byte-level access (little-endian).
 		assert(bytes[0] == 0x04);
 		assert(bytes[sizeof(int)] == 0x08);
 	}
 
-	//!	as_bytes() on const span.
+	//!	`as_bytes()` on const span.
 	{
 		const int data[1] = { 0x0A0B0C0D };
 		ns::Span<const int> s(data, 1);
@@ -421,7 +431,7 @@ void test_span()
 		assert(bytes[0] == 0x0D);
 	}
 
-	//!	as_writable_bytes() allows modification through byte view.
+	//!	`as_writable_bytes()` allows modification through byte view.
 	{
 		int data[1] = { 0 };
 		ns::Span<int> s(data, 1);
@@ -433,7 +443,7 @@ void test_span()
 		assert(data[0] == 0x42);
 	}
 
-	//!	as_bytes() on fixed-extent span.
+	//!	`as_bytes()` on fixed-extent span.
 	{
 		int data[3] = { 0, 0, 0 };
 		ns::Span<int, 3> s(data);
@@ -441,7 +451,7 @@ void test_span()
 		assert(bytes.size() == 3 * sizeof(int));
 	}
 
-	//!	as_bytes() on empty span.
+	//!	`as_bytes()` on empty span.
 	{
 		ns::Span<int> s;
 		auto bytes = ns::as_bytes(s);
@@ -457,12 +467,12 @@ void test_span()
 	auto alloc = device->defaultAllocator();
 	auto & stream = device->defaultStream();
 
-	//!	Launch device-side test kernel.
+	// Launch device-side test kernel.
 	ns::Array<int>		d_output(alloc, 3);
 	std::vector<int>	h_output(3, 0);
 
 	stream.fill(d_output.data(), 0, 3);
-	stream.launch(span_test_kernel, 1, 1)(d_output);
+	stream.launch(span_test_kernel, 1, 1)(d_output.data());
 	stream.memcpy(h_output.data(), d_output.data(), 3);
 
 	assert(h_output[0] == 1);
