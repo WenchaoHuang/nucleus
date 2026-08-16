@@ -34,7 +34,7 @@ For OptiX ray-tracing functionality, see the companion [Photon](https://github.c
 - CUDA graph support with automatic topology caching and parameter update (`ns::Graph`)
 - Texture and surface objects with full dimensionality support (1-D/2-D/3-D, cubemap, layered, mipmapped)
 - Kernel-launch helpers: `ns::ceil_div`, `ns::align_up`, `CUDA_for` / `NS_BOUNDS_CHECK` bounds-check macros
-- `ns::Span<T>` — lightweight non-owning view over a contiguous sequence (similar to `std::span`)
+- `ns::Span<T>` — host-only `std::span` compatibility layer with initializer-list support for const views
 - Logger (`ns::Logger`) for structured diagnostic messages
 
 ## Prerequisites
@@ -261,6 +261,35 @@ Call `reserve()` before allocating when the required capacity may grow, then cal
 
 Pointers returned by a scratch arena are non-owning and become invalid when the arena is reused, cleared, destroyed, or its buffer grows. For asynchronous work, reuse the same scratch arena only for operations ordered on one stream, or synchronize explicitly before reusing it across streams.
 
+### `ns::Span<T>` — Host Contiguous View
+
+`ns::Span<T, Extent>` is a host-only compatibility layer over `std::span`. Mutable element types are exact aliases of the corresponding standard span, so existing `std::span` APIs and type traits continue to work unchanged:
+
+```cpp
+#include <nucleus/span.h>
+
+int values[] = { 1, 2, 3, 4 };
+ns::Span<int> mutableValues(values);       // exactly std::span<int>
+ns::Span<int, 4> fixedValues(values);      // exactly std::span<int, 4>
+```
+
+Const element types use a small adapter derived from `std::span<const T, Extent>`. It inherits the standard constructors and adds an `std::initializer_list` constructor for concise function calls:
+
+```cpp
+int sum(ns::Span<const int> values);
+
+int result = sum({ 1, 2, 3, 4 });
+```
+
+> [!WARNING]
+> An initializer-list backing array follows the lifetime of its `std::initializer_list` object. A braced temporary normally lives only until the end of the full expression. Passing it directly to a function is valid, but storing or returning the resulting span leaves a dangling view:
+>
+> ```cpp
+> auto dangling = ns::Span<const int>{ 1, 2, 3 }; // Do not store this span.
+> ```
+
+Because `Span` selects its implementation through a type trait, template arguments must be written explicitly; `std::span` deduction guides are not available. Use `ns::as_bytes()` when a read-only byte view is needed. CUDA device code should continue to use `ns::dev::Span<T>` from `<nucleus/device_span.h>`.
+
 ### `dev::Ptr<T>` — Typed Device Pointer
 
 A lightweight, typed wrapper for a device pointer that carries array bounds. It is both host- and device-callable and supports optional runtime bounds checking.
@@ -392,7 +421,8 @@ Nucleus/
 │   ├── graph.h             # ns::Graph    (CUDA graph with auto-caching)
 │   ├── allocator.h         # ns::Allocator, DeviceAllocator, HostAllocator
 │   ├── buffer.h            # ns::Buffer   (raw RAII memory block)
-│   ├── span.h              # ns::Span<T> (lightweight non-owning array view)
+│   ├── span.h              # ns::Span<T> (host-only std::span compatibility layer)
+│   ├── device_span.h       # ns::dev::Span<T> (host/device contiguous view)
 │   ├── buffer_slice.h      # ns::BufferSlice<T>, BufferSlice2D<T>, BufferSlice3D<T> (owning typed slices)
 │   ├── scratch_arena.h     # ns::ScratchArena (reusable temporary memory)
 │   ├── array_1d.h          # ns::Array<T>

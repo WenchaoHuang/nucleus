@@ -24,6 +24,7 @@
 ***********************************    main    ***********************************
 *********************************************************************************/
 
+extern void test_span();
 extern void test_event();
 extern void test_array();
 extern void test_image();
@@ -43,6 +44,7 @@ extern void test_scratch_arena();
 
 int main()
 {
+	test_span();
 	test_runtime();
 	test_device();
 	test_event();
