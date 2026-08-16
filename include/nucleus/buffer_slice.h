@@ -23,6 +23,7 @@
 
 #include "fwd.h"
 #include "buffer.h"
+#include "device_span.h"
 #include "device_pointer.h"
 
 namespace NS_NAMESPACE
@@ -32,53 +33,57 @@ namespace NS_NAMESPACE
 	*****************************************************************************/
 
 	//!	@brief		A class representing a 1D slice of a buffer.
-	template<typename Type> class BufferSlice : public dev::Ptr<Type>
+	template<typename Type> class BufferSlice : public dev::Span<Type>
 	{
+		using _Base = dev::Span<Type>;
 
 	public:
 
 		//!	@brief		Default constructor.
-		BufferSlice() : dev::Ptr<Type>(nullptr), m_offset(0) {}
+		BufferSlice() : _Base(nullptr, 0), m_offset(0) {}
 
 		//!	@brief		Construct with nullptr.
-		BufferSlice(std::nullptr_t) : dev::Ptr<Type>(nullptr), m_offset(0) {}
+		BufferSlice(std::nullptr_t) : _Base(nullptr, 0), m_offset(0) {}
 
 		//!	@brief		Copy constructor, initializes from another `BufferSlice` of the same type.
-		BufferSlice(const BufferSlice<std::remove_cv_t<Type>> & rhs) : dev::Ptr<Type>(rhs.data(), rhs.width()), m_buffer(rhs.buffer()), m_offset(rhs.offset()) {}
+		BufferSlice(const BufferSlice<std::remove_cv_t<Type>> & rhs) : _Base(rhs.data(), rhs.size()), m_buffer(rhs.buffer()), m_offset(rhs.offset()) {}
 
 		//!	@brief		Construct with a given `Buffer`.
-		explicit BufferSlice(Buffer buffer) : dev::Ptr<Type>(static_cast<Type*>(buffer.data()), buffer.capacity() / sizeof(Type)), m_buffer(std::move(buffer)), m_offset(0) { NS_ASSERT(m_buffer); }
+		explicit BufferSlice(Buffer buffer) : _Base(static_cast<Type*>(buffer.data()), buffer.capacity() / sizeof(Type)), m_buffer(std::move(buffer)), m_offset(0) { NS_ASSERT(m_buffer); }
 
 		/**
-		 *	@brief		Constructor to initialize with a buffer handle, offset and width.
+		 *	@brief		Constructor to initialize with a buffer handle, offset and size.
 		 *	@param[in]	buffer - Buffer handle.
 		 *	@param[in]	offset - Byte offset within the buffer where the 1D slice starts.
-		 *	@param[in]	width - Width of the 1D slice.
+		 *	@param[in]	size - Width of the 1D slice.
 		 *	@warning	Ensures the buffer is not null, the address is correctly aligned, and the size fits within the buffer.
 		 */
-		explicit BufferSlice(Buffer buffer, size_t offset, size_t width) : dev::Ptr<Type>(reinterpret_cast<Type*>(buffer.address() + offset), width), m_buffer(std::move(buffer)), m_offset(offset)
+		explicit BufferSlice(Buffer buffer, size_t offset, size_t size) : _Base(reinterpret_cast<Type*>(buffer.address() + offset), size), m_buffer(std::move(buffer)), m_offset(offset)
 		{
 			NS_ASSERT(m_buffer);
 			NS_ASSERT((m_buffer.address() + offset) % alignof(Type) == 0);
-			NS_ASSERT((offset + sizeof(Type) * width) <= m_buffer.capacity());
+			NS_ASSERT((offset + sizeof(Type) * size) <= m_buffer.capacity());
 		}
 
 	public:
 
 		/**
-		 *	@brief		Returns a sub-slice starting at element \p start with \p width elements.
+		 *	@brief		Returns a sub-slice starting at element \p start with \p size elements.
 		 *	@param[in]	start - Element index of the sub-slice start (relative to this slice).
-		 *	@param[in]	width - Number of elements in the sub-slice.
+		 *	@param[in]	size - Number of elements in the sub-slice.
 		 */
-		BufferSlice subslice(size_t start, size_t width) const
+		BufferSlice subslice(size_t start, size_t size) const
 		{
-			NS_ASSERT(start + width <= this->width());
+			NS_ASSERT(start + size <= this->size());
 
-			return BufferSlice(m_buffer, m_offset + start * sizeof(Type), width);
+			return BufferSlice(m_buffer, m_offset + start * sizeof(Type), size);
 		}
 
-		//!	@brief		Returns device pointer to the underlying array, explicitly.
-		const dev::Ptr<Type> & ptr() const { return *this; }
+		//!	@brief		Returns constant device span to the underlying array, explicitly.
+		const dev::Span<const Type> & span() const { return *this; }
+
+		//!	@brief		Returns device span to the underlying array, explicitly.
+		const dev::Span<Type> & span() { return *this; }
 
 		//!	@brief		Returns the byte offset within the buffer.
 		size_t offset() const { return m_offset; }
@@ -243,7 +248,7 @@ namespace NS_NAMESPACE
 	{
 		static_assert(BinaryCompatible<DstType, SrcType>::value, "slice_cast requires DstType and SrcType to be binary compatible");
 
-		return slice.empty() ? BufferSlice<DstType>() : BufferSlice<DstType>(slice.buffer(), slice.offset(), slice.width());
+		return slice.empty() ? BufferSlice<DstType>() : BufferSlice<DstType>(slice.buffer(), slice.offset(), slice.size());
 	}
 
 	//!	@brief		Reinterpret a 2D buffer slice as another element type, enforcing binary compatibility at compile time.
