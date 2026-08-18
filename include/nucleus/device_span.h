@@ -22,9 +22,6 @@
 #pragma once
 
 #include "fwd.h"
-#include <array>
-#include <vector>
-#include <initializer_list>
 
 namespace NS_NAMESPACE
 {
@@ -121,21 +118,12 @@ namespace NS_NAMESPACE::dev
 		
 		//! @brief		Dynamic initialization is not supported for a `__constant__` variable
 		constexpr Span() noexcept requires(Extent == dynamic_extent || Extent == 0) = default;
-		
-		//!	@brief		Constructor for a span from `std::vector`.
-		Span(const std::vector<Type> & data) requires(Extent == dynamic_extent) : _SpanBase(data.data(), data.size()) {}
-
-		//!	@brief		Constructor for a span from `std::initializer_list`.
-		Span(const std::initializer_list<Type> & data) requires(Extent == dynamic_extent) : _SpanBase(data.begin(), data.size()) {}
 
 		//!	@brief		Constructor for a span with a pointer and size.
 		NS_CUDA_CALLABLE explicit Span(const Type * data, size_t size) requires(Extent == dynamic_extent) : _SpanBase(data, size) {}
 
 		//!	@brief		Constructor for a span with a fixed array.
 		template<size_t N> NS_CUDA_CALLABLE Span(const Type (&data)[N]) requires(Extent == dynamic_extent || Extent == N) : _SpanBase(data, N) {}
-
-		//!	@brief		Constructor for a span with fixed extent from `std::array`.
-		template<size_t N> Span(const std::array<Type, N> & data) requires(Extent == dynamic_extent || Extent == N) : _SpanBase(data.data(), N) {}
 
 		//!	@brief		Constructor for a span with fixed extent from another span.
 		template<size_t N> NS_CUDA_CALLABLE Span(const Span<const Type, N> & rhs) requires(Extent == dynamic_extent) : _SpanBase(rhs.data(), rhs.size()) {}
@@ -284,18 +272,12 @@ namespace NS_NAMESPACE::dev
 
 		//! @brief		Dynamic initialization is not supported for a `__constant__` variable
 		constexpr Span() noexcept requires(Extent == dynamic_extent || Extent == 0) = default;
-		
-		//!	@brief		Constructor for a span from std::vector.
-		Span(std::vector<Type> & data) requires(Extent == dynamic_extent) : _ConstBase(data.data(), data.size()) {}
 
 		//!	@brief		Constructor for a span with a pointer and size.
 		NS_CUDA_CALLABLE explicit Span(Type * data, size_t size) requires(Extent == dynamic_extent) : _ConstBase(data, size) {}
 
 		//!	@brief		Constructor for a span with a fixed array.
 		template<size_t N> NS_CUDA_CALLABLE Span(Type (&data)[N]) requires(Extent == dynamic_extent || Extent == N) : _ConstBase(data) {}
-
-		//!	@brief		Constructor for a span with fixed extent from std::array.
-		template<size_t N> Span(std::array<Type, N> & data) requires(Extent == dynamic_extent || Extent == N) : _ConstBase(data.data(), N) {}
 
 		//!	@brief		Constructor for a span with fixed extent from another span.
 		template<size_t N> NS_CUDA_CALLABLE Span(Span<Type, N> & rhs) requires(Extent == dynamic_extent) : _ConstBase(rhs.data(), rhs.size()) {}

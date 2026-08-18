@@ -124,15 +124,6 @@ void test_dev_span()
 		assert(s.back() == 4);
 	}
 
-	//!	Construct from `std::array`.
-	{
-		const std::array<int, 3> arr = { 10, 20, 30 };
-		ns::dev::Span<const int, 3> s(arr);
-		assert(s[0] == 10);
-		assert(s[1] == 20);
-		assert(s[2] == 30);
-	}
-
 	/*****************************************************************************
 	*********************    Dynamic-extent ns::dev::Span    *********************
 	*****************************************************************************/
@@ -165,36 +156,6 @@ void test_dev_span()
 		ns::dev::Span<int> s(data);
 		s[2] = 99;
 		assert(data[2] == 99);
-	}
-
-	//!	Construct from `std::vector`.
-	{
-		std::vector<int> vec = { 7, 8, 9 };
-		ns::dev::Span<int> s(vec);
-		assert(s.size() == 3);
-		assert(s[0] == 7);
-		assert(s[2] == 9);
-
-		//!	const ns::dev::Span from const `std::vector`.
-		const std::vector<int> cvec = { 1, 2 };
-		ns::dev::Span<const int> scv(cvec);
-		assert(scv.size() == 2);
-	}
-
-	//!	Construct from `std::array` (mutable).
-	{
-		std::array<int, 4> arr = { 0, 0, 0, 0 };
-		ns::dev::Span<int> s(arr);
-		s[0] = 42;
-		assert(arr[0] == 42);
-	}
-
-	//!	Construct from `std::initializer_list`.
-	{
-		ns::dev::Span<const int> s = { 0, 1, 2, 3 };
-		assert(s.size() == 4);
-		assert(s[0] == 0);
-		assert(s[3] == 3);
 	}
 
 	/*****************************************************************************
