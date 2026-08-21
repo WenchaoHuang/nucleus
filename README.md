@@ -34,7 +34,7 @@ For OptiX ray-tracing functionality, see the companion [Photon](https://github.c
 - CUDA graph support with automatic topology caching and parameter update (`ns::Graph`)
 - Texture and surface objects with full dimensionality support (1-D/2-D/3-D, cubemap, layered, mipmapped)
 - Kernel-launch helpers: `ns::ceil_div`, `ns::align_up`, `CUDA_for` / `NS_BOUNDS_CHECK` bounds-check macros
-- `ns::Span<T>` — host-only `std::span` compatibility layer with initializer-list support for const views
+- `ns::Span<T>` — host-only compatibility patch that backports the C++26 `std::span` initializer-list behavior to C++20, including const views
 - Logger (`ns::Logger`) for structured diagnostic messages
 
 ## Prerequisites
@@ -261,9 +261,11 @@ Call `reserve()` before allocating when the required capacity may grow, then cal
 
 Pointers returned by a scratch arena are non-owning and become invalid when the arena is reused, cleared, destroyed, or its buffer grows. For asynchronous work, reuse the same scratch arena only for operations ordered on one stream, or synchronize explicitly before reusing it across streams.
 
-### `ns::Span<T>` — Host Contiguous View
+### `ns::Span<T>` — C++26 `std::span` Compatibility Patch
 
-`ns::Span<T, Extent>` is a host-only compatibility layer over `std::span`. Mutable element types are exact aliases of the corresponding standard span, so existing `std::span` APIs and type traits continue to work unchanged:
+`ns::Span<T, Extent>` is a host-only patch aligned with C++26 `std::span`. Nucleus currently targets C++20, so this wrapper backports the C++26 `std::initializer_list` constructor for read-only spans while preserving the standard span interface. Mutable element types are exact aliases of the corresponding `std::span`, so existing APIs and type traits continue to work unchanged:
+
+The host-side implementation intentionally uses `std::span` rather than `ns::dev::Span`. Standard span types are more consistently recognized by debuggers, which makes host-side values easier to inspect and troubleshoot. `ns::dev::Span<T>` remains the separate host/device view for CUDA code.
 
 ```cpp
 #include <nucleus/span.h>
@@ -273,7 +275,7 @@ ns::Span<int> mutableValues(values);       // exactly std::span<int>
 ns::Span<int, 4> fixedValues(values);      // exactly std::span<int, 4>
 ```
 
-Const element types use a small adapter derived from `std::span<const T, Extent>`. It inherits the standard constructors and adds an `std::initializer_list` constructor for concise function calls:
+Const element types use a small adapter derived from `std::span<const T, Extent>`. It inherits the standard constructors and adds the C++26 `std::initializer_list` constructor for concise function calls:
 
 ```cpp
 int sum(ns::Span<const int> values);
@@ -421,7 +423,7 @@ Nucleus/
 │   ├── graph.h             # ns::Graph    (CUDA graph with auto-caching)
 │   ├── allocator.h         # ns::Allocator, DeviceAllocator, HostAllocator
 │   ├── buffer.h            # ns::Buffer   (raw RAII memory block)
-│   ├── span.h              # ns::Span<T> (host-only std::span compatibility layer)
+│   ├── span.h              # ns::Span<T> (C++26 std::span compatibility patch)
 │   ├── device_span.h       # ns::dev::Span<T> (host/device contiguous view)
 │   ├── buffer_slice.h      # ns::BufferSlice<T>, BufferSlice2D<T>, BufferSlice3D<T> (owning typed slices)
 │   ├── scratch_arena.h     # ns::ScratchArena (reusable temporary memory)
