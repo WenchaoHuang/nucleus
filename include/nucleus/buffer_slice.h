@@ -46,7 +46,7 @@ namespace NS_NAMESPACE
 		BufferSlice(std::nullptr_t) : _Base(nullptr, 0), m_offset(0) {}
 
 		//!	@brief		Copy constructor, initializes from another `BufferSlice` of the same type.
-		BufferSlice(const BufferSlice<std::remove_cv_t<Type>> & rhs) : _Base(rhs.data(), rhs.size()), m_buffer(rhs.buffer()), m_offset(rhs.offset()) {}
+		BufferSlice(const BufferSlice<std::remove_cv_t<Type>> & rhs) : _Base(rhs), m_buffer(rhs.buffer()), m_offset(rhs.offset()) {}
 
 		//!	@brief		Construct with a given `Buffer`.
 		explicit BufferSlice(Buffer buffer) : _Base(static_cast<Type*>(buffer.data()), buffer.capacity() / sizeof(Type)), m_buffer(std::move(buffer)), m_offset(0) { NS_ASSERT(m_buffer); }

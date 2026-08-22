@@ -265,7 +265,7 @@ Pointers returned by a scratch arena are non-owning and become invalid when the 
 
 `ns::Span<T, Extent>` is a host-only patch aligned with C++26 `std::span`. Nucleus currently targets C++20, so this wrapper backports the C++26 `std::initializer_list` constructor for read-only spans while preserving the standard span interface. Mutable element types are exact aliases of the corresponding `std::span`, so existing APIs and type traits continue to work unchanged:
 
-The host-side implementation intentionally uses `std::span` rather than `ns::dev::Span`. Standard span types are more consistently recognized by debuggers, which makes host-side values easier to inspect and troubleshoot. `ns::dev::Span<T>` remains the separate host/device view for CUDA code.
+The host-side implementation intentionally uses `std::span` rather than `ns::dev::Span`. Standard span types are more consistently recognized by debuggers, which makes host-side values easier to inspect and troubleshoot. `ns::dev::Span<T>` remains the separate device-side view intended for CUDA code.
 
 ```cpp
 #include <nucleus/span.h>
@@ -291,6 +291,25 @@ int result = sum({ 1, 2, 3, 4 });
 > ```
 
 Because `Span` selects its implementation through a type trait, template arguments must be written explicitly; `std::span` deduction guides are not available. Use `ns::as_bytes()` when a read-only byte view is needed. CUDA device code should continue to use `ns::dev::Span<T>` from `<nucleus/device_span.h>`.
+
+### `ns::dev::Span<T>` — Device-Side Contiguous View
+
+`ns::dev::Span<T, Extent>` is a lightweight, non-owning view designed primarily for passing contiguous device memory into CUDA kernels and device-callable functions. Its operations are host/device callable where needed for construction and testing, but unlike the host-only `ns::Span`, it is part of the device-side API and does not own the underlying storage. Its mutable and read-only forms are intentionally represented as separate types: `ns::dev::Span<T, Extent>` inherits from `ns::dev::Span<const T, Extent>`. This preserves mutable element access for the former while allowing it to be passed to APIs that accept a const view. The split also keeps `T` available for implicit template argument deduction through the const-view interface:
+
+```cu
+template<typename Type>
+NS_CUDA_CALLABLE void inspect(ns::dev::Span<const Type> values)
+{
+	// read-only access to values
+}
+
+__global__ void kernel(ns::dev::Span<int> values)
+{
+	inspect(values); // Type is deduced as int; values is viewed as const
+}
+```
+
+Use `ns::as_writable_bytes()` only with mutable, non-volatile spans. `ns::as_bytes()` provides a read-only byte view for non-volatile spans.
 
 ### `dev::Ptr<T>` — Typed Device Pointer
 
@@ -424,7 +443,7 @@ Nucleus/
 │   ├── allocator.h         # ns::Allocator, DeviceAllocator, HostAllocator
 │   ├── buffer.h            # ns::Buffer   (raw RAII memory block)
 │   ├── span.h              # ns::Span<T> (C++26 std::span compatibility patch)
-│   ├── device_span.h       # ns::dev::Span<T> (host/device contiguous view)
+│   ├── device_span.h       # ns::dev::Span<T> (device-side contiguous view)
 │   ├── buffer_slice.h      # ns::BufferSlice<T>, BufferSlice2D<T>, BufferSlice3D<T> (owning typed slices)
 │   ├── scratch_arena.h     # ns::ScratchArena (reusable temporary memory)
 │   ├── array_1d.h          # ns::Array<T>
