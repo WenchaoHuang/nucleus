@@ -141,18 +141,30 @@ namespace NS_NAMESPACE
 
 	template<> struct CudaBuiltinType<double2> { using type = ::double2; };
 	template<> struct CudaBuiltinType<double3> { using type = ::double3; };
+#if __CUDACC_VER_MAJOR__ < 13
+	template<> struct CudaBuiltinType<double4> { using type = ::double4; };
+#else
 	template<> struct CudaBuiltinType<double4_16a> { using type = ::double4_16a; };
 	template<> struct CudaBuiltinType<double4_32a> { using type = ::double4_32a; };
+#endif
 
 	template<> struct CudaBuiltinType<longlong2> { using type = ::longlong2; };
 	template<> struct CudaBuiltinType<longlong3> { using type = ::longlong3; };
+#if __CUDACC_VER_MAJOR__ < 13
+	template<> struct CudaBuiltinType<longlong4> { using type = ::longlong4; };
+#else
 	template<> struct CudaBuiltinType<longlong4_16a> { using type = ::longlong4_16a; };
 	template<> struct CudaBuiltinType<longlong4_32a> { using type = ::longlong4_32a; };
+#endif
 
 	template<> struct CudaBuiltinType<ulonglong2> { using type = ::ulonglong2; };
 	template<> struct CudaBuiltinType<ulonglong3> { using type = ::ulonglong3; };
+#if __CUDACC_VER_MAJOR__ < 13
+	template<> struct CudaBuiltinType<ulonglong4> { using type = ::ulonglong4; };
+#else
 	template<> struct CudaBuiltinType<ulonglong4_16a> { using type = ::ulonglong4_16a; };
 	template<> struct CudaBuiltinType<ulonglong4_32a> { using type = ::ulonglong4_32a; };
+#endif
 #endif
 }
 
