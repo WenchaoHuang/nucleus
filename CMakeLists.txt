@@ -97,9 +97,9 @@ add_library(Nucleus::nucleus ALIAS ${TARGET_NAME})
 
 # Link directories
 if(NUCLEUS_CUDA_RUNTIME_STATIC)
-	target_link_libraries(${TARGET_NAME} PUBLIC CUDA::cudart_static)
+	target_link_libraries(${TARGET_NAME} PRIVATE CUDA::cudart_static)
 else()
-	target_link_libraries(${TARGET_NAME} PUBLIC CUDA::cudart)
+	target_link_libraries(${TARGET_NAME} PRIVATE CUDA::cudart)
 endif()
 
 # Include directories
