@@ -33,6 +33,5 @@ target_link_libraries(${TARGET_NAME} PRIVATE Nucleus::nucleus)
 set_target_properties(${TARGET_NAME} PROPERTIES
 	CUDA_RESOLVE_DEVICE_SYMBOLS ON
 	CUDA_SEPARABLE_COMPILATION ON
-	CUDA_ARCHITECTURES "75"
 	FOLDER "Examples"
 )
