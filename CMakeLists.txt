@@ -33,6 +33,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(NUCLEUS_BUILD_TESTS "Build tests for Nucleus library" OFF)
 option(NUCLEUS_BUILD_EXAMPLES "Build examples for Nucleus library" OFF)
 option(NUCLEUS_BUILD_SHARED_LIB "Build Nucleus as shared library" ON)
+option(NUCLEUS_CUDA_RUNTIME_STATIC "Use static CUDA runtime" OFF)
 
 # Target name
 set(TARGET_NAME nucleus)
@@ -95,7 +96,11 @@ endif()
 add_library(Nucleus::nucleus ALIAS ${TARGET_NAME})
 
 # Link directories
-target_link_libraries(${TARGET_NAME} PUBLIC CUDA::cudart)
+if(NUCLEUS_CUDA_RUNTIME_STATIC)
+	target_link_libraries(${TARGET_NAME} PUBLIC CUDA::cudart_static)
+else()
+	target_link_libraries(${TARGET_NAME} PUBLIC CUDA::cudart)
+endif()
 
 # Include directories
 target_include_directories(${TARGET_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
