@@ -8,3 +8,9 @@
 2. Keep API and CUDA behavior consistent with adjacent code. Reuse existing
    Nucleus types, `NS_*` macros, logging, and error-handling patterns instead of
    creating parallel helpers or changing error semantics without a clear need.
+
+3. Match the established style of nearby code in the same module before editing.
+   Preserve its naming, include ordering, file layout, comments, control flow,
+   brace and spacing conventions, and local helper usage. Keep changes narrowly
+   scoped: avoid unrelated reformatting, renaming, or refactoring. When adding
+   tests, follow the structure, naming, and fixture patterns of nearby tests.
