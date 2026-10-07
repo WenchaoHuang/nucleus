@@ -38,6 +38,7 @@ extern void test_dev_ptr();
 extern void test_surface();
 extern void test_texture();
 extern void test_dev_span();
+extern void test_dev_mdspan();
 extern void test_allocator();
 extern void test_buffer_slice();
 extern void test_scratch_arena();
@@ -58,6 +59,7 @@ int main()
 	test_surface();
 	test_texture();
 	test_dev_span();
+	test_dev_mdspan();
 	test_buffer_slice();
 	test_scratch_arena();
 	test_logger();
