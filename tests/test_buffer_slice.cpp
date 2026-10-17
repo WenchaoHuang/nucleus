@@ -45,6 +45,8 @@ void test_buffer_slice()
 
 	ns::BufferSlice3D<int> bufferSlice6;
 	ns::BufferSlice3D<int> bufferSlice7 = nullptr;
+	ns::BufferSlice3D<int> bufferSlice8(buffer, 0, 8, 4, 2);
+	ns::BufferSlice3D<int> bufferSlice8b = bufferSlice8.subslice(1, 1, 1, 4, 2, 1);
 
 	ns::slice_cast<int>(bufferSlice0);
 	ns::slice_cast<float>(bufferSlice4);

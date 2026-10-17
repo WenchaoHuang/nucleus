@@ -221,7 +221,7 @@ namespace NS_NAMESPACE
 		{
 			NS_ASSERT(x + width <= this->width() && y + height <= this->height() && z + depth <= this->depth());
 
-			return BufferSlice<Type>(m_buffer, m_offset + (z * this->height() * this->width() + y * this->width() + x) * sizeof(Type), static_cast<uint32_t>(width), static_cast<uint32_t>(height), static_cast<uint32_t>(depth));
+			return BufferSlice3D<Type>(m_buffer, m_offset + (z * this->height() * this->width() + y * this->width() + x) * sizeof(Type), static_cast<uint32_t>(width), static_cast<uint32_t>(height), static_cast<uint32_t>(depth));
 		}
 
 		//!	@brief		Returns device pointer to the underlying array, explicitly.
