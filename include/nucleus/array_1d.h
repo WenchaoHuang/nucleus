@@ -160,7 +160,7 @@ namespace NS_NAMESPACE
 		{
 			NS_ASSERT(_Extent == dynamic_extent || _Extent <= _Base::size());
 
-			return dev::Span<const Type, _Extent>(_Base::data(), _Extent);
+			return dev::Span<const Type, _Extent>(_Base::data(), _Extent == dynamic_extent ? _Base::size() : _Extent);
 		}
 
 
@@ -173,7 +173,7 @@ namespace NS_NAMESPACE
 		{
 			NS_ASSERT(_Extent == dynamic_extent || _Extent <= _Base::size());
 
-			return dev::Span<Type, _Extent>(_Base::data(), _Extent);
+			return dev::Span<Type, _Extent>(_Base::data(), _Extent == dynamic_extent ? _Base::size() : _Extent);
 		}
 
 	private:
