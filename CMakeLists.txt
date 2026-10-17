@@ -23,8 +23,8 @@ cmake_minimum_required(VERSION 3.18)
 # Project name: Nucleus
 project(Nucleus VERSION 0.1.0 LANGUAGES CXX CUDA)
 
-# Find CUDA Toolkit (needed to expose include dirs to C++ compilation units)
-find_package(CUDAToolkit REQUIRED)
+# Find CUDA Toolkit 12.0 or newer (required for C++20 support)
+find_package(CUDAToolkit 12.0 REQUIRED)
 
 # Organize targets into folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

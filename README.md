@@ -41,7 +41,7 @@ For OptiX ray-tracing functionality, see the companion [Photon](https://github.c
 
 | Requirement | Minimum version |
 |---|---|
-| CUDA Toolkit | 11.0 |
+| CUDA Toolkit | 12.0 |
 | CMake | 3.18 |
 | C++ compiler | C++20 |
 
