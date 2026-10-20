@@ -266,6 +266,14 @@ namespace NS_NAMESPACE::dev
 	 *	@note		Inherits from `Span<const Type, Extent>` so mutable spans can be
 	 *				implicitly converted to const views and used for template argument
 	 *				deduction; see the `Span<const T, Extent>` documentation above.
+	 *	@note		This design assumes writable GPU storage, such as memory allocated
+	 *				by `cudaMalloc`. The const base restricts access through the view;
+	 *				it does not make the underlying allocation const. The `const_cast`
+	 *				in `data()` therefore only restores mutable access to writable storage.
+	 *	@warning	The writable-storage requirement must also hold after rebinding the
+	 *				inherited base through a `Span<const Type, Extent>&` reference. This
+	 *				is not enforced by the type system: do not rebind that base to truly
+	 *				const objects or read-only device memory and then write through this span.
 	 */
 	template<typename Type, size_t Extent> class Span : public Span<const Type, Extent>
 	{
