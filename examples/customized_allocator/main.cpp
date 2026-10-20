@@ -21,8 +21,8 @@
  */
 
 #include <map>
+#include <nucleus/array.h>
 #include <nucleus/runtime.h>
-#include <nucleus/array_1d.h>
 #include <nucleus/allocator.h>
 
 /*********************************************************************************

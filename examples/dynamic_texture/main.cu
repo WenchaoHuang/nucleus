@@ -24,12 +24,12 @@
 
 #include "../example_window.h"
 
+#include <nucleus/array.h>
 #include <nucleus/device.h>
 #include <nucleus/stream.h>
 #include <nucleus/runtime.h>
 #include <nucleus/surface.h>
 #include <nucleus/texture.h>
-#include <nucleus/array_1d.h>
 #include <nucleus/array_2d.h>
 
 #include <cuda_runtime_api.h>

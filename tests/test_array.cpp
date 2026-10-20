@@ -21,9 +21,9 @@
  */
 
 #include <vector>
+#include <nucleus/array.h>
 #include <nucleus/device.h>
 #include <nucleus/runtime.h>
-#include <nucleus/array_1d.h>
 #include <nucleus/array_2d.h>
 #include <nucleus/array_3d.h>
 

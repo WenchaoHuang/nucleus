@@ -22,10 +22,10 @@
 
 #include "../example_window.h"
 
+#include <nucleus/array.h>
 #include <nucleus/device.h>
 #include <nucleus/stream.h>
 #include <nucleus/runtime.h>
-#include <nucleus/array_1d.h>
 #include <nucleus/launch_utils.cuh>
 
 /*********************************************************************************

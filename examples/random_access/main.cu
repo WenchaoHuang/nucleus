@@ -26,10 +26,10 @@
 #include <iomanip>
 #include <sstream>
 
+#include <nucleus/array.h>
 #include <nucleus/device.h>
 #include <nucleus/stream.h>
 #include <nucleus/runtime.h>
-#include <nucleus/array_1d.h>
 #include <nucleus/allocator.h>
 #include <nucleus/scoped_timer.h>
 #include <nucleus/launch_utils.cuh>

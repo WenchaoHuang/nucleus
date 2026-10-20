@@ -133,7 +133,7 @@ Or include individual headers as needed (see [Project Structure](#project-struct
 ```cu
 // vector_add.cu  —  must be compiled with nvcc
 #include <nucleus/runtime.h>
-#include <nucleus/array_1d.h>
+#include <nucleus/array.h>
 #include <nucleus/launch_utils.cuh>  // .cuh — only in .cu files
 
 // Kernel: element-wise addition
@@ -472,7 +472,7 @@ Nucleus/
 │   ├── device_span.h       # ns::dev::Span<T> (device-side contiguous view)
 │   ├── buffer_slice.h      # ns::BufferSlice<T>, BufferSlice2D<T>, BufferSlice3D<T> (owning typed slices)
 │   ├── scratch_arena.h     # ns::ScratchArena (reusable temporary memory)
-│   ├── array_1d.h          # ns::Array<T>
+│   ├── array.h          	# ns::Array<T>
 │   ├── array_2d.h          # ns::Array2D<T>
 │   ├── array_3d.h          # ns::Array3D<T>
 │   ├── device_pointer.h    # dev::Ptr<T>, dev::Ptr2<T>, dev::Ptr3<T>

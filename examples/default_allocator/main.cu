@@ -24,10 +24,10 @@
 #include <vector>
 #include <cstdlib>
 
+#include <nucleus/array.h>
 #include <nucleus/device.h>
 #include <nucleus/stream.h>
 #include <nucleus/runtime.h>
-#include <nucleus/array_1d.h>
 #include <nucleus/scratch_arena.h>
 #include <nucleus/launch_utils.cuh>
 

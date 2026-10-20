@@ -22,10 +22,10 @@
 
 #include <vector>
 #include <functional>
+#include <nucleus/array.h>
 #include <nucleus/stream.h>
 #include <nucleus/device.h>
 #include <nucleus/runtime.h>
-#include <nucleus/array_1d.h>
 #include <nucleus/array_2d.h>
 #include <nucleus/array_3d.h>
 #include <nucleus/image_1d.h>
