@@ -91,19 +91,19 @@ Runtime::Runtime()
 }
 
 
-const char * Runtime::getErrorString(Error_t err) noexcept
+const char * Runtime::getErrorString(ErrorCode code) noexcept
 {
-	return cudaGetErrorString(static_cast<cudaError_t>(err));
+	return cudaGetErrorString(static_cast<cudaError_t>(code));
 }
 
 
-const char * Runtime::getErrorName(Error_t err) noexcept
+const char * Runtime::getErrorName(ErrorCode code) noexcept
 {
-	return cudaGetErrorName(static_cast<cudaError_t>(err));
+	return cudaGetErrorName(static_cast<cudaError_t>(code));
 }
 
 
-Error_t Runtime::getLastError() noexcept
+ErrorCode Runtime::getLastError() noexcept
 {
 	return cudaGetLastError();
 }

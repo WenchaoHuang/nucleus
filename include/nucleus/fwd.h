@@ -56,7 +56,7 @@ namespace NS_NAMESPACE
 	class ScratchArena;
 	class HostAllocator;
 	class DeviceAllocator;
-	using Error_t = int;
+	using ErrorCode = int;
 
 	struct Extent;
 	struct Version;
