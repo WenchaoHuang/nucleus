@@ -1,4 +1,4 @@
-/**
+﻿/**
  *	Copyright (c) 2025 Wenchao Huang <physhuangwenchao@gmail.com>
  *
  *	Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -84,6 +84,7 @@ void test_array()
 		array11.resize(300);
 		array11.resize(300);
 		array11.clear();
+		array11.cspan();
 		array11.span();
 		assert(array11.data() == nullptr);
 	}

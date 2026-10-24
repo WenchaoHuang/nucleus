@@ -1,4 +1,4 @@
-/**
+﻿/**
  *	Copyright (c) 2025 Wenchao Huang <physhuangwenchao@gmail.com>
  *
  *	Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,6 +26,7 @@
 #include "logger.h"
 #include "runtime.h"
 #include "device_span.h"
+#include <utility>
 
 namespace NS_NAMESPACE
 {
@@ -34,146 +35,123 @@ namespace NS_NAMESPACE
 	*****************************************************************************/
 
 	/**
-	 *	@brief		A 1D array template that provides device-accessible memory management.
+	 *	@brief		Owns a contiguous allocation of typed memory through a `Buffer`.
+	 *	@note		Elements are not initialized, constructed, or destroyed.
 	 */
-	template<typename Type> class Array : public dev::Span<Type>
+	template<typename Type> class Array
 	{
 		NS_NONCOPYABLE(Array)
 
-		using _Base = dev::Span<Type>;
-
 	public:
 
-		//!	@brief		Construct an empty array.
-		Array() noexcept : _Base(nullptr, 0) {}
+		//!	@brief		Default constructor.
+		Array() noexcept = default;
 
-		//!	@brief		Allocates array with \p width elements using the default allocator.
-		explicit Array(size_t width) : Array(Runtime::defaultAllocator(), width) {}
+		//!	@brief		Allocates array with \p count elements using the default allocator.
+		explicit Array(size_t count) : Array(Runtime::defaultAllocator(), count) {}
 
-		//!	@brief		Allocates array with \p width elements.
-		explicit Array(std::shared_ptr<Allocator> alloctor, size_t width) : Array() { this->resize(std::move(alloctor), width); }
+		//!	@brief		Allocates array with \p count elements.
+		explicit Array(std::shared_ptr<Allocator> allocator, size_t count) : Array() { this->resize(std::move(allocator), count); }
+
+		//!	@note		Transfers ownership from another array.
+		void operator=(Array && rhs) noexcept { m_buffer = std::move(rhs.m_buffer); }
 
 		//!	@brief		Move constructor. Transfers ownership from another array.
-		Array(Array && rhs) : _Base(const_cast<Type*>(std::exchange(rhs.m_data, nullptr)), std::exchange(rhs.m_size, 0)), m_buffer(std::move(rhs.m_buffer)) {}
+		Array(Array && rhs) noexcept : m_buffer(std::move(rhs.m_buffer)) {}
+
+	public:
+
+		//!	@brief		Releases allocated memory.
+		void clear() noexcept { m_buffer = Buffer{}; }
+
+		//!	@brief		Checks if the array is empty.
+		bool empty() const noexcept { return m_buffer.empty(); }
+
+		//!	@brief		Returns the size of the allocation in bytes.
+		size_t size_bytes() const noexcept { return m_buffer.capacity(); }
+
+		//!	@brief		Swaps contents with another array.
+		void swap(Array & rhs) noexcept { std::swap(m_buffer, rhs.m_buffer); }
+
+		//!	@brief		Returns the number of elements.
+		size_t size() const noexcept { return m_buffer.capacity() / sizeof(Type); }
+
+		//!	@brief		Returns a mutable pointer to the underlying memory.
+		Type * data() noexcept { return reinterpret_cast<Type*>(m_buffer.data()); }
+
+		//!	@brief		Releases ownership of the internal buffer.
+		Buffer releaseBuffer() noexcept { return std::exchange(m_buffer, Buffer()); }
+
+		//!	@brief		Returns a const pointer to the underlying memory.
+		const Type * data() const noexcept { return reinterpret_cast<const Type*>(m_buffer.data()); }
+
+		//!	@brief		Gets the allocator associated with.
+		const std::shared_ptr<Allocator> & allocator() const noexcept { return m_buffer.allocator(); }
 
 	public:
 
 		/**
-		 *	@brief		Resizes the array using a new allocator.
-		 *	@param[in]	allocator - The new allocator to use.
-		 *	@param[in]	width - The new number of elements.
-		 *	@note		If the allocator or size changes, existing data will be lost.
+		 *	@brief		Returns device pointer.
+		 *	@tparam		_Extent - The number of elements to view (default is `dynamic_extent`).
+		 *	@note		Provides an explicit method to get device pointer.
 		 */
-		void resize(std::shared_ptr<Allocator> allocator, size_t width)
+		template<size_t _Extent = dynamic_extent> dev::Span<Type, _Extent> span()
 		{
-			NS_ASSERT_LOG_IF(allocator == nullptr, "Empty allocator!");
+			NS_ASSERT(_Extent == dynamic_extent || _Extent <= this->size());
 
-			if ((this->allocator() != allocator) || (this->size() != width))
-			{
-				m_buffer = Buffer(std::move(allocator), sizeof(Type) * width);
-
-				_Base::m_data = reinterpret_cast<Type*>(m_buffer.data());
-				_Base::m_size = width;
-			}
-		}
-
-
-		/**
-		 *	@brief		Resizes the array using the default allocator.
-		 *	@param[in]	width - The new number of elements.
-		 *	@note		If the size changes, existing data will be lost.
-		 */
-		void resize(size_t width)
-		{
-			auto allocator = Runtime::defaultAllocator();
-
-			NS_ASSERT_LOG_IF(!allocator, "No default allocator!");
-
-			this->resize(allocator, width);
-		}
-
-
-		/**
-		 *	@brief		Gets the allocator associated with.
-		 */
-		 const std::shared_ptr<Allocator> & allocator() const
-		 {
-			 return m_buffer.allocator();
-		 }
-
-
-		/**
-		 *	@brief		Releases ownership of the internal buffer.
-		 *	@return		The released buffer (nullptr if array was empty).
-		 *	@note		After this call, the array will be empty but still valid.
-		 */
-		Buffer releaseBuffer() noexcept
-		{
-			_Base::m_size = 0;
-			_Base::m_data = nullptr;
-
-			return std::exchange(m_buffer, Buffer());
-		}
-
-
-		/**
-		 *	@brief		Move assignment operator.
-		 */
-		void operator=(Array && rhs) noexcept
-		{
-			_Base::m_data = std::exchange(rhs.m_data, nullptr);
-			_Base::m_size = std::exchange(rhs.m_size, 0);
-
-			m_buffer = std::move(rhs.m_buffer);
-		}
-
-
-		/**
-		 *	@brief		Swaps contents with another array.
-		 */
-		void swap(Array & rhs) noexcept
-		{
-			std::swap(_Base::m_size, rhs.m_size);
-			std::swap(_Base::m_data, rhs.m_data);
-			std::swap(m_buffer, rhs.m_buffer);
-		}
-
-
-		/**
-		 *	@brief		Clears the array and releases all allocated memory.
-		 */
-		void clear() noexcept
-		{
-			if (!m_buffer.empty())
-				m_buffer = Buffer();
-			_Base::m_data = nullptr;
-			_Base::m_size = 0;
+			return dev::Span<Type, _Extent>(this->data(), _Extent == dynamic_extent ? this->size() : _Extent);
 		}
 
 
 		/**
 		 *	@brief		Return constant version of device pointer.
 		 *	@tparam		_Extent - The number of elements to view (default is `dynamic_extent`).
-		 *	@note		Provides an explicit method to get device pointer. 
+		 *	@note		Provides an explicit method to get device pointer.
 		 */
 		template<size_t _Extent = dynamic_extent> dev::Span<const Type, _Extent> span() const
 		{
-			NS_ASSERT(_Extent == dynamic_extent || _Extent <= _Base::size());
+			NS_ASSERT(_Extent == dynamic_extent || _Extent <= this->size());
 
-			return dev::Span<const Type, _Extent>(_Base::data(), _Extent == dynamic_extent ? _Base::size() : _Extent);
+			return dev::Span<const Type, _Extent>(this->data(), _Extent == dynamic_extent ? this->size() : _Extent);
 		}
 
 
 		/**
-		 *	@brief		Returns device pointer.
+		 *	@brief		Return constant version of device pointer.
 		 *	@tparam		_Extent - The number of elements to view (default is `dynamic_extent`).
-		 *	@note		Provides an explicit method to get device pointer. 
+		 *	@note		Provides an explicit method to get device pointer.
 		 */
-		template<size_t _Extent = dynamic_extent> dev::Span<Type, _Extent> span()
+		template<size_t _Extent = dynamic_extent> dev::Span<const Type, _Extent> cspan() const
 		{
-			NS_ASSERT(_Extent == dynamic_extent || _Extent <= _Base::size());
+			return this->span<_Extent>();
+		}
 
-			return dev::Span<Type, _Extent>(_Base::data(), _Extent == dynamic_extent ? _Base::size() : _Extent);
+
+		/**
+		 *	@brief		Resizes the array using a new allocator.
+		 *	@param[in]	allocator - The new allocator to use.
+		 *	@param[in]	count - The new number of elements.
+		 *	@note		If the allocator or size changes, existing data will be lost.
+		 */
+		void resize(std::shared_ptr<Allocator> allocator, size_t count)
+		{
+			NS_ASSERT_LOG_IF(allocator == nullptr, "Empty allocator!");
+
+			if ((this->allocator() != allocator) || (this->size() != count))
+			{
+				m_buffer = Buffer(std::move(allocator), sizeof(Type) * count);
+			}
+		}
+
+
+		/**
+		 *	@brief		Resizes the array using the default allocator.
+		 *	@param[in]	count - The new number of elements.
+		 *	@note		If the allocator or size changes, existing data will be lost.
+		 */
+		void resize(size_t count)
+		{
+			this->resize(Runtime::defaultAllocator(), count);
 		}
 
 	private:

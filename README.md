@@ -134,14 +134,15 @@ Or include individual headers as needed (see [Project Structure](#project-struct
 // vector_add.cu  —  must be compiled with nvcc
 #include <nucleus/runtime.h>
 #include <nucleus/array.h>
+#include <nucleus/device_span.h>
 #include <nucleus/launch_utils.cuh>  // .cuh — only in .cu files
 
 // Kernel: element-wise addition
 // CUDA_for(i, count) expands to:
 //   const auto i = ns::tid(); if (i >= count) return;
-__global__ void add_kernel(dev::Ptr<int> out,
-						   dev::Ptr<const int> x,
-						   dev::Ptr<const int> y,
+__global__ void add_kernel(dev::Span<int> out,
+						   dev::Span<const int> x,
+						   dev::Span<const int> y,
 						   unsigned int count)
 {
 	CUDA_for(i, count);
@@ -251,7 +252,7 @@ bool done = stream.isComplete();
 
 ### `ns::Array<T>` / `ns::Array2D<T>` / `ns::Array3D<T>`
 
-RAII wrappers for typed device memory. They inherit from `dev::Ptr<T>` and can be passed directly to kernels.
+RAII wrappers for typed memory. `Array<T>` owns a `Buffer` and exposes its pointer, element count, and byte size. It does not inherit from a device view, but it converts to a dynamic `dev::Span<T>` or `dev::Span<const T>` like `std::vector` converts to dynamic `std::span`; fixed-extent spans must be constructed explicitly. `Array2D<T>` and `Array3D<T>` inherit from `dev::Ptr2<T>` and `dev::Ptr3<T>`, respectively.
 
 ```cpp
 ns::Array<float>   a1(allocator, width);
@@ -261,7 +262,7 @@ ns::Array3D<float> a3(allocator, width, height, depth);
 a1.size();            // element count
 a2.width(); a2.height();
 a1.data();            // raw device pointer (Type*)
-a1.ptr();             // dev::Ptr<float> — typed device pointer
+a1.size_bytes();      // allocation size in bytes
 ```
 
 ### `ns::ScratchArena`
