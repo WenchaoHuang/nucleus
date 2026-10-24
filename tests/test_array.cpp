@@ -20,12 +20,13 @@
  *	SOFTWARE.
  */
 
-#include <vector>
 #include <nucleus/array.h>
 #include <nucleus/device.h>
 #include <nucleus/runtime.h>
 #include <nucleus/array_2d.h>
 #include <nucleus/array_3d.h>
+#include <nucleus/device_span.h>
+#include <nucleus/device_pointer.h>
 
 /*********************************************************************************
 ********************************    test_array    ********************************
@@ -45,8 +46,16 @@ void test_array()
 	ns::Array<int>					array0;
 	ns::Array<int>					array1(allocator, 100);
 	ns::Array<int>					array11 = std::move(array1);
-	dev::Span<int, 5>				span0 = array11.span<5>();
-	dev::Span<const int, 5>			span1 = array11.span<5>();
+
+	dev::Span<int>					span0 = array11;
+	dev::Span<const int>			span1 = array11;
+	dev::Span<int, 100>				span2(array11);
+	dev::Span<const int, 100>		span3(array11);
+
+	assert(span0.data() == array11.data());
+	assert(span1.data() == array11.data());
+	assert(span2.data() == array11.data());
+	assert(span3.data() == array11.data());
 
 	ns::Array2D<float>				array2;
 	ns::Array2D<float>				array3(allocator, 100, 100);
@@ -84,7 +93,6 @@ void test_array()
 		array11.resize(300);
 		array11.resize(300);
 		array11.clear();
-		array11.span();
 		assert(array11.data() == nullptr);
 	}
 

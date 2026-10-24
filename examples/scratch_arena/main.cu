@@ -28,6 +28,7 @@
 #include <nucleus/device.h>
 #include <nucleus/stream.h>
 #include <nucleus/runtime.h>
+#include <nucleus/device_span.h>
 #include <nucleus/scratch_arena.h>
 #include <nucleus/launch_utils.cuh>
 

@@ -31,6 +31,7 @@
 #include <nucleus/stream.h>
 #include <nucleus/runtime.h>
 #include <nucleus/allocator.h>
+#include <nucleus/device_span.h>
 #include <nucleus/scoped_timer.h>
 #include <nucleus/launch_utils.cuh>
 
