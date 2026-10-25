@@ -1,4 +1,4 @@
-# Nucleus: C++ Bindings for CUDA Resources
+# Nucleus: Clear Resource and Execution Semantics for CUDA
 
 [![License](https://img.shields.io/github/license/WenchaoHuang/Nucleus)](LICENSE)
 [![Build (Linux)](https://github.com/WenchaoHuang/Nucleus/actions/workflows/build-linux.yml/badge.svg)](https://github.com/WenchaoHuang/Nucleus/actions/workflows/build-linux.yml)
@@ -11,15 +11,21 @@
 
 ## Overview
 
-Nucleus is an open-source C++ library that provides modern, type-safe abstractions over the CUDA Runtime API. It is designed to streamline heterogeneous computing by wrapping common CUDA resources — devices, streams, events, memory allocations, arrays, textures, surfaces, and CUDA graphs — in RAII-friendly C++ objects.
+Nucleus is an open-source C++20 library that gives CUDA programs clear resource and execution semantics, making GPU code easier to build, compose, and maintain.
+
+It provides typed memory, RAII ownership, and explicit execution through streams, events, and graphs over the CUDA Runtime API. These building blocks help you connect kernels into applications while keeping resource lifetimes, data movement, and synchronization visible in the code.
+
+The same ownership and execution contracts apply to CUDA code written by hand or with AI assistance. Nucleus makes those contracts easier to express and review; applications remain responsible for kernel correctness, execution dependencies, and performance validation.
 
 Key design goals:
 
-- **CUDA Header Isolation** — CUDA headers are contained within Nucleus; host-side translation units that include Nucleus headers do not need to include CUDA headers directly, reducing toolchain conflicts.
-- **Compile-Time Type Safety** — Typed device pointers (`dev::Ptr<T>`, `dev::Ptr2<T>`, `dev::Ptr3<T>`) and a compile-time `ptr_cast<>` utility catch type mismatches at compile time rather than at runtime.
-- **Runtime Memory Checking** — An optional bounds-checking and null-pointer-detection mechanism (enabled via the `NS_CUDA_MEMORY_CHECK` compile flag) helps catch memory errors during development.
-- **RAII Resource Management** — All CUDA objects (`Stream`, `Event`, `Buffer`, `Array`, `Texture`, `Surface`, `Graph`, …) follow RAII and are non-copyable, preventing resource leaks.
-- **Fluent Stream API** — Stream operations return `Stream&`, enabling readable method chaining and easy synchronization.
+- **Typed Interfaces** — Arrays, device pointers, and spans carry element types and dimensions across API boundaries. Non-owning views make kernel inputs explicit.
+- **Explicit Ownership** — RAII manages resource cleanup. Arrays own their allocations, views borrow storage, and images share their underlying CUDA allocation. Each resource type defines its ownership behavior.
+- **Visible Execution** — Streams, events, and graphs express submission order, dependencies, and completion. Fluent stream operations keep related launches, copies, and synchronization together.
+- **Reusable Building Blocks** — Allocators, scratch memory, and separate image storage and sampling objects support composition across workloads.
+- **Focused Headers** — Include individual host-side headers without directly including CUDA headers. Headers that define device code, such as `launch_utils.cuh`, belong in `.cu` files compiled by `nvcc`.
+
+See [Resource and Execution Contracts](#resource-and-execution-contracts) for the responsibilities that remain with the caller, and [Quick Start](#quick-start) for a complete allocation, launch, and readback example.
 
 For OptiX ray-tracing functionality, see the companion [Photon](https://github.com/WenchaoHuang/Photon) library.
 
@@ -118,13 +124,14 @@ cmake --build build
 
 ## Quick Start
 
-The include-all convenience header pulls in every Nucleus component:
+Include the individual headers for the resources you use (see [Project Structure](#project-structure) below):
 
 ```cpp
-#include <nucleus/nucleus.h>
+#include <nucleus/array.h>
+#include <nucleus/device.h>
+#include <nucleus/runtime.h>
+#include <nucleus/stream.h>
 ```
-
-Or include individual headers as needed (see [Project Structure](#project-structure) below).
 
 > **Note:** Headers that define CUDA device code (e.g. `launch_utils.cuh`) must be included only from `.cu` files compiled by `nvcc`.
 
@@ -132,9 +139,12 @@ Or include individual headers as needed (see [Project Structure](#project-struct
 
 ```cu
 // vector_add.cu  —  must be compiled with nvcc
+#include <vector>
 #include <nucleus/runtime.h>
 #include <nucleus/array.h>
+#include <nucleus/device.h>
 #include <nucleus/device_span.h>
+#include <nucleus/stream.h>
 #include <nucleus/launch_utils.cuh>  // .cuh — only in .cu files
 
 // Kernel: element-wise addition
@@ -151,6 +161,9 @@ __global__ void add_kernel(dev::Span<int> out,
 
 int main()
 {
+	if (ns::Runtime::devices().empty())
+		return 1;
+
 	const int count = 1 << 20;
 
 	// Obtain device, allocator, and default stream from the runtime singleton.
@@ -176,9 +189,11 @@ int main()
 	stream.memcpy(host_result.data(), C.data(), C.size());
 	stream.sync();
 
-	return 0;
+	return host_result.front() == 3 ? 0 : 1;
 }
 ```
+
+The fills, kernel, and copy are ordered on the same stream. The final `sync()` completes the copy before the host reads the result and before the arrays leave scope. Launching a kernel with a view does not transfer ownership of its storage.
 
 ### Using a Custom Allocator
 
@@ -210,6 +225,16 @@ stream.setForceSync(true);
 ```
 
 ## Core Concepts
+
+### Resource and Execution Contracts
+
+- **Ownership and views** — `Array<T>` owns its allocation through a `Buffer`; `dev::Span<T>` and `dev::Ptr<T>` borrow storage. Passing or copying a view does not extend the allocation's lifetime. Images share their backing allocation, which bound textures and surfaces also retain.
+- **Initialization** — Array allocations are uninitialized. Fill, copy, or write their contents before reading them. `Array<T>` does not construct or destroy individual elements.
+- **Asynchronous lifetime** — Keep allocations, host transfer buffers, and texture or surface objects alive until submitted work using them has completed. RAII defines cleanup; callers must establish completion before releasing resources. Use stream or event synchronization before the host consumes asynchronous results.
+- **Execution dependencies** — Operations submitted to one stream execute in order. Express dependencies between streams explicitly with events or synchronization. Kernel launches and graph execution do not infer data dependencies from pointers or views.
+- **Scratch reuse** — Reuse temporary storage only when its previous and next uses are ordered. A scratch arena can serve sequential operations on one stream; use explicit dependencies or synchronization across streams. Complete outstanding uses before growing, clearing, or destroying the backing allocation.
+
+Typed interfaces help express element types and access intent. They do not prove that a pointer is valid, that a kernel stays within bounds, or that concurrent accesses are race-free. Validate those properties in application tests and measure performance on the target workload.
 
 ### `ns::Runtime`
 
@@ -460,7 +485,6 @@ __global__ void my_kernel(dev::Tex2D<float4> tex, int width, int height)
 ```
 Nucleus/
 ├── include/nucleus/        # Public headers (add to your include path)
-│   ├── nucleus.h           # Convenience header — includes everything
 │   ├── version.h           # ns::Version (major/minor/patch value)
 │   ├── runtime.h           # ns::Runtime  (device enumeration, singleton)
 │   ├── device.h            # ns::Device   (GPU handle, properties, allocator)

@@ -4,12 +4,12 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="theme-color" content="#181e1a">
-	<meta name="description" content="Nucleus is a C++20 library for CUDA resources. Explore typed device memory, RAII ownership, streams, graphs, and CMake integration.">
-	<meta property="og:title" content="Nucleus — C++ bindings for CUDA resources">
-	<meta property="og:description" content="CUDA resources. C++ semantics. A practical guide to the Nucleus library.">
+	<meta name="description" content="Nucleus gives CUDA programs clear resource and execution semantics in C++20, making GPU code easier to build, compose, and maintain.">
+	<meta property="og:title" content="Nucleus — CUDA resources and execution in C++">
+	<meta property="og:description" content="Typed memory. Explicit ownership. Visible execution. Build, compose, and maintain GPU code with Nucleus.">
 	<meta property="og:type" content="website">
 	<meta property="og:url" content="https://wenchaohuang.github.io/nucleus/">
-	<title>Nucleus — C++ bindings for CUDA resources</title>
+	<title>Nucleus — CUDA resources and execution in C++</title>
 	<link rel="icon" href="favicon.svg" type="image/svg+xml">
 	<link rel="stylesheet" href="styles.css">
 	<script src="script.js" defer></script>
@@ -59,9 +59,9 @@
 				<div class="hero-layout">
 					<div class="hero-copy">
 						<p class="eyebrow"><span></span> A FOUNDATION FOR GPU CODE</p>
-						<h1 id="overview-title">CUDA resources.<br><span>C++ semantics.</span></h1>
-						<p class="hero-description">Typed memory. Explicit execution.<br>Resource lifetimes that take care of themselves.</p>
-						<p class="hero-detail">Nucleus brings modern C++ abstractions to the CUDA Runtime API, so you can focus on the work your GPU does.</p>
+						<h1 id="overview-title">CUDA resources.<br><span>Clear semantics.</span></h1>
+						<p class="hero-description">Typed memory. Explicit ownership.<br>Execution you can reason about.</p>
+						<p class="hero-detail">Nucleus gives CUDA programs clear resource and execution semantics, making GPU code easier to build, compose, and maintain.</p>
 						<div class="hero-actions"><a class="button button-primary" href="#installation">Get started <span aria-hidden="true">→</span></a><a class="text-link" href="https://github.com/WenchaoHuang/Nucleus">Explore the source <span aria-hidden="true">↗</span></a></div>
 					</div>
 					<div class="hero-code code-block">
@@ -86,9 +86,9 @@ stream
 				<div class="project-facts" aria-label="Project requirements"><div><span>LANGUAGE</span><strong>C++20</strong></div><div><span>TOOLKIT</span><strong>CUDA 12.0+</strong></div><div><span>BUILD SYSTEM</span><strong>CMake 3.18+</strong></div><div><span>PLATFORMS</span><strong>Linux &amp; Windows</strong></div></div>
 				<div class="development-note"><span class="note-icon" aria-hidden="true">i</span><p><strong>Under active development.</strong> The API is evolving and breaking changes may occur. Nucleus is not yet recommended for production use.</p></div>
 				<div class="principle-grid">
-					<article><span class="principle-mark" aria-hidden="true">&lt;T&gt;</span><h2>Types carry intent.</h2><p>Typed arrays, device pointers, and spans keep element types visible across the host–device boundary.</p></article>
-					<article><span class="principle-mark" aria-hidden="true">{ }</span><h2>Ownership is explicit.</h2><p>RAII manages resource lifetimes. Streams keep launches, copies, and synchronization in your hands.</p></article>
-					<article><span class="principle-mark" aria-hidden="true">.h</span><h2>Headers stay focused.</h2><p>Use individual Nucleus headers in host code. Include CUDA launch helpers only in your .cu files.</p></article>
+					<article><span class="principle-mark" aria-hidden="true">&lt;T&gt;</span><h2>Types carry intent.</h2><p>Arrays and views keep element types and access intent visible when passing data into kernels.</p></article>
+					<article><span class="principle-mark" aria-hidden="true">{ }</span><h2>Ownership is explicit.</h2><p>Arrays own allocations. Views borrow storage. Images share resources. RAII manages cleanup.</p></article>
+					<article><span class="principle-mark" aria-hidden="true">→</span><h2>Execution stays visible.</h2><p>Streams, events, and graphs keep submission order, dependencies, and completion explicit.</p></article>
 				</div>
 			</section>
 
@@ -171,6 +171,7 @@ cmake --install build --config Release --prefix /path/to/nucleus</code></pre></d
 
 	<span class="c-keyword">return</span> result.front() == <span class="c-number">2.0f</span> ? <span class="c-number">0</span> : <span class="c-number">1</span>;
 }</code></pre></div></details>
+				<p class="technical-note"><strong>Ownership and completion.</strong> The fill, kernel, and copy run in order on one stream. The final <code>sync()</code> completes the copy before the host reads the result and the arrays leave scope. Views borrow memory; callers must keep resources alive until their GPU work completes. See the <a class="text-link" href="https://github.com/WenchaoHuang/Nucleus#resource-and-execution-contracts">resource and execution contracts <span aria-hidden="true">↗</span></a>.</p>
 				<p class="technical-note"><strong>Compile with nvcc.</strong> The <code>launch_utils.cuh</code> header defines device code and belongs in <code>.cu</code> translation units. A CUDA-capable GPU is required to run the example.</p>
 				<div class="code-block"><div class="code-heading"><span>Terminal · application root</span><button class="copy-button" type="button" data-copy aria-label="Copy application build commands"><span>Copy</span></button></div><pre><code>cmake -S . -B build
 cmake --build build --config Release</code></pre></div>
@@ -195,8 +196,8 @@ cmake --build build --config Release</code></pre></div>
 				<p class="technical-note">Build the bundled examples with <code>-DNUCLEUS_BUILD_EXAMPLES=ON</code>. See each example’s source for its requirements.</p>
 			</section>
 
-			<div class="next-steps"><div><span class="section-label">KEEP EXPLORING</span><h2>Read the code. Make it yours.</h2><p>The public headers and examples are the best place to go deeper.</p></div><a class="button button-primary" href="https://github.com/WenchaoHuang/Nucleus">Open repository <span aria-hidden="true">↗</span></a></div>
-			<footer class="site-footer"><span>Nucleus <span aria-hidden="true">/</span> C++ bindings for CUDA resources</span><div><a href="https://github.com/WenchaoHuang/Nucleus/blob/main/LICENSE">MIT License</a><a href="https://github.com/WenchaoHuang/Nucleus/issues">Report an issue <span aria-hidden="true">↗</span></a><a href="#overview">Back to top ↑</a></div></footer>
+			<div class="next-steps"><div><span class="section-label">KEEP EXPLORING</span><h2>Build on clear contracts.</h2><p>Use the headers and examples to understand ownership and execution, then validate correctness and performance for your workload.</p></div><a class="button button-primary" href="https://github.com/WenchaoHuang/Nucleus">Open repository <span aria-hidden="true">↗</span></a></div>
+			<footer class="site-footer"><span>Nucleus <span aria-hidden="true">/</span> CUDA resources and execution in C++</span><div><a href="https://github.com/WenchaoHuang/Nucleus/blob/main/LICENSE">MIT License</a><a href="https://github.com/WenchaoHuang/Nucleus/issues">Report an issue <span aria-hidden="true">↗</span></a><a href="#overview">Back to top ↑</a></div></footer>
 		</main>
 	</div>
 	<p class="sr-only" role="status" aria-live="polite" data-copy-status></p>
