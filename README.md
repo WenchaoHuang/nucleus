@@ -40,6 +40,7 @@ For OptiX ray-tracing functionality, see the companion [Photon](https://github.c
 - CUDA graph support with automatic topology caching and parameter update (`ns::Graph`)
 - Texture and surface objects with full dimensionality support (1-D/2-D/3-D, cubemap, layered, mipmapped)
 - Kernel-launch helpers: `ns::ceil_div`, `ns::align_up`, `CUDA_for` / `NS_BOUNDS_CHECK` bounds-check macros
+- Device-side multidimensional views with independently static or dynamic dimensions (`dev::Span2D<T, W, H>`, `dev::Span3D<T, W, H, D>`)
 - `ns::Span<T>` — host-only compatibility patch that backports the C++26 `std::span` initializer-list behavior to C++20, including const views
 - Logger (`ns::Logger`) for structured diagnostic messages
 
@@ -363,6 +364,39 @@ __global__ void kernel(ns::dev::Span<int> values)
 
 Use `ns::as_writable_bytes()` only with mutable, non-volatile spans. `ns::as_bytes()` provides a read-only byte view for non-volatile spans.
 
+### `ns::dev::Span2D<T>` / `ns::dev::Span3D<T>`
+
+Non-owning, trivially copyable views for contiguous 2D and 3D memory. Each dimension independently accepts a fixed size or `ns::dynamic_extent`. Only dynamic dimensions occupy runtime storage; fully static views store just a pointer. These views use Nucleus's C++20/CUDA interfaces and do not depend on CCCL or `cuda/std/mdspan`.
+
+```cpp
+#include <nucleus/device_span_2d.h>
+#include <nucleus/device_span_3d.h>
+
+// Given pointers to sufficiently large, contiguous allocations:
+dev::Span2D<float> image(imageData, width, height);
+dev::Span2D<float, 128> rows(imageData, height);
+dev::Span2D<float, 128, 64> tile(imageData);
+dev::Span3D<float, 128, ns::dynamic_extent, 8> volume(volumeData, height);
+```
+
+Constructors accept either all dimensions or only the dynamic dimensions, in width, height, depth order. Supplied fixed dimensions must match exactly. Compatible fixed-to-dynamic view conversions are implicit; dynamic-to-fixed conversions require explicit construction and matching runtime dimensions. Different fixed dimensions are rejected at compile time.
+
+In device code, use `image(x, y)` or `image[y][x]`, and `volume(x, y, z)` or `volume[z][y][x]`. The x coordinate varies fastest. A row is a `Span<T, Width>`; a 3D slice is a `Span2D<T, Width, Height>`, preserving static dimensions. The views expose `data()`, `width()`, `height()`, `depth()` (3D), `size()`, `size_bytes()`, and `pitch()` (row bytes).
+
+`Array2D` and `Array3D` provide `span()` and `cspan()` with optional static dimensions:
+
+```cpp
+ns::Array2D<float> image(128, 64);
+auto writable = image.span<128, 64>();
+auto readonly = image.cspan();
+```
+
+Arrays also convert implicitly to fully dynamic views; a view with any fixed dimension requires explicit construction. Unlike a 1D prefix span, a multidimensional array view must match each fixed dimension exactly. Reducing the width would change the row stride.
+
+The const behavior follows `dev::Span`: mutable views inherit from read-only views, and a const view object exposes read-only elements and subviews. `empty()` checks for a null data pointer. Default construction is available when at least one dimension is dynamic or zero; dynamic dimensions initialize to zero and fixed dimensions retain their values.
+
+These views describe packed memory, not pitched allocations or arbitrary rectangular subregions. The allocation must remain valid until asynchronous work completes, and dimension products and byte counts must fit in `size_t`. Dimension and index preconditions use `NS_ASSERT`, which is disabled in device code and in release host builds.
+
 ### `dev::Ptr<T>` — Typed Device Pointer
 
 A lightweight, typed wrapper for a device pointer that carries array bounds. It is both host- and device-callable and supports optional runtime bounds checking.
@@ -495,6 +529,8 @@ Nucleus/
 │   ├── buffer.h            # ns::Buffer   (raw RAII memory block)
 │   ├── span.h              # ns::Span<T> (C++26 std::span compatibility patch)
 │   ├── device_span.h       # ns::dev::Span<T> (device-side contiguous view)
+│   ├── device_span_2d.h    # ns::dev::Span2D<T, Width, Height>
+│   ├── device_span_3d.h    # ns::dev::Span3D<T, Width, Height, Depth>
 │   ├── buffer_slice.h      # ns::BufferSlice<T>, BufferSlice2D<T>, BufferSlice3D<T> (owning typed slices)
 │   ├── scratch_arena.h     # ns::ScratchArena (reusable temporary memory)
 │   ├── array.h          	# ns::Array<T>

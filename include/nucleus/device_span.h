@@ -133,7 +133,7 @@ namespace NS_NAMESPACE::dev
 		constexpr Span() noexcept requires(is_dynamic_extent || Extent == 0) = default;
 
 		//!	@brief		Constructor for a span with a pointer and size.
-		NS_CUDA_CALLABLE explicit Span(const Type * data, size_t size) noexcept : _Base(data, size) { NS_ASSERT(is_dynamic_extent || Extent == size); }
+		NS_CUDA_CALLABLE constexpr explicit Span(const Type * data, size_t size) noexcept : _Base(data, size) { NS_ASSERT(is_dynamic_extent || Extent == size); }
 
 		//!	@brief		Constructor for a span with a fixed array.
 		template<size_t N> NS_CUDA_CALLABLE constexpr Span(const Type (&data)[N]) noexcept requires(is_dynamic_extent || Extent == N) : _Base(data, N) {}
@@ -308,7 +308,7 @@ namespace NS_NAMESPACE::dev
 		template<size_t N> NS_CUDA_CALLABLE constexpr Span(const Span<Type, N> & rhs) noexcept requires(is_dynamic_extent) : _ConstBase(rhs) {}
 
 		//!	@brief		Constructor for a span with a pointer and size.
-		NS_CUDA_CALLABLE explicit Span(Type * data, size_t size) noexcept : _ConstBase(data, size) { NS_ASSERT(is_dynamic_extent || Extent == size); }
+		NS_CUDA_CALLABLE constexpr explicit Span(Type * data, size_t size) noexcept : _ConstBase(data, size) { NS_ASSERT(is_dynamic_extent || Extent == size); }
 
 		//!	@brief		Constructs a span from an array.
 		explicit(!is_dynamic_extent) Span(Array<Type> & arr) noexcept : _ConstBase(arr.data(), arr.size()) { NS_ASSERT(is_dynamic_extent || Extent == arr.size()); }

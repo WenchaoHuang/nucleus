@@ -60,6 +60,35 @@ void test_array()
 	ns::Array2D<int>				array2Default(100, 100);
 	ns::Array3D<int>				array3Default(100, 100, 100);
 
+	// Multidimensional spans borrow the complete shape, including static dimensions.
+	{
+		auto span2d = array2Default.span<100>();
+		auto span3d = array3Default.span<ns::dynamic_extent, 100, 100>();
+		const auto & const2d = array2Default;
+		const auto & const3d = array3Default;
+		dev::Span2D<int> converted2d = array2Default;
+		dev::Span3D<int> converted3d = array3Default;
+		dev::Span2D<const int> readonly2d = const2d;
+		dev::Span3D<const int> readonly3d = const3d;
+		dev::Span2D<int, 100, 100> fixed2d(array2Default);
+		dev::Span3D<int, 100, 100, 100> fixed3d(array3Default);
+
+		static_assert(std::is_same_v<decltype(const2d.span()), dev::Span2D<const int>>);
+		static_assert(std::is_same_v<decltype(const3d.span()), dev::Span3D<const int>>);
+		static_assert(std::is_same_v<decltype(array2Default.cspan<100, 100>()), dev::Span2D<const int, 100, 100>>);
+		static_assert(std::is_same_v<decltype(array3Default.cspan<100, 100, 100>()), dev::Span3D<const int, 100, 100, 100>>);
+		static_assert(!std::is_constructible_v<dev::Span2D<int>, const ns::Array2D<int> &>);
+		static_assert(!std::is_constructible_v<dev::Span3D<int>, const ns::Array3D<int> &>);
+		static_assert(!std::is_convertible_v<ns::Array2D<int> &, dev::Span2D<int, 100>>);
+		static_assert(!std::is_convertible_v<ns::Array3D<int> &, dev::Span3D<int, 100>>);
+
+		assert(span2d.data() == array2Default.data() && span2d.width() == 100 && span2d.height() == 100);
+		assert(span3d.data() == array3Default.data() && span3d.width() == 100 && span3d.height() == 100 && span3d.depth() == 100);
+		assert(converted2d.data() == readonly2d.data() && readonly2d.data() == fixed2d.data());
+		assert(converted3d.data() == readonly3d.data() && readonly3d.data() == fixed3d.data());
+		assert(array2.span().empty() && array4.cspan().empty());
+	}
+
 	std::vector<ns::Array<int>>		arrArray0;
 	std::vector<ns::Array<int>>		arrArray1(200);
 

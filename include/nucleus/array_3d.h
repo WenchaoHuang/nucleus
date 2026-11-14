@@ -26,6 +26,7 @@
 #include "logger.h"
 #include "runtime.h"
 #include "device_pointer.h"
+#include "device_span_3d.h"
 
 namespace NS_NAMESPACE
 {
@@ -223,6 +224,30 @@ namespace NS_NAMESPACE
 		 *	@note		Provides an explicit method to get device pointer.
 		 */
 		dev::Ptr3<Type> ptr() { return *this; }
+
+
+		/**
+		 *	@brief		Returns a writable view with optional static dimensions.
+		 *	@note		Each fixed dimension must equal the corresponding array dimension.
+		 */
+		template<size_t _Width = dynamic_extent, size_t _Height = dynamic_extent, size_t _Depth = dynamic_extent> dev::Span3D<Type, _Width, _Height, _Depth> span()
+		{
+			return dev::Span3D<Type, _Width, _Height, _Depth>(this->data(), this->width(), this->height(), this->depth());
+		}
+
+
+		//!	@brief		Returns a read-only view, matching fixed dimensions exactly.
+		template<size_t _Width = dynamic_extent, size_t _Height = dynamic_extent, size_t _Depth = dynamic_extent> dev::Span3D<const Type, _Width, _Height, _Depth> span() const
+		{
+			return dev::Span3D<const Type, _Width, _Height, _Depth>(this->data(), this->width(), this->height(), this->depth());
+		}
+
+
+		//!	@brief		Returns a read-only view with optional static dimensions.
+		template<size_t _Width = dynamic_extent, size_t _Height = dynamic_extent, size_t _Depth = dynamic_extent> dev::Span3D<const Type, _Width, _Height, _Depth> cspan() const
+		{
+			return this->span<_Width, _Height, _Depth>();
+		}
 
 	private:
 

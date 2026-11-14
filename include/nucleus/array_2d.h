@@ -26,6 +26,7 @@
 #include "logger.h"
 #include "runtime.h"
 #include "device_pointer.h"
+#include "device_span_2d.h"
 
 namespace NS_NAMESPACE
 {
@@ -205,6 +206,30 @@ namespace NS_NAMESPACE
 		 *	@note		Provides an explicit method to get device pointer.
 		 */
 		dev::Ptr2<Type> ptr() { return *this; }
+
+
+		/**
+		 *	@brief		Returns a writable view with optional static dimensions.
+		 *	@note		Each fixed dimension must equal the corresponding array dimension.
+		 */
+		template<size_t _Width = dynamic_extent, size_t _Height = dynamic_extent> dev::Span2D<Type, _Width, _Height> span()
+		{
+			return dev::Span2D<Type, _Width, _Height>(this->data(), this->width(), this->height());
+		}
+
+
+		//!	@brief		Returns a read-only view, matching fixed dimensions exactly.
+		template<size_t _Width = dynamic_extent, size_t _Height = dynamic_extent> dev::Span2D<const Type, _Width, _Height> span() const
+		{
+			return dev::Span2D<const Type, _Width, _Height>(this->data(), this->width(), this->height());
+		}
+
+
+		//!	@brief		Returns a read-only view with optional static dimensions.
+		template<size_t _Width = dynamic_extent, size_t _Height = dynamic_extent> dev::Span2D<const Type, _Width, _Height> cspan() const
+		{
+			return this->span<_Width, _Height>();
+		}
 
 	private:
 
