@@ -1,0 +1,145 @@
+# Nucleus C++ and CUDA formatting conventions.
+# Requires clang-format 19 or newer. Use the same version in editors and CI.
+# This captures the dominant style in include/nucleus, src, tests, and examples.
+# Hand-aligned tables, compact records, and multi-statement case blocks cannot
+# always be reproduced exactly. Requires-expression braces may also be attached.
+# Review formatting diffs and avoid reformatting unrelated code.
+---
+BasedOnStyle: LLVM
+Language: Cpp
+Standard: c++20
+
+# Use four-column tabs for indentation and alignment, including namespaces.
+UseTab: Always
+TabWidth: 4
+IndentWidth: 4
+ContinuationIndentWidth: 4
+ConstructorInitializerIndentWidth: 4
+NamespaceIndentation: All
+IndentAccessModifiers: false
+AccessModifierOffset: -4
+IndentCaseLabels: true
+IndentCaseBlocks: false
+
+# Match .gitattributes and retain the existing one- or two-blank-line grouping.
+LineEnding: LF
+MaxEmptyLinesToKeep: 2
+KeepEmptyLines:
+  AtStartOfBlock: true
+  AtStartOfFile: false
+  AtEndOfFile: false
+EmptyLineAfterAccessModifier: Always
+EmptyLineBeforeAccessModifier: Leave
+SeparateDefinitionBlocks: Leave
+FixNamespaceComments: false
+CompactNamespaces: false
+
+# Keep long signatures, expressions, and comments without a fixed line limit.
+ColumnLimit: 0
+ReflowComments: false
+BreakStringLiterals: false
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 0
+
+# Use Allman braces and permit short bodies where supported by the formatter.
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: true
+  AfterControlStatement: Always
+  AfterEnum: true
+  AfterExternBlock: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  BeforeCatch: true
+  BeforeElse: true
+  BeforeLambdaBody: true
+  BeforeWhile: true
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+AllowShortFunctionsOnASingleLine: All
+AllowShortBlocksOnASingleLine: Always
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortLoopsOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortEnumsOnASingleLine: false
+AllowShortLambdasOnASingleLine: All
+
+# Keep template<typename T> on the same line as the declaration when possible.
+SpaceAfterTemplateKeyword: false
+BreakTemplateDeclarations: Leave
+BreakBeforeConceptDeclarations: Never
+BreakAfterReturnType: None
+BreakConstructorInitializers: BeforeColon
+PackConstructorInitializers: BinPack
+BreakInheritanceList: BeforeColon
+BinPackArguments: true
+BinPackParameters: true
+
+# Match Type * name, Type & name, and Type{ value }.
+DerivePointerAlignment: false
+PointerAlignment: Middle
+ReferenceAlignment: Pointer
+SpaceAroundPointerQualifiers: Both
+QualifierAlignment: Leave
+SpaceBeforeParens: ControlStatements
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeCpp11BracedList: false
+Cpp11BracedListStyle: false
+SpaceAfterCStyleCast: false
+SpacesInAngles: Never
+SpacesInParens: Never
+SpacesInSquareBrackets: false
+
+# Align consecutive fields and assignments within their existing groups.
+# Exact hand-selected tab stops are not preserved by clang-format.
+AlignConsecutiveDeclarations:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+  AlignFunctionPointers: true
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+  AlignCompound: true
+  PadOperators: false
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+  AlignCaseColons: false
+
+# Preserve include/using order and the hand-formatted bodies of CUDA macros.
+SortIncludes: Never
+IncludeBlocks: Preserve
+SortUsingDeclarations: Never
+IndentPPDirectives: BeforeHash
+PPIndentWidth: 4
+SkipMacroDefinitionBody: true
+
+# These macros expand to complete statements without a call-site semicolon.
+StatementMacros:
+  - NS_USING_NAMESPACE
+  - NS_NONCOPYABLE
+
+# Treat export and CUDA annotations as attributes on the following declaration.
+AttributeMacros:
+  - NS_API
+  - NS_NOVTABLE
+  - NS_NODISCARD
+  - NS_INLINE
+  - NS_FORCE_INLINE
+  - NS_CUDA_CALLABLE
+  - NS_CUDA_CALLABLE_INLINE
+
+# Formatting must not introduce or remove control-flow braces or qualifiers.
+InsertBraces: false
+RemoveBracesLLVM: false
+...
