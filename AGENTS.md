@@ -1,16 +1,19 @@
 # Nucleus Development Guidelines
 
-1. Follow `.gitattributes` for line endings. Repository text files use LF by
-   default; preserve explicit exceptions such as `.bat` and `.cmd` files. Use
-   UTF-8 without BOM and tabs for indentation. Do not alter the encoding,
-   indentation, or line endings of untouched lines.
+1. Use UTF-8 without BOM and follow `.gitattributes` for line endings: LF by
+   default, with explicit exceptions such as `.bat` and `.cmd` files. Preserve
+   the encoding and line endings of untouched content.
 
-2. Keep API and CUDA behavior consistent with adjacent code. Reuse existing
-   Nucleus types, `NS_*` macros, logging, and error-handling patterns instead of
-   creating parallel helpers or changing error semantics without a clear need.
+2. Reuse existing Nucleus types, `NS_*` macros, logging, and error-handling
+   patterns. Preserve API and CUDA semantics unless the task requires a change.
 
-3. Match the established style of nearby code in the same module before editing.
-   Preserve its naming, include ordering, file layout, comments, control flow,
-   brace and spacing conventions, and local helper usage. Keep changes narrowly
-   scoped: avoid unrelated reformatting, renaming, or refactoring. When adding
-   tests, follow the structure, naming, and fixture patterns of nearby tests.
+3. Follow the established naming, include ordering, file organization, and
+   documentation conventions in the same module. When adding tests, follow
+   nearby test structure, naming, and fixture patterns. Keep changes narrowly
+   scoped: avoid unrelated reformatting, renaming, or refactoring.
+
+4. Use the local `.clang-format` as the source of truth for C++ and CUDA
+   formatting, including indentation, braces, and spacing, even when nearby
+   code differs. Run clang-format 19 or newer on modified code, limiting the
+   formatting range when needed to keep the diff scoped. Review the resulting
+   diff and report if the formatter could not be run.
