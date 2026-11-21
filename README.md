@@ -15,6 +15,10 @@ Nucleus is an open-source C++20 library that gives CUDA programs clear resource 
 
 It provides typed memory, RAII ownership, and explicit execution through streams, events, and graphs over the CUDA Runtime API. These building blocks help you connect kernels into applications while keeping resource lifetimes, data movement, and synchronization visible in the code.
 
+Nucleus is designed to be buildable with CUDA Toolkit 12.0 or newer and a C++20 compiler. Its required dependencies are provided by the CUDA Toolkit, with no separate CCCL package needed for the Nucleus build. The library provides C++20-compatible implementations and adapters for selected facilities that otherwise require newer C++ standards or newer CCCL releases, so applications can use those interfaces while keeping CUDA 12.0+ as their baseline.
+
+Nucleus and [CCCL](https://github.com/NVIDIA/cccl) serve different layers of a CUDA application. CCCL provides generic device algorithms and low-level CUDA C++ components such as Thrust, CUB, and libcudacxx. Nucleus manages typed resources and their execution context through allocations, views, streams, events, graphs, textures, surfaces, and allocators. CCCL remains the source for generic algorithm implementations, while Nucleus provides the resource and execution layer around them. Its pointers, spans, and stream handles can be passed to CCCL and other CUDA libraries, allowing both libraries to be used together in the same workflow.
+
 The same ownership and execution contracts apply to CUDA code written by hand or with AI assistance. Nucleus makes those contracts easier to express and review; applications remain responsible for kernel correctness, execution dependencies, and performance validation.
 
 Key design goals:
@@ -23,6 +27,7 @@ Key design goals:
 - **Explicit Ownership** — RAII manages resource cleanup. Arrays own their allocations, views borrow storage, and images share their underlying CUDA allocation. Each resource type defines its ownership behavior.
 - **Visible Execution** — Streams, events, and graphs express submission order, dependencies, and completion. Fluent stream operations keep related launches, copies, and synchronization together.
 - **Reusable Building Blocks** — Allocators, scratch memory, and separate image storage and sampling objects support composition across workloads.
+- **CUDA 12.0+ Baseline** — Build the library with CUDA Toolkit 12.0 or newer and C++20 while using selected compatibility layers for newer C++ and CCCL facilities.
 - **Focused Headers** — Include individual host-side headers without directly including CUDA headers. Headers that define device code, such as `launch_utils.cuh`, belong in `.cu` files compiled by `nvcc`.
 
 See [Resource and Execution Contracts](#resource-and-execution-contracts) for the responsibilities that remain with the caller, and [Quick Start](#quick-start) for a complete allocation, launch, and readback example.
@@ -41,17 +46,31 @@ For OptiX ray-tracing functionality, see the companion [Photon](https://github.c
 - Texture and surface objects with full dimensionality support (1-D/2-D/3-D, cubemap, layered, mipmapped)
 - Kernel-launch helpers: `ns::ceil_div`, `ns::align_up`, `CUDA_for` / `NS_BOUNDS_CHECK` bounds-check macros
 - `ns::Span<T>` — host-only compatibility patch that backports the C++26 `std::span` initializer-list behavior to C++20, including const views
+- C++20-compatible adapters for selected facilities introduced by newer CUDA C++ and CCCL releases
 - Logger (`ns::Logger`) for structured diagnostic messages
 
 ## Prerequisites
 
 | Requirement | Minimum version |
 |---|---|
-| CUDA Toolkit | 12.0 |
+| CUDA Toolkit | 12.0 or newer |
 | CMake | 3.18 |
 | C++ compiler | C++20 |
 
-Nucleus is currently developed and tested on Linux and Windows (MSVC). Other platforms are not officially supported.
+Nucleus is currently developed and tested on Linux and Windows (MSVC). Other platforms are not officially supported. A separate CCCL installation is optional. When CCCL is available, Nucleus can interoperate with its algorithms through raw device pointers, typed views, and CUDA stream handles.
+
+## Nucleus and CCCL
+
+CCCL is the CUDA C++ standard library and algorithm collection. It contains the generic algorithms and low-level components used by many CUDA applications, including Thrust, CUB, and libcudacxx. Its release version is coupled to CUDA Toolkit compatibility, and newer CCCL releases may require a newer Toolkit for their complete feature set.
+
+Nucleus provides the resource and execution layer around those components:
+
+- Nucleus owns allocations and exposes typed device pointers, spans, arrays, images, textures, and surfaces.
+- Nucleus makes stream ordering, events, graph execution, and asynchronous lifetimes explicit.
+- CCCL algorithms can consume Nucleus data through `data()`, `dev::Span`, or `dev::Ptr`, and can run on a stream obtained from `ns::Stream::handle()`.
+- Nucleus supplies compatibility implementations for selected C++26 and newer CCCL facilities. This keeps the Nucleus build baseline at CUDA Toolkit 12.0 and C++20 when an equivalent can be provided without depending on a newer Toolkit.
+
+Use CCCL directly for generic algorithms. Use Nucleus when the application also needs consistent resource ownership, typed views, and explicit execution semantics around those algorithms.
 
 ## Installation
 
