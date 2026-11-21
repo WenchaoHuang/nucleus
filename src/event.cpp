@@ -1,4 +1,4 @@
-/**
+﻿/**
  *	Copyright (c) 2025 Wenchao Huang <physhuangwenchao@gmail.com>
  *
  *	Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,11 +28,42 @@
 NS_USING_NAMESPACE
 
 /*********************************************************************************
+*********************************    EventRef    *********************************
+*********************************************************************************/
+
+void EventRef::sync() const
+{
+	cudaError_t err = cudaEventSynchronize(m_hEvent);
+
+	if (err != cudaSuccess)
+	{
+		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
+		
+		throw static_cast<ErrorCode>(err);
+	}
+}
+
+
+bool EventRef::is_done() const
+{
+	cudaError_t err = cudaEventQuery(m_hEvent);
+
+	if (err != cudaSuccess && err != cudaErrorNotReady)
+	{
+		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
+		
+		throw static_cast<ErrorCode>(err);
+	}
+
+	return err == cudaSuccess;
+}
+
+/*********************************************************************************
 **********************************    Event    ***********************************
 *********************************************************************************/
 
 Event::Event(Device * device, bool isBlockingSync, bool isDisableTiming)
-	: m_device(device), m_hEvent(nullptr), m_isBlockingSync(isBlockingSync)
+	: EventRef(cudaEvent_t{}), m_device(device), m_isBlockingSync(isBlockingSync)
 {
 	NS_ASSERT(device != nullptr);
 
@@ -49,38 +80,8 @@ Event::Event(Device * device, bool isBlockingSync, bool isDisableTiming)
 	{
 		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
 
-		cudaGetLastError();
-
-		throw err;
+		throw static_cast<ErrorCode>(err);
 	}
-}
-
-
-void Event::sync() const
-{
-	cudaError_t err = cudaEventSynchronize(m_hEvent);
-
-	if (err != cudaSuccess)
-	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
-	}
-}
-
-
-bool Event::query() const
-{
-	cudaError_t err = cudaEventQuery(m_hEvent);
-
-	if ((err != cudaSuccess) && (err != cudaErrorNotReady))
-	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
-	}
-
-	return err == cudaSuccess;
 }
 
 
@@ -103,17 +104,17 @@ Event::~Event() noexcept
 ********************************    TimedEvent    ********************************
 *********************************************************************************/
 
-std::chrono::nanoseconds TimedEvent::elapsedTime(TimedEvent & eventStart, TimedEvent & eventEnd)
+std::chrono::nanoseconds NS_NAMESPACE::operator-(const TimedEvent & end, const TimedEvent & start)
 {
 	float milliseconds = 0.0f;
 
-	cudaError_t err = cudaEventElapsedTime(&milliseconds, eventStart.handle(), eventEnd.handle());
+	cudaError_t err = cudaEventElapsedTime(&milliseconds, start.get(), end.get());
 
 	if (err != cudaSuccess)
 	{
 		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
+		
+		throw static_cast<ErrorCode>(err);
 	}
 
 	return std::chrono::nanoseconds(static_cast<long long>(milliseconds * 1e6));

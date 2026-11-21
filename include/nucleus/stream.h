@@ -1,4 +1,4 @@
-﻿/**
+/**
  *	Copyright (c) 2025 Wenchao Huang <physhuangwenchao@gmail.com>
  *
  *	Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -114,11 +114,11 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Record an event.
 		 *	@param[in]	event - Valid event to record.
-		 *	@note		Call such as Event::query() or Stream::waitFor() will then examine or wait for completion of the work that was captured.
+		 *	@note		Call such as `Event::is_done()` or `Stream::waitFor()` will then examine or wait for completion of the work that was captured.
 		 *	@note		Can be called multiple times on the same event and will overwrite the previously captured state.
 		 *	@warning	Event and stream must be on the same device.
 		 */
-		NS_API Stream & record(Event & event);
+		NS_API Stream & record(EventRef event);
 
 
 		/**
@@ -128,7 +128,7 @@ namespace NS_NAMESPACE
 		 *	@note		Make all future work submitted to this stream wait for all work captured in event.
 		 *	@note		Event may be from a different device than this stream.
 		 */
-		NS_API Stream & waitFor(Event & event);
+		NS_API Stream & waitFor(EventRef event);
 
 	public:
 

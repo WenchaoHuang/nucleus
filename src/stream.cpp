@@ -60,11 +60,11 @@ Stream::Stream(Device * device, std::nullptr_t) : m_device(device), m_hStream(nu
 }
 
 
-Stream & Stream::record(Event & event)
+Stream & Stream::record(EventRef event)
 {
 	this->acquireDeviceContext();
 
-	cudaError_t err = cudaEventRecord(event.handle(), m_hStream);
+	cudaError_t err = cudaEventRecord(event.get(), m_hStream);
 
 	if (err != cudaSuccess)
 	{
@@ -77,11 +77,11 @@ Stream & Stream::record(Event & event)
 }
 
 
-Stream & Stream::waitFor(Event & event)
+Stream & Stream::waitFor(EventRef event)
 {
 	this->acquireDeviceContext();
 
-	cudaError_t err = cudaStreamWaitEvent(m_hStream, event.handle(), cudaEventWaitDefault);
+	cudaError_t err = cudaStreamWaitEvent(m_hStream, event.get(), cudaEventWaitDefault);
 
 	if (err != cudaSuccess)
 	{

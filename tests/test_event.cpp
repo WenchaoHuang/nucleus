@@ -25,6 +25,7 @@
 #include <nucleus/stream.h>
 #include <nucleus/runtime.h>
 #include <nucleus/scoped_timer.h>
+#include <type_traits>
 
 /*********************************************************************************
 ********************************    test_event    ********************************
@@ -32,6 +33,16 @@
 
 void test_event()
 {
+	static_assert(std::is_trivially_copyable_v<ns::EventRef>);
+	static_assert(std::is_nothrow_copy_constructible_v<ns::EventRef>);
+	static_assert(!std::is_copy_assignable_v<ns::EventRef>);
+	static_assert(!std::is_move_assignable_v<ns::EventRef>);
+	static_assert(std::is_convertible_v<cudaEvent_t, ns::EventRef>);
+	static_assert(!std::is_constructible_v<ns::EventRef, std::nullptr_t>);
+	static_assert(!std::is_constructible_v<ns::EventRef, int>);
+	static_assert(!std::is_copy_constructible_v<ns::Event>);
+	static_assert(!ns::EventRef(cudaEvent_t{}));
+
 	auto device = ns::Runtime::device(0);
 	auto & stream = device->defaultStream();
 
@@ -40,17 +51,45 @@ void test_event()
 	ns::TimedEvent	event2(device);
 	ns::ScopedTimer	timer(stream, [](std::chrono::nanoseconds ns) { printf("ScopedTime: %fus\n", ns.count() * 1e-3); });
 
-	stream.record(event0);
+	{
+		ns::Stream		   producer(device);
+		const ns::EventRef borrowed = event0.get();
+		const ns::EventRef copy		= borrowed;
+		assert(copy == borrowed && copy != event1);
+
+		producer.record(borrowed);
+		stream.waitFor(copy).sync();
+		assert(copy.is_done());
+	}
+	stream.record(event0.get());
+	event0.sync();
+	assert(event0.is_done());
+
+	const auto expectCudaError = [](auto operation)
+	{
+		try
+		{
+			operation();
+		}
+		catch ([[maybe_unused]] ns::ErrorCode error)
+		{
+			assert(error != 0);
+			return;
+		}
+		assert(false && "Expected the operation to report a CUDA error");
+	};
+	const ns::EventRef empty(cudaEvent_t{});
+	expectCudaError([&]
+					{ empty.sync(); });
+	expectCudaError([&]
+					{ (void)empty.is_done(); });
+	expectCudaError([&]
+					{ (void)(event2 - event1); });
+
 	stream.record(event1);
 	stream.record(event2);
-	stream.waitFor(event1).sync();
+	stream.waitFor(event2).sync();
 
-	auto time = ns::TimedEvent::elapsedTime(event1, event2);
-
-	if (event1.query())
-	{
-		event1.sync();
-		event1.device();
-		event1.handle();
-	}
+	[[maybe_unused]] auto elapsed = event2 - event1;
+	assert(elapsed.count() >= 0);
 }
