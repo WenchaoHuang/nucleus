@@ -1,4 +1,4 @@
-/**
+﻿/**
  *	Copyright (c) 2025 Wenchao Huang <physhuangwenchao@gmail.com>
  *
  *	Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -45,7 +45,7 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//	Callback type that receives the measured duration in microseconds.
+		//!	@brief		Callback type that receives the measured duration in nanoseconds.
 		using CallbackFunc = std::function<void(std::chrono::nanoseconds ns)>;
 
 
@@ -80,13 +80,24 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Destructor - records end event and invokes callback
 		 *	@details	Synchronizes the stream before measurement to ensure accurate timing.
-		 *				The callback receives the elapsed time between start/end events.
+		 *				The callback runs only when CUDA supplies a valid measurement.
 		 */
 		~ScopedTimer()
 		{
 			m_stream.record(m_endEvent).sync();
 
-			m_callback(TimedEvent::elapsedTime(m_startEvent, m_endEvent));
+			std::chrono::nanoseconds elapsed{};
+
+			try
+			{
+				elapsed = m_endEvent - m_startEvent;
+			}
+			catch (ErrorCode)
+			{
+				return;
+			}
+
+			m_callback(elapsed);
 		}
 
 	private:

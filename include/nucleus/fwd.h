@@ -50,6 +50,7 @@ namespace NS_NAMESPACE
 	class Stream;
 	class Device;
 	class Runtime;
+	class EventRef;
 	class Allocator;
 	class TimedEvent;
 	class ScopedTimer;

@@ -25,6 +25,7 @@
 #include <nucleus/stream.h>
 #include <nucleus/runtime.h>
 #include <nucleus/scoped_timer.h>
+#include <cuda_runtime_api.h>
 
 /*********************************************************************************
 ********************************    test_event    ********************************
@@ -40,17 +41,43 @@ void test_event()
 	ns::TimedEvent	event2(device);
 	ns::ScopedTimer	timer(stream, [](std::chrono::nanoseconds ns) { printf("ScopedTime: %fus\n", ns.count() * 1e-3); });
 
-	stream.record(event0);
+	ns::Event		releasable_event(device);
+	cudaEvent_t		released_handle = releasable_event.release();
+	assert(cudaEventDestroy(released_handle) == cudaSuccess);
+	assert(released_handle != nullptr);
+	assert(!releasable_event);
+
+	{
+		ns::Stream				producer(device);
+		const ns::EventRef		borrowed = event0.handle();
+		const ns::EventRef		copy = borrowed;
+		assert(copy == borrowed && copy != event1);
+
+		producer.record(borrowed);
+		stream.waitFor(copy).sync();
+		assert(copy.is_done());
+	}
+
+	// Test event recording and synchronization
+	stream.record(event0.handle());
+	event0.sync();
 	stream.record(event1);
 	stream.record(event2);
-	stream.waitFor(event1).sync();
+	stream.waitFor(event2).sync();
+	assert(event0.is_done());
 
-	auto time = ns::TimedEvent::elapsedTime(event1, event2);
 
-	if (event1.query())
-	{
-		event1.sync();
-		event1.device();
-		event1.handle();
-	}
+	// Test elapsed time
+	auto elapsed = event2 - event1;
+	assert(elapsed.count() >= 0);
+
+
+	// Move assignment test
+	auto event3 = std::move(event2);
+	assert(!event2 && event3);
+
+
+	// Move assignment test
+	event3 = std::move(event1);
+	assert(!event1 && event3);
 }

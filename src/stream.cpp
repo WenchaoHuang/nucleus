@@ -60,7 +60,7 @@ Stream::Stream(Device * device, std::nullptr_t) : m_device(device), m_hStream(nu
 }
 
 
-Stream & Stream::record(Event & event)
+Stream & Stream::record(EventRef event)
 {
 	this->acquireDeviceContext();
 
@@ -77,7 +77,7 @@ Stream & Stream::record(Event & event)
 }
 
 
-Stream & Stream::waitFor(Event & event)
+Stream & Stream::waitFor(EventRef event)
 {
 	this->acquireDeviceContext();
 
