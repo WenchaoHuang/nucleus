@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Wenchao Huang <physhuangwenchao@gmail.com>
+﻿# Copyright (c) 2025 Wenchao Huang <physhuangwenchao@gmail.com>
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -119,8 +119,13 @@ if(MSVC)
 	target_compile_options(${TARGET_NAME} PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=/utf-8>)
 endif()
 
-# Load the custom helper that adds a dummy.cpp source file
 if(MSVC)
+	# Place example and test executables beside the Nucleus library.
+	if(NUCLEUS_BUILD_SHARED_LIB)
+		set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "$<TARGET_FILE_DIR:${TARGET_NAME}>")
+	endif()
+
+	# Load the custom helper that adds a dummy.cpp source file
 	include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/add_dummy_cpp.cmake)
 endif()
 
