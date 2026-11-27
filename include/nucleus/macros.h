@@ -26,8 +26,16 @@
 #include "nucleus_export.h"
 #include "nucleus_version.h"
 
+/*********************************************************************************
+***********************************    MSVC    ***********************************
+*********************************************************************************/
+
 #ifdef _MSC_VER
-	#pragma warning(disable: 4201)		//!	Nonstandard extension used: nameless struct/union.
+	#pragma warning(disable: 4201)		// Nonstandard extension used: nameless struct/union.
+
+	#ifdef __INTELLISENSE__
+		#undef __CUDACC__				// Work around Intellidiot parsing errors.
+	#endif
 #endif
 
 /*********************************************************************************
