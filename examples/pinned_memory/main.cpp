@@ -78,31 +78,49 @@ int main()
 		constexpr size_t ratio = 1000000000;
 
 		{
-			ns::ScopedTimer timer(stream, [=](std::chrono::nanoseconds ns) { printf("    %s us |", to_string_aligned(size_t(ns.count() * 1e-3 * ratio) / (2 * ratio * samples), 14).c_str()); });
-
-			for (int i = 0; i < samples; i++)
+			std::future<std::chrono::nanoseconds> elapsed;
 			{
-				stream.memcpy(pageable.data(), global.data(), test_count);
-				stream.memcpy(global.data(), pageable.data(), test_count);
+				ns::ScopedTimer timer(stream);
+
+				for (int i = 0; i < samples; i++)
+				{
+					stream.memcpy(pageable.data(), global.data(), test_count);
+					stream.memcpy(global.data(), pageable.data(), test_count);
+				}
+
+				elapsed = timer.get_future();
 			}
+			printf("    %s us |", to_string_aligned(size_t(elapsed.get().count() * 1e-3 * ratio) / (2 * ratio * samples), 14).c_str());
 		}
 		{
-			ns::ScopedTimer timer(stream, [=](std::chrono::nanoseconds ns) { printf("    %s us |", to_string_aligned(size_t(ns.count() * 1e-3 * ratio) / (2 * ratio * samples), 12).c_str()); });
-
-			for (int i = 0; i < samples; i++)
+			std::future<std::chrono::nanoseconds> elapsed;
 			{
-				stream.memcpy(pinned.data(), global.data(), test_count);
-				stream.memcpy(global.data(), pinned.data(), test_count);
+				ns::ScopedTimer timer(stream);
+
+				for (int i = 0; i < samples; i++)
+				{
+					stream.memcpy(pinned.data(), global.data(), test_count);
+					stream.memcpy(global.data(), pinned.data(), test_count);
+				}
+
+				elapsed = timer.get_future();
 			}
+			printf("    %s us |", to_string_aligned(size_t(elapsed.get().count() * 1e-3 * ratio) / (2 * ratio * samples), 12).c_str());
 		}
 		{
-			ns::ScopedTimer timer(stream, [=](std::chrono::nanoseconds ns) { printf("    %s us |\n", to_string_aligned(size_t(ns.count() * 1e-3 * ratio) / (2 * ratio * samples), 14).c_str()); });
-
-			for (int i = 0; i < samples; i++)
+			std::future<std::chrono::nanoseconds> elapsed;
 			{
-				stream.memcpy(pageable.data(), pinned.data(), test_count);
-				stream.memcpy(pinned.data(), pageable.data(), test_count);
+				ns::ScopedTimer timer(stream);
+
+				for (int i = 0; i < samples; i++)
+				{
+					stream.memcpy(pageable.data(), pinned.data(), test_count);
+					stream.memcpy(pinned.data(), pageable.data(), test_count);
+				}
+
+				elapsed = timer.get_future();
 			}
+			printf("    %s us |\n", to_string_aligned(size_t(elapsed.get().count() * 1e-3 * ratio) / (2 * ratio * samples), 14).c_str());
 		}
 	}
 

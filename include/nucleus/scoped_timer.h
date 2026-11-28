@@ -24,7 +24,7 @@
 #include "fwd.h"
 #include "event.h"
 #include "stream.h"
-#include <functional>
+#include <future>
 
 namespace NS_NAMESPACE
 {
@@ -34,8 +34,8 @@ namespace NS_NAMESPACE
 
 	/**
 	 *	@brief		RAII-style GPU timer that measures execution duration between stream events.
-	 *	@details	Automatically records start/end events on construction/destruction and invokes
-	 *				a callback with the measured duration. Designed for CUDA stream timing.
+	 *	@details	Records start/end events on construction/destruction and makes the measured duration
+	 *				available through a future. The destructor synchronizes the stream.
 	 *	@note		Designed specifically for development/debugging purposes to profile CUDA stream operations.
 	 *				Not recommended for production code due to synchronization overhead.
 	 */
@@ -45,17 +45,12 @@ namespace NS_NAMESPACE
 
 	public:
 
-		//!	@brief		Callback type that receives the measured duration in nanoseconds.
-		using CallbackFunc = std::function<void(std::chrono::nanoseconds ns)>;
-
-
 		/**
 		 *	@brief		Constructs timer and records start event.
 		 *	@param[in]	stream - The CUDA stream to time operations on.
-		 *	@param[in]	callback - Function to receive timing results.
+		 *	@throw		ErrorCode - If event creation or recording fails.
 		 */
-		explicit ScopedTimer(Stream & stream, const CallbackFunc & callback) : stream_(stream),
-			callback_(callback), start_event_(stream.device()), end_event_(stream.device())
+		explicit ScopedTimer(Stream & stream) : stream_(stream), end_event_(stream.device()), start_event_(stream.device())
 		{
 			stream_.record(start_event_);
 		}
@@ -64,47 +59,51 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Constructs timer and records start event.
 		 *	@param[in]	stream - The CUDA stream to time operations on.
-		 *	@param[in]	callback - Function to receive timing results.
+		 *	@throw		ErrorCode - If event creation or recording fails.
 		 */
-		explicit ScopedTimer(Stream * stream, const CallbackFunc & callback) : ScopedTimer(*stream, callback) {}
+		explicit ScopedTimer(Stream * stream) : ScopedTimer(*stream) {}
 
 
 		/**
 		 *	@brief		Constructs timer and records start event.
 		 *	@param[in]	stream - The CUDA stream to time operations on.
-		 *	@param[in]	callback - Function to receive timing results.
+		 *	@note		The caller must keep the stream alive until the timer is destroyed.
+		 *	@throw		ErrorCode - If event creation or recording fails.
 		 */
-		explicit ScopedTimer(std::shared_ptr<Stream> stream, const CallbackFunc & callback) : ScopedTimer(*stream, callback) {}
+		explicit ScopedTimer(std::shared_ptr<Stream> stream) : ScopedTimer(*stream) {}
 
 
 		/**
-		 *	@brief		Destructor - records end event and invokes callback
-		 *	@details	Synchronizes the stream before measurement to ensure accurate timing.
-		 *				The callback runs only when CUDA supplies a valid measurement.
+		 *	@brief		Returns a future for the elapsed time in nanoseconds.
+		 *	@note		Can be called once. Wait for the result only after the timer is destroyed.
+		 *	@throw		std::future_error - If the future has already been retrieved.
 		 */
-		~ScopedTimer()
+		std::future<std::chrono::nanoseconds> get_future() { return promise_.get_future(); }
+
+
+		/**
+		 *	@brief		Records the end event and synchronizes the stream.
+		 *	@details	The future receives the elapsed time or the exception from measurement.
+		 */
+		~ScopedTimer() noexcept
 		{
-			stream_.record(end_event_).sync();
-
-			std::chrono::nanoseconds elapsed{};
-
 			try
 			{
-				elapsed = end_event_ - start_event_;
-			}
-			catch (ErrorCode)
-			{
-				return;
-			}
+				stream_.record(end_event_).sync();
 
-			callback_(elapsed);
+				promise_.set_value(end_event_ - start_event_);
+			}
+			catch (...)
+			{
+				promise_.set_exception(std::current_exception());
+			}
 		}
 
 	private:
 
-		Stream &			stream_;
-		TimedEvent			end_event_;
-		TimedEvent			start_event_;
-		CallbackFunc		callback_;
+		Stream &									stream_;
+		TimedEvent									end_event_;
+		TimedEvent									start_event_;
+		std::promise<std::chrono::nanoseconds>		promise_;
 	};
 }

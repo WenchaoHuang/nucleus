@@ -113,36 +113,60 @@ int main()
 		constexpr int block_size = 128;
 		constexpr size_t ratio = 1000000000;
 		{
-			ns::ScopedTimer timer(stream, [=](std::chrono::nanoseconds ns) { printf("%s us |", to_string_aligned(size_t(ns.count() * 1e-3 * ratio) / (ratio * samples), 8).c_str()); });
-
-			for (int i = 0; i < samples; i++)
+			std::future<std::chrono::nanoseconds> elapsed;
 			{
-				stream.launch(indexed_copy<float3>, ns::ceil_div(test_count, block_size), block_size)(output_float3, input_float3, sequential_indices, test_count);
+				ns::ScopedTimer timer(stream);
+
+				for (int i = 0; i < samples; i++)
+				{
+					stream.launch(indexed_copy<float3>, ns::ceil_div(test_count, block_size), block_size)(output_float3, input_float3, sequential_indices, test_count);
+				}
+
+				elapsed = timer.get_future();
 			}
+			printf("%s us |", to_string_aligned(size_t(elapsed.get().count() * 1e-3 * ratio) / (ratio * samples), 8).c_str());
 		}
 		{
-			ns::ScopedTimer timer(stream, [=](std::chrono::nanoseconds ns) { printf("%s us |", to_string_aligned(size_t(ns.count() * 1e-3 * ratio) / (ratio * samples), 8).c_str()); });
-
-			for (int i = 0; i < samples; i++)
+			std::future<std::chrono::nanoseconds> elapsed;
 			{
-				stream.launch(indexed_copy<float4>, ns::ceil_div(test_count, block_size), block_size)(output_float4, input_float4, sequential_indices, test_count);
+				ns::ScopedTimer timer(stream);
+
+				for (int i = 0; i < samples; i++)
+				{
+					stream.launch(indexed_copy<float4>, ns::ceil_div(test_count, block_size), block_size)(output_float4, input_float4, sequential_indices, test_count);
+				}
+
+				elapsed = timer.get_future();
 			}
+			printf("%s us |", to_string_aligned(size_t(elapsed.get().count() * 1e-3 * ratio) / (ratio * samples), 8).c_str());
 		}
 		{
-			ns::ScopedTimer timer(stream, [=](std::chrono::nanoseconds ns) { printf("%s us |", to_string_aligned(size_t(ns.count() * 1e-3 * ratio) / (ratio * samples), 8).c_str()); });
-
-			for (int i = 0; i < samples; i++)
+			std::future<std::chrono::nanoseconds> elapsed;
 			{
-				stream.launch(indexed_copy<float3>, ns::ceil_div(test_count, block_size), block_size)(output_float3, input_float3, random_indices, test_count);
+				ns::ScopedTimer timer(stream);
+
+				for (int i = 0; i < samples; i++)
+				{
+					stream.launch(indexed_copy<float3>, ns::ceil_div(test_count, block_size), block_size)(output_float3, input_float3, random_indices, test_count);
+				}
+
+				elapsed = timer.get_future();
 			}
+			printf("%s us |", to_string_aligned(size_t(elapsed.get().count() * 1e-3 * ratio) / (ratio * samples), 8).c_str());
 		}
 		{
-			ns::ScopedTimer timer(stream, [=](std::chrono::nanoseconds ns) { printf("%s us |", to_string_aligned(size_t(ns.count() * 1e-3 * ratio) / (ratio * samples), 8).c_str()); });
-
-			for (int i = 0; i < samples; i++)
+			std::future<std::chrono::nanoseconds> elapsed;
 			{
-				stream.launch(indexed_copy<float4>, ns::ceil_div(test_count, block_size), block_size)(output_float4, input_float4, random_indices, test_count);
+				ns::ScopedTimer timer(stream);
+
+				for (int i = 0; i < samples; i++)
+				{
+					stream.launch(indexed_copy<float4>, ns::ceil_div(test_count, block_size), block_size)(output_float4, input_float4, random_indices, test_count);
+				}
+
+				elapsed = timer.get_future();
 			}
+			printf("%s us |", to_string_aligned(size_t(elapsed.get().count() * 1e-3 * ratio) / (ratio * samples), 8).c_str());
 		}
 
 		printf("\n");

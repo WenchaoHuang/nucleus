@@ -39,7 +39,17 @@ void test_event()
 	ns::Event		event0(device);
 	ns::TimedEvent	event1(device);
 	ns::TimedEvent	event2(device);
-	ns::ScopedTimer	timer(stream, [](std::chrono::nanoseconds ns) { printf("ScopedTime: %fus\n", ns.count() * 1e-3); });
+
+	std::future<std::chrono::nanoseconds> elapsed_time;
+	{
+		ns::ScopedTimer timer(stream);
+		elapsed_time = timer.get_future();
+		assert(elapsed_time.wait_for(std::chrono::nanoseconds::zero()) == std::future_status::timeout);
+	}
+	assert(elapsed_time.wait_for(std::chrono::nanoseconds::zero()) == std::future_status::ready);
+	auto duration = elapsed_time.get();
+	assert(duration.count() >= 0);
+	(void)duration;
 
 	ns::Event		releasable_event(device);
 	cudaEvent_t		released_handle = releasable_event.release();
