@@ -46,7 +46,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	image - Shared pointer to the image object.
 		 *	@param[in]	sampler - Sampler for texture fetched.
 		 *	@param[in]	view_format - View format of texture (internal use).
-		 *	@throws		cudaError_t - In case of failure.
+		 *	@throws		ErrorCode - In case of failure.
 		 */
 		NS_API explicit TextureBase(std::shared_ptr<ImageBase> image, Sampler sampler, Format view_format);
 
@@ -82,7 +82,7 @@ namespace NS_NAMESPACE
 		 *	@brief		Binds a texture memory as the texture resource.
 		 *	@param[in]	image - The image object.
 		 *	@param[in]	sampler - Sampler for texture fetched.
-		 *	@throws		cudaError_t - In case of failure.
+		 *	@throws		ErrorCode - In case of failure.
 		 */
 		Texture(const ImageTemplate<Type> & image, Sampler sampler = Sampler()) : TextureBase(std::make_shared<ImageTemplate<Type>>(image), sampler, ns::FormatOf<Type>::value) {}
 
@@ -92,7 +92,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	image - Shared pointer to the memory object.
 		 *	@param[in]	sampler - Sampler for texture fetched.
 		 *	@details	Force set ReadMode::eNormalizedFloat to 1.
-		 *	@throws		cudaError_t - In case of failure.
+		 *	@throws		ErrorCode - In case of failure.
 		 */
 		template<typename StorageType> Texture(const ImageTemplate<StorageType> & image, Sampler sampler = Sampler()) : TextureBase(std::make_shared<ImageTemplate<StorageType>>(image), sampler, ns::FormatOf<Type>::value)
 		{

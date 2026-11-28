@@ -33,13 +33,11 @@ NS_USING_NAMESPACE
 
 Runtime::Runtime()
 {
-	cudaGetLastError();
-
-	//////////////////////////////////////////////////////////////////////
-
 	int driver_version = 0;
 
-	cudaDriverGetVersion(&driver_version);
+	cudaError_t err = cudaDriverGetVersion(&driver_version);
+
+	if (err != cudaSuccess)		throw static_cast<ErrorCode>(err);
 
 	driver_version_.major = driver_version / 1000;
 	driver_version_.minor = (driver_version % 1000) / 10;
@@ -50,7 +48,9 @@ Runtime::Runtime()
 
 	int runtime_version = 0;
 
-	cudaRuntimeGetVersion(&runtime_version);
+	err = cudaRuntimeGetVersion(&runtime_version);
+
+	if (err != cudaSuccess)		throw static_cast<ErrorCode>(err);
 
 	runtime_version_.major = runtime_version / 1000;
 	runtime_version_.minor = (runtime_version % 1000) / 10;
@@ -59,35 +59,45 @@ Runtime::Runtime()
 
 	//////////////////////////////////////////////////////////////////////
 
-	cudaGetLastError();
-
 	int device_count = 0;
 
-	auto err = cudaGetDeviceCount(&device_count);
+	err = cudaGetDeviceCount(&device_count);
 
-	cuda_devices_.resize(device_count, nullptr);
+	if (err != cudaSuccess && err != cudaErrorNoDevice)	throw static_cast<ErrorCode>(err);
 
 	NS_INFO_LOG_IF(err == cudaErrorNoDevice, "No CUDA-capable devices were detected.");
 
 	//////////////////////////////////////////////////////////////////////
 
-	for (int i = 0; i < device_count; i++)
+	try
 	{
-		cudaDeviceProp dev_prop = {};
-
-		cudaGetDeviceProperties(reinterpret_cast<cudaDeviceProp*>(&dev_prop), i);
-
-		NS_INFO_LOG("CUDA device(%d): %s, compute capability: %d.%d", i, dev_prop.name, dev_prop.major, dev_prop.minor);
-
-		cuda_devices_[i] = new Device(i, dev_prop);
-
-		if (i == 0)
+		for (int i = 0; i < device_count; i++)
 		{
-			default_alloc_ = cuda_devices_[0]->default_allocator();
+			cudaDeviceProp dev_prop = {};
+
+			err = cudaGetDeviceProperties(reinterpret_cast<cudaDeviceProp*>(&dev_prop), i);
+
+			if (err != cudaSuccess) throw static_cast<ErrorCode>(err);
+
+			NS_INFO_LOG("CUDA device(%d): %s, compute capability: %d.%d", i, dev_prop.name, dev_prop.major, dev_prop.minor);
+
+			cuda_devices_.emplace_back(new Device(i, dev_prop));
+
+			if (i == 0)
+			{
+				default_alloc_ = cuda_devices_[0]->default_allocator();
+			}
 		}
 	}
+	catch (...)
+	{
+		for (auto device : cuda_devices_)
+		{
+			delete device;
+		}
 
-	cudaGetLastError();
+		throw;
+	}
 }
 
 
@@ -111,10 +121,8 @@ ErrorCode Runtime::get_last_error() noexcept
 
 Runtime::~Runtime()
 {
-	for (size_t i = 0; i < cuda_devices_.size(); i++)
+	for (auto device : cuda_devices_)
 	{
-		delete cuda_devices_[i];
+		delete device;
 	}
-
-	cuda_devices_.clear();
 }

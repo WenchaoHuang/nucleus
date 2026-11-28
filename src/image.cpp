@@ -62,7 +62,7 @@ public:
 	 *	@param[in]	format - Texel format of the image.
 	 *	@param[in]	extent - Dimensions of the image.
 	 *	@param[in]	flags - Flags for image creation (interanl use).
-	 *	@throw		cudaError_t - In case of failure.
+	 *	@throw		ErrorCode - In case of failure.
 	 */
 	explicit Resource(std::shared_ptr<DeviceAllocator> allocator, Format format, Extent extent, int flags)
 		: handle(allocator->allocate_texture_memory(format, extent.width, extent.height, extent.depth, flags | cudaArraySurfaceLoadStore)),
@@ -76,40 +76,47 @@ public:
 	 *	@param[in]	extent - Dimensions of the image.
 	 *	@param[in]	num_levels - Number of mipmap levels to allocated.
 	 *	@param[in]	flags - Flags for image creation (interanl use).
-	 *	@throw		cudaError_t - In case of failure.
+	 *	@throw		ErrorCode - In case of failure.
 	 */
 	explicit Resource(std::shared_ptr<DeviceAllocator> allocator, Format format, Extent extent, unsigned int num_levels, int flags)
 		: handle(allocator->allocate_mipmap_texture_memory(format, extent.width, extent.height, extent.depth, num_levels, flags | cudaArraySurfaceLoadStore)),
 		allocator(allocator), format(format), extent(extent)
 	{
-		this->mipmaps.resize(num_levels);
-
-		auto image_lod = std::get<cudaMipmappedArray_t>(handle);
-
-		for (unsigned int i = 0; i < num_levels; i++)
+		try
 		{
-			cudaError_t err = cudaGetMipmappedArrayLevel(&mipmaps[i].first, image_lod, i);
+			this->mipmaps.resize(num_levels);
 
-			if (err == cudaSuccess)
+			auto image_lod = std::get<cudaMipmappedArray_t>(handle);
+
+			for (unsigned int i = 0; i < num_levels; i++)
 			{
-				uint32_t				_flags = 0;
-				cudaExtent				_extent = {};
-				cudaChannelFormatDesc	channel_desc = {};
+				cudaError_t err = cudaGetMipmappedArrayLevel(&mipmaps[i].first, image_lod, i);
 
-				cudaArrayGetInfo(&channel_desc, &_extent, &_flags, mipmaps[i].first);
+				if (err == cudaSuccess)
+				{
+					uint32_t				_flags = 0;
+					cudaExtent				_extent = {};
+					cudaChannelFormatDesc	channel_desc = {};
 
-				mipmaps[i].second.height = static_cast<unsigned int>(_extent.height);
-				mipmaps[i].second.width = static_cast<unsigned int>(_extent.width);
-				mipmaps[i].second.depth = static_cast<unsigned int>(_extent.depth);
+					err = cudaArrayGetInfo(&channel_desc, &_extent, &_flags, mipmaps[i].first);
+
+					if (err != cudaSuccess) throw static_cast<ErrorCode>(err);
+
+					mipmaps[i].second.height = static_cast<unsigned int>(_extent.height);
+					mipmaps[i].second.width = static_cast<unsigned int>(_extent.width);
+					mipmaps[i].second.depth = static_cast<unsigned int>(_extent.depth);
+				}
+				else
+				{
+					throw static_cast<ErrorCode>(err);
+				}
 			}
-			else
-			{
-				NS_ERROR_LOG("%s.", cudaGetErrorString(err));
+		}
+		catch (...)
+		{
+			allocator->deallocate_mipmap_texture_memory(std::get<cudaMipmappedArray_t>(handle));
 
-				cudaGetLastError();
-
-				throw err;
-			}
+			throw;
 		}
 	}
 

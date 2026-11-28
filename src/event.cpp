@@ -88,8 +88,6 @@ Event::~Event() noexcept
 		if (err != cudaSuccess)
 		{
 			NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-			cudaGetLastError();
 		}
 	}
 }

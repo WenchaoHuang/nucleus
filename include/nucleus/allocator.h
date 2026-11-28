@@ -51,7 +51,7 @@ namespace NS_NAMESPACE
 		 *	@brief		Allocate storage with a size of at least \p bytes
 		 *	@param[in]	bytes - Requested allocation size in bytes.
 		 *	@return		Pointer to newly allocated memory.
-		 *	@throw		cudaError_t - In case of failure.
+		 *	@throw		ErrorCode - In case of failure.
 		 */
 		NS_NODISCARD void * allocate_memory(size_t bytes) { return this->do_allocate_memory(bytes); }
 
@@ -94,7 +94,7 @@ namespace NS_NAMESPACE
 		 *	@return		Pointer to newly allocated memory.
 		 *	@details	Memories allocated by CUDA API are always aligned to 512B.
 		 *	@details	If \p bytes is 0, nullptr will be returned.
-		 *	@throw		cudaError_t - In case of failure.
+		 *	@throw		ErrorCode - In case of failure.
 		 */
 		virtual void * do_allocate_memory(size_t bytes) override;
 
@@ -134,7 +134,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	height - height of the buffer.
 		 *	@param[in]	depth - depth of the buffer.
 		 *	@param[in]	flags - Flags for buffer creation (internal use).
-		 *	@throw		cudaError_t - In case of failure.
+		 *	@throw		ErrorCode - In case of failure.
 		 */
 		virtual cudaArray_t allocate_texture_memory(Format format, size_t width, size_t height, size_t depth, int flags = 0);
 
@@ -156,7 +156,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	depth - depth of the buffer.
 		 *	@param[in]	num_levels - Number of mipmap levels to allocated.
 		 *	@param[in]	flags - Flags for buffer creation (interanl use).
-		 *	@throw		cudaError_t - In case of failure.
+		 *	@throw		ErrorCode - In case of failure.
 		 */
 		virtual cudaMipmappedArray_t allocate_mipmap_texture_memory(Format format, size_t width, size_t height, size_t depth, unsigned int num_levels, int flags = 0);
 
@@ -176,7 +176,7 @@ namespace NS_NAMESPACE
 		 *	@return		Pointer to the newly allocated memory.
 		 *	@details	Memories allocated by CUDA API are always aligned to 512B.
 		 *	@details	If \p bytes is 0, nullptr will be returned.
-		 *	@throw		cudaError_t - In case of failure.
+		 *	@throw		ErrorCode - In case of failure.
 		 */
 		virtual void * do_allocate_memory(size_t bytes) override;
 

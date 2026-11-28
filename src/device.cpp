@@ -41,18 +41,18 @@ Device::Device(int id, const cudaDeviceProp & dev_prop) : id_(id), dev_prop_(std
 
 ErrorCode Device::init() noexcept
 {
-	this->set_current();
-
-	cudaError_t err = cudaFree(nullptr);
-
-	if (err != cudaSuccess)
+	try
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
+		this->set_current();
 
-		cudaGetLastError();
+		cudaError_t err = cudaFree(nullptr);
+
+		return static_cast<ErrorCode>(err);
 	}
-
-	return err;
+	catch (ErrorCode err)
+	{
+		return err;
+	}
 }
 
 
@@ -66,9 +66,7 @@ size_t Device::free_memory_size() const
 
 	if (err != cudaSuccess)
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
+		throw static_cast<ErrorCode>(err);
 	}
 
 	return free_mem_in_bytes;
@@ -83,9 +81,7 @@ void Device::sync() const
 
 	if (err != cudaSuccess)
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
+		throw static_cast<ErrorCode>(err);
 	}
 }
 
@@ -100,14 +96,10 @@ void Device::set_current() const
 
 		if (err != cudaSuccess)
 		{
-			NS_ERROR_LOG("%s.", cudaGetErrorString(err));
+			throw static_cast<ErrorCode>(err);
+		}
 
-			cudaGetLastError();
-		}
-		else
-		{
-			current_device = this->id_;
-		}
+		current_device = this->id_;
 	}
 }
 

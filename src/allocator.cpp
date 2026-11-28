@@ -40,16 +40,8 @@ void * HostAllocator::do_allocate_memory(size_t bytes)
 
 	if (err != cudaSuccess)
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
-
-		throw err;
+		throw static_cast<ErrorCode>(err);
 	}
-
-#ifdef NS_CUDA_MEMORY_CHECK
-	err = cudaMemset(ptr, -1, bytes);
-#endif
 
 	return ptr;
 }
@@ -62,8 +54,6 @@ void HostAllocator::do_deallocate_memory(void * ptr)
 	if (err != cudaSuccess)
 	{
 		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
 	}
 }
 
@@ -104,7 +94,7 @@ static cudaChannelFormatDesc create_channel_desc(Format format)
 		case Format::Float:		{ channel_desc = cudaCreateChannelDesc<::float1>();		break; }
 		case Format::Float2:	{ channel_desc = cudaCreateChannelDesc<::float2>();		break; }
 		case Format::Float4:	{ channel_desc = cudaCreateChannelDesc<::float4>();		break; }
-		default:				{ NS_ERROR_LOG("Invalid format!");						break; }
+		default:				{ throw static_cast<ErrorCode>(cudaErrorInvalidValue); }
 	}
 
 	return channel_desc;
@@ -123,11 +113,7 @@ cudaArray_t DeviceAllocator::allocate_texture_memory(Format format, size_t width
 
 	if (err != cudaSuccess)
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
-
-		throw err;
+		throw static_cast<ErrorCode>(err);
 	}
 
 	return array;
@@ -146,11 +132,7 @@ cudaMipmappedArray_t DeviceAllocator::allocate_mipmap_texture_memory(Format form
 
 	if (err != cudaSuccess)
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
-
-		throw err;
+		throw static_cast<ErrorCode>(err);
 	}
 
 	return mipmaped_array;
@@ -193,18 +175,8 @@ void * DeviceAllocator::do_allocate_memory(size_t bytes)
 
 	if (err != cudaSuccess)
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
-
-		throw err;
+		throw static_cast<ErrorCode>(err);
 	}
-
-#ifdef NS_CUDA_MEMORY_CHECK
-	err = cudaMemset(ptr, -1, bytes);
-
-	cudaDeviceSynchronize();
-#endif
 
 	return ptr;
 }
@@ -217,7 +189,5 @@ void DeviceAllocator::do_deallocate_memory(void * ptr)
 	if (err != cudaSuccess)
 	{
 		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
 	}
 }

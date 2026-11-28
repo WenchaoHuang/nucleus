@@ -71,6 +71,7 @@ namespace NS_NAMESPACE
 	 *	@param[in]	func - Kernel function for which occupancy is calculated
 	 *	@param[in]	block_size - Block size the kernel is intended to be launched with
 	 *	@param[in]	dynamic_s_mem_size - Per-block dynamic shared memory usage intended, in bytes.
+	 *	@throw		ErrorCode - If the CUDA occupancy query fails.
 	 */
 	inline int Device::occupancy_max_active_blocks_per_multiprocessor(const void * func, int block_size, size_t dynamics_mem_size)
 	{
@@ -80,9 +81,7 @@ namespace NS_NAMESPACE
 
 		if (err != cudaSuccess)
 		{
-			NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-			cudaGetLastError();
+			throw static_cast<ErrorCode>(err);
 		}
 
 		return num_blocks;
@@ -112,6 +111,7 @@ namespace NS_NAMESPACE
 	 *	@param[in]	shared_mem_bytes - Number of bytes for shared memory.
 	 *	@param[in]	args - Pointers to kernel arguments.
 	 *	@retval		Stream - Reference to this stream (enables method chaining).
+	 *	@throw		ErrorCode - If the CUDA operation fails.
 	 *	@warning	Only available in *.cu files.
 	 */
 	inline Stream & Stream::launch_kernel_impl(const void * func, const dim3 & grid_dim, const dim3 & block_dim, size_t shared_mem, void ** args)
@@ -124,11 +124,7 @@ namespace NS_NAMESPACE
 
 			if (err != cudaSuccess)
 			{
-				NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-				cudaGetLastError();
-
-				throw err;
+				throw static_cast<ErrorCode>(err);
 			}
 			else if (force_sync_)
 			{
@@ -149,6 +145,7 @@ namespace NS_NAMESPACE
 	 *	@example	stream.launch(KernelAdd, grid_dim, block_dim, shared_mem)(A, B, C, count);
 	 *	@note		The returned lambda is a temporary object that should be used immediately to configure and launch the kernel.
 	 *				It encapsulates all necessary information for the kernel launch, including the kernel function, its arguments.
+	 *	@throw		ErrorCode - When invoking the returned callable, if the CUDA launch or synchronization fails.
 	 *	@warning	Only available in *.cu files (implemented in launch_utils.cuh).
 	 */
 	template<typename... Args> auto Stream::launch(KernelFunc<Args...> func, const dim3 & grid_dim, const dim3 & block_dim, size_t shared_mem)

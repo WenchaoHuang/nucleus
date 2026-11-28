@@ -111,20 +111,13 @@ TextureBase::TextureBase(std::shared_ptr<ImageBase> source_image, Sampler sample
 
 		cudaError_t err = cudaCreateTextureObject(&texture_, &res_desc, &texture_desc, nullptr);
 
-		if (err == cudaSuccess)
+		if (err != cudaSuccess)
 		{
-			sampler_ = sampler;
-
-			image_ = source_image;
+			throw static_cast<ErrorCode>(err);
 		}
-		else
-		{
-			NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-			cudaGetLastError();
-
-			throw err;
-		}
+		
+		image_ = source_image;
+		sampler_ = sampler;
 	}
 }
 

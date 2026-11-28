@@ -48,7 +48,7 @@ namespace NS_NAMESPACE
 
 		/**
 		 *	@brief		Trigger initialization of the CUDA context.
-		 *	@retval		cudaSuccess - If device's context was initialized successfully.
+		 *	@return		CUDA success code on success, or the CUDA error code on failure.
 		 */
 		NS_API ErrorCode init() noexcept;
 
@@ -62,6 +62,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Wait for compute device to finish.
 		 *	@note		Block until the device has completed all preceding requested tasks.
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		NS_API void sync() const;
 
@@ -73,7 +74,8 @@ namespace NS_NAMESPACE
 		 *	@note		This call may be made from any host thread, to any device, and at
 		 *				any time.  This function will do no synchronization with the previous
 		 *				or new device, and should be considered a very low overhead call.
-		 *	@warning	Callling ::cudaSetDevice() in other place is not allowed!
+		 *	@warning	Callling `::cudaSetDevice()` in other place is not allowed!
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		NS_API void set_current() const;
 
@@ -81,6 +83,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		query the size of free device memory.
 		 *	@return		The free amount of memory available for allocation by the device in bytes.
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		NS_API size_t free_memory_size() const;
 
@@ -109,6 +112,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	func - Kernel function for which occupancy is calculated
 		 *	@param[in]	block_size - Block size the kernel is intended to be launched with
 		 *	@param[in]	dynamic_s_mem_size - Per-block dynamic shared memory usage intended, in bytes.
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		int occupancy_max_active_blocks_per_multiprocessor(const void * func, int block_size, size_t dynamics_mem_size = 0);
 

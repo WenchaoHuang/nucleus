@@ -49,6 +49,7 @@ namespace NS_NAMESPACE
 	public:
 
 		//!	@brief		Unbinds the current surface resource.
+		//! @throw		ErrorCode - If CUDA cannot destroy the surface object.
 		NS_API void unbind();
 
 		//!	@brief		Checks if the surface is empty.
@@ -62,7 +63,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Binds a texture memory as the surface resource.
 		 *	@param[in]	image - Shared pointer to the memory object.
-		 *	@throw		cudaError_t - In case of failure.
+		 *	@throw		ErrorCode - In case of failure.
 		 */
 		NS_API void bind_image(std::shared_ptr<Image> image);
 
@@ -95,6 +96,7 @@ namespace NS_NAMESPACE
 		Image1D<Type> image() const { return *std::static_pointer_cast<Image1D<Type>>(image_); }
 
 		//!	@brief		Binds a 1D texture memory object to the surface.
+		//!	@throw		ErrorCode - If CUDA cannot unbind or create the surface object.
 		void bind(const Image1D<Type> & image) { this->bind_image(std::make_shared<Image1D<Type>>(image)); }
 
 		//!	@brief		Converts to a device surface object for kernal access.
@@ -132,6 +134,7 @@ namespace NS_NAMESPACE
 		Image2D<Type> image() const { return *std::static_pointer_cast<Image2D<Type>>(image_); }
 
 		//!	@brief		Binds a 2D texture memory object to the surface.
+		//!	@throw		ErrorCode - If CUDA cannot unbind or create the surface object.
 		void bind(const Image2D<Type> & image) { this->bind_image(std::make_shared<Image2D<Type>>(image)); }
 
 		//!	@brief		Converts to a device surface object for kernal access.
@@ -169,6 +172,7 @@ namespace NS_NAMESPACE
 		Image3D<Type> image() const { return *std::static_pointer_cast<Image3D<Type>>(image_); }
 
 		//!	@brief		Binds a 3D texture memory object to the surface.
+		//!	@throw		ErrorCode - If CUDA cannot unbind or create the surface object.
 		void bind(const Image3D<Type> & image) { this->bind_image(std::make_shared<Image3D<Type>>(image)); }
 
 		//!	@brief		Converts to a device surface object for kernal access.
@@ -206,6 +210,7 @@ namespace NS_NAMESPACE
 		Image1DLayered<Type> image() const { return *std::static_pointer_cast<Image1DLayered<Type>>(image_); }
 
 		//!	@brief		Binds a 1D layered texture memory object to the surface.
+		//!	@throw		ErrorCode - If CUDA cannot unbind or create the surface object.
 		void bind(const Image1DLayered<Type> & image) { this->bind_image(std::make_shared<Image1DLayered<Type>>(image)); }
 
 		//!	@brief		Converts to a device surface object for kernal access.
@@ -243,6 +248,7 @@ namespace NS_NAMESPACE
 		Image2DLayered<Type> image() const { return *std::static_pointer_cast<Image2DLayered<Type>>(image_); }
 
 		//!	@brief		Binds a 2D layered texture memory object to the surface.
+		//!	@throw		ErrorCode - If CUDA cannot unbind or create the surface object.
 		void bind(const Image2DLayered<Type> & image) { this->bind_image(std::make_shared<Image2DLayered<Type>>(image)); }
 
 		//!	@brief		Converts to a device surface object for kernal access.
@@ -280,6 +286,7 @@ namespace NS_NAMESPACE
 		ImageCube<Type> image() const { return *std::static_pointer_cast<ImageCube<Type>>(image_); }
 
 		//!	@brief		Binds a cubemap texture memory object to the surface.
+		//!	@throw		ErrorCode - If CUDA cannot unbind or create the surface object.
 		void bind(const ImageCube<Type> & image) { this->bind_image(std::make_shared<ImageCube<Type>>(image)); }
 
 		//!	@brief		Converts to a device surface object for kernal access.
@@ -317,6 +324,7 @@ namespace NS_NAMESPACE
 		ImageCubeLayered<Type> image() const { return *std::static_pointer_cast<ImageCubeLayered<Type>>(image_); }
 
 		//!	@brief		Binds a layered cubemap texture memory object to the surface.
+		//!	@throw		ErrorCode - If CUDA cannot unbind or create the surface object.
 		void bind(const ImageCubeLayered<Type> & image) { this->bind_image(std::make_shared<ImageCubeLayered<Type>>(image)); }
 
 		//!	@brief		Converts to a device surface object for kernal access.

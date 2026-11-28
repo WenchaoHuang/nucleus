@@ -47,18 +47,12 @@ void Surface::bind_image(std::shared_ptr<Image> image)
 
 	cudaError_t err = cudaCreateSurfaceObject(&surface_, &res_desc);
 
-	if (err == cudaSuccess)
+	if (err != cudaSuccess)
 	{
-		image_ = image;
+		throw static_cast<ErrorCode>(err);
 	}
-	else
-	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
-
-		throw err;
-	}
+	
+	image_ = image;
 }
 
 
@@ -70,9 +64,7 @@ void Surface::unbind()
 
 		if (err != cudaSuccess)
 		{
-			NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-			cudaGetLastError();
+			throw static_cast<ErrorCode>(err);
 		}
 
 		image_ = nullptr;
@@ -84,5 +76,12 @@ void Surface::unbind()
 
 Surface::~Surface()
 {
-	this->unbind();
+	try
+	{
+		this->unbind();
+	}
+	catch (ErrorCode err)
+	{
+		NS_ERROR_LOG("%s.", cudaGetErrorString(static_cast<cudaError_t>(err)));
+	}
 }

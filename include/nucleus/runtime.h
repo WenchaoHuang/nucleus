@@ -50,6 +50,7 @@ namespace NS_NAMESPACE
 
 		/**
 		 *	@brief		Return a raw pointer to the CUDA runtime wrapper (singleton).
+		 *	@throw		ErrorCode - If CUDA runtime initialization fails.
 		 */
 		static Runtime * instance()
 		{
@@ -85,24 +86,28 @@ namespace NS_NAMESPACE
 
 		/**
 		 *	@brief		Return the version number of the current CUDA Runtime instance.
+		 *	@throw		ErrorCode - If CUDA runtime initialization fails.
 		 */
 		static Version version() { return Runtime::instance()->runtime_version_; }
 
 
 		/**
 		 *	@brief		Return the latest version of CUDA supported by the driver.
+		 *	@throw		ErrorCode - If CUDA runtime initialization fails.
 		 */
 		static Version driver_version() { return Runtime::instance()->driver_version_; }
 
 
 		/**
 		 *	@brief		Return pointer to physical device.
+		 *	@throw		ErrorCode - If CUDA runtime initialization fails.
 		 */
 		static Device * device(size_t index) { return Runtime::instance()->cuda_devices_[index]; }
 
 
 		/**
 		 *	@brief		Return physical device array.
+		 *	@throw		ErrorCode - If CUDA runtime initialization fails.
 		 */
 		static const std::vector<Device*> & devices() { return Runtime::instance()->cuda_devices_; }
 
@@ -111,12 +116,14 @@ namespace NS_NAMESPACE
 		 *	@brief		Return constant reference of the default device allocator.
 		 *	@note		The default device allocator is used for allocating device memory when no allocator is specified.
 		 *	@note		The default device allocator is initialized to the default allocator of the first device.
+		 *	@throw		ErrorCode - If CUDA runtime initialization fails.
 		 */
 		static const std::shared_ptr<DeviceAllocator> & default_allocator() { return Runtime::instance()->default_alloc_; }
 
 
 		/**
 		 *	@brief		Set the default device allocator.
+		 *	@throw		ErrorCode - If CUDA runtime initialization fails.
 		 */
 		static void set_default_allocator(std::shared_ptr<DeviceAllocator> alloc) { Runtime::instance()->default_alloc_ = alloc; }
 

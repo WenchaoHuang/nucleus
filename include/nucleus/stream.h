@@ -56,6 +56,7 @@ namespace NS_NAMESPACE
 		 *	@brief		Create a non-blocking CUDA Stream.
 		 *	@param[in]	device - Device associated with.
 		 *	@param[in]	priority - Stream priority.
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		NS_API explicit Stream(Device * device, int priority = 0);
 
@@ -70,6 +71,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Wait for stream tasks to complete.
 		 *	@note		Wait until this stream has completed all operations.
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		NS_API void sync() const;
 
@@ -77,6 +79,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Query whether all previously submitted stream operations have completed without blocking.
 		 *	@retval		True - If all operations in this stream have completed.
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		NS_API bool is_idle() const;
 
@@ -117,6 +120,7 @@ namespace NS_NAMESPACE
 		 *	@note		Call such as `Event::is_done()` or `Stream::wait_for()` will then examine or wait for completion of the work that was captured.
 		 *	@note		Can be called multiple times on the same event and will overwrite the previously captured state.
 		 *	@warning	Event and stream must be on the same device.
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		NS_API Stream & record(EventRef event);
 
@@ -127,6 +131,7 @@ namespace NS_NAMESPACE
 		 * 	@retval		Stream - Reference to this stream (enables method chaining).
 		 *	@note		Make all future work submitted to this stream wait for all work captured in event.
 		 *	@note		Event may be from a different device than this stream.
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		NS_API Stream & wait_for(EventRef event);
 
@@ -140,6 +145,7 @@ namespace NS_NAMESPACE
 		 *	@example	stream.launch_graph(graph)
 		 *	@example	stream.launch_graph(graph).sync()
 		 *	@example	stream.launch_graph(graph).launch_graph(graph)
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		NS_API Stream & launch_graph(cudaGraphExec_t graph_exec);
 
@@ -153,6 +159,7 @@ namespace NS_NAMESPACE
 		 *	@note		The function will be called after currently enqueued work and will block work added after it.
 		 *	@warning	The host function must not perform any synchronization that may depend on outstanding CUDA work not mandated to run earlier.
 		 *	@warning	The host function must not make any CUDA API calls.
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		template<typename Type> Stream & launch_host_func(HostFunc<Type> func, Type * user_data)
 		{
@@ -171,6 +178,7 @@ namespace NS_NAMESPACE
 		 *	@note		The returned lambda is a temporary object that should be used immediately to configure and launch the kernel.
 		 *				It encapsulates all necessary information for the kernel launch, including the kernel function, its arguments.
 		 *	@warning	Only available in *.cu files (implemented in launch_utils.cuh).
+		 *	@throw		ErrorCode - When invoking the returned callable, if the CUDA launch or synchronization fails.
 		 */
 		template<typename... Args> NS_NODISCARD auto launch(KernelFunc<Args...> func, const dim3 & grid_dim, const dim3 & block_dim, size_t shared_mem = 0);
 		
@@ -190,6 +198,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	extext - Extent of matrix transfer.
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
 		 *	@warning	The memory areas may not overlap. \p width must not exceed either \p dst_pitch or \p src_pitch.
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		template<typename Type> Stream & memcpy_3d(Type * dst, size_t dst_pitch, size_t dst_height, const Type * src, size_t src_pitch, size_t src_height, size_t width, size_t height, size_t depth)
 		{
@@ -210,6 +219,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	height - Height of matrix transfer (rows).
 		 *	@param[in]	depth - Depth of matrix transfer (layers).
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		template<typename Type> Stream & memcpy_3d(Type * dst, size_t dst_pitch, size_t dst_height, ImageAccessor<Type> src_img, size_t width, size_t height, size_t depth)
 		{
@@ -227,6 +237,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	height - Height of matrix transfer (rows).
 		 *	@param[in]	depth - Depth of matrix transfer (layers).
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		template<typename Type> Stream & memcpy_3d(ImageAccessor<Type> dst_img, const Type * src, size_t src_pitch, size_t src_height, size_t width, size_t height, size_t depth)
 		{
@@ -243,6 +254,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	depth - Depth of matrix transfer (layers).
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
 		 *	@warning	The memory areas may not overlap.
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		template<typename Type> Stream & memcpy_3d(ImageAccessor<Type> dst_img, ImageAccessor<Type> src_img, size_t width, size_t height, size_t depth)
 		{
@@ -262,6 +274,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	extent - Extent of matrix transfer.
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
 		 *	@warning	The memory areas may not overlap. \p width must not exceed either \p dst_pitch or \p src_pitch.
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		template<typename Type> Stream & memcpy_2d(Type * dst, size_t dst_pitch, const Type * src, size_t src_pitch, size_t width, size_t height)
 		{
@@ -280,6 +293,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	width - Width of matrix transfer (columns).
 		 *	@param[in]	height - Height of matrix transfer (rows).
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		template<typename Type> Stream & memcpy_2d(Type * dst, size_t dst_pitch, ImageAccessor<Type> src_img, size_t width, size_t height)
 		{
@@ -295,6 +309,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	width - Width of matrix transfer (columns).
 		 *	@param[in]	height - Height of matrix transfer (rows).
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		template<typename Type> Stream & memcpy_2d(ImageAccessor<Type> dst_img, const Type * src, size_t src_pitch, size_t width, size_t height)
 		{
@@ -311,6 +326,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	height - Height of matrix transfer (rows).
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
 		 *	@warning	The memory areas may not overlap.
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		template<typename Type> Stream & memcpy_2d(ImageAccessor<Type> dst_img, ImageAccessor<Type> src_img, size_t width, size_t height)
 		{
@@ -326,6 +342,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	count - If Type is void: bytes to copy. Otherwise, number of elements to copy.
 		 * 	@retval		Stream - Reference to this stream (enables method chaining).
 		 *	@note		Copying memory on different devices is also available.
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		template<typename Type> Stream & memcpy(Type * dst, const Type * src, size_t count)
 		{
@@ -345,6 +362,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	srcPosZ - z offset of image data.
 		 *	@param[in]	count - number of elements to copy.
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		template<typename Type> Stream & memcpy(Type * dst, ImageAccessor<Type> src_img, size_t count)
 		{
@@ -361,6 +379,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	src - Source memory address.
 		 *	@param[in]	count - number of elements to copy.
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		template<typename Type> Stream & memcpy(ImageAccessor<Type> dst_img, const Type * src, size_t count)
 		{
@@ -375,6 +394,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	count - number of elements to copy.
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
 		 *	@warning	The memory areas may not overlap.
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		template<typename Type> Stream & memcpy(ImageAccessor<Type> dst_img, ImageAccessor<Type> src_img, size_t count)
 		{
@@ -390,6 +410,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	src - Source memory address.
 		 *	@param[in]	count - Element count to copy (in bytes when Type = void).
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		template<typename Type> Stream & memcpy_to_symbol(Type * symbol, size_t offset, const Type * src, size_t count)
 		{
@@ -414,6 +435,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	offset - Offset from start of symbol (in bytes when Type = void).
 		 *	@param[in]	count - Element count to copy (in bytes when Type = void).
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		template<typename Type> Stream & memcpy_from_symbol(Type * dst, const Type * symbol, size_t offset, size_t count)
 		{
@@ -440,6 +462,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	block_size - CUDA thread block size (default = 256, which is near-optimal for most modern GPUs). 
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
 		 *	@warning	Only available in *.cu files (CUDA compilation required).
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		template<typename Type> Stream & fill(Type * values, Type value, size_t count, int block_size = 256);
 
@@ -450,6 +473,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	value - Value to fill with (only the least significant byte is used).
 		 *	@param[in]	bytes - Size in bytes to set.
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		NS_API Stream & memset(void * address, int value, size_t bytes);
 		
@@ -468,6 +492,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	depth - Depth of matrix transfer (layers).
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
 		 *	@warning	The memory areas may not overlap. \p width must not exceed either \p dst_pitch or \p src_pitch.
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		NS_API Stream & memcpy_linear(void * dst, size_t dst_pitch, size_t dst_height, const void * src, size_t src_pitch, size_t src_height, size_t width, size_t height, size_t depth);
 
@@ -482,6 +507,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	height - Height of matrix transfer (rows).
 		 *	@param[in]	depth - Depth of matrix transfer (layers).
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		NS_API Stream & memcpy_linear_image(void * dst, size_t dst_pitch, size_t dst_height, ImageAccessor<void> src_img, size_t width, size_t height, size_t depth);
 
@@ -496,6 +522,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	height - Height of matrix transfer (rows).
 		 *	@param[in]	depth - Depth of matrix transfer (layers).
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		NS_API Stream & memcpy_image_linear(ImageAccessor<void> dst_img, const void * src, size_t src_pitch, size_t src_height, size_t width, size_t height, size_t depth);
 
@@ -507,6 +534,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	src_pitch - Offset of source image data.
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
 		 *	@warning	The memory areas may not overlap.
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		NS_API Stream & memcpy_image(ImageAccessor<void> dst_img, ImageAccessor<void> src_img, size_t width, size_t height, size_t depth);
 
@@ -518,6 +546,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	offset - Offset from start of symbol in bytes.
 		 *	@param[in]	count - Element count to copy in bytes.
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		NS_API Stream & memcpy_from_symbol_impl(void * dst, const void * symbol, size_t offset, size_t count);
 
@@ -529,6 +558,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	src - Source memory address.
 		 *	@param[in]	count - Element count to copy in bytes.
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		NS_API Stream & memcpy_to_symbol_impl(void * symbol, size_t offset, const void * src, size_t count);
 
@@ -542,12 +572,14 @@ namespace NS_NAMESPACE
 		 *	@param[in]	args - Pointers to kernel arguments.
 		 *	@retval		Stream - Reference to this stream (enables method chaining).
 		 *	@warning	Only available in *.cu files.
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		Stream & launch_kernel_impl(const void * func, const dim3 & grid_dim, const dim3 & block_dim, size_t shared_mem, void ** args);
 
 
 		/**
 		 *	@brief		Acquires the device context for this stream.
+		 *	@throw		ErrorCode - If the CUDA operation fails.
 		 */
 		NS_API void acquire_device_context() const;
 

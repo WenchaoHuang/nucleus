@@ -45,11 +45,7 @@ Stream::Stream(Device * device, int priority) : device_(device), stream_(nullptr
 
 	if (err != cudaSuccess)
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
-
-		throw err;
+		throw static_cast<ErrorCode>(err);
 	}
 }
 
@@ -68,9 +64,7 @@ Stream & Stream::record(EventRef event)
 
 	if (err != cudaSuccess)
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
+		throw static_cast<ErrorCode>(err);
 	}
 
 	return *this;
@@ -85,9 +79,7 @@ Stream & Stream::wait_for(EventRef event)
 
 	if (err != cudaSuccess)
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
+		throw static_cast<ErrorCode>(err);
 	}
 
 	return *this;
@@ -102,9 +94,7 @@ Stream & Stream::launch_graph(cudaGraphExec_t graph_exec)
 
 	if (err != cudaSuccess)
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
+		throw static_cast<ErrorCode>(err);
 	}
 	else if (force_sync_)
 	{
@@ -123,9 +113,7 @@ Stream & Stream::launch_host_func(HostFunc<void> func, void * user_data)
 
 	if (err != cudaSuccess)
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
+		throw static_cast<ErrorCode>(err);
 	}
 	else if (force_sync_)
 	{
@@ -141,7 +129,7 @@ Stream & Stream::memcpy_linear(void * dst, size_t dst_pitch, size_t dst_height, 
 	this->acquire_device_context();
 
 	cudaMemcpy3DParms mempcy_params = {};
-	mempcy_params.dstPtr	= make_cudaPitchedPtr(dst, dst_pitch, 0, dst_height);
+	mempcy_params.dstPtr = make_cudaPitchedPtr(dst, dst_pitch, 0, dst_height);
 	mempcy_params.srcPtr = make_cudaPitchedPtr(const_cast<void*>(src), src_pitch, 0, src_height);
 	mempcy_params.extent = make_cudaExtent(width, height, depth);
 	mempcy_params.kind = cudaMemcpyDefault;
@@ -150,9 +138,7 @@ Stream & Stream::memcpy_linear(void * dst, size_t dst_pitch, size_t dst_height, 
 
 	if (err != cudaSuccess)
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
+		throw static_cast<ErrorCode>(err);
 	}
 	else if (force_sync_)
 	{
@@ -178,9 +164,7 @@ Stream & Stream::memcpy_linear_image(void * dst, size_t dst_pitch, size_t dst_he
 
 	if (err != cudaSuccess)
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
+		throw static_cast<ErrorCode>(err);
 	}
 	else if (force_sync_)
 	{
@@ -206,9 +190,7 @@ Stream & Stream::memcpy_image_linear(ImageAccessor<void> dst_img, const void * s
 
 	if (err != cudaSuccess)
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
+		throw static_cast<ErrorCode>(err);
 	}
 	else if (force_sync_)
 	{
@@ -235,9 +217,7 @@ Stream & Stream::memcpy_image(ImageAccessor<void> dst_img, ImageAccessor<void> s
 
 	if (err != cudaSuccess)
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
+		throw static_cast<ErrorCode>(err);
 	}
 	else if (force_sync_)
 	{
@@ -256,9 +236,7 @@ Stream & Stream::memcpy_to_symbol_impl(void * symbol, size_t offset, const void 
 
 	if (err != cudaSuccess)
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
+		throw static_cast<ErrorCode>(err);
 	}
 	else if (force_sync_)
 	{
@@ -277,9 +255,7 @@ Stream & Stream::memcpy_from_symbol_impl(void * dst, const void * symbol, size_t
 
 	if (err != cudaSuccess)
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
+		throw static_cast<ErrorCode>(err);
 	}
 	else if (force_sync_)
 	{
@@ -298,9 +274,7 @@ Stream & Stream::memset(void * address, int value, size_t bytes)
 
 	if (err != cudaSuccess)
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
+		throw static_cast<ErrorCode>(err);
 	}
 	else if (force_sync_)
 	{
@@ -319,9 +293,7 @@ void Stream::sync() const
 
 	if (err != cudaSuccess)
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
+		throw static_cast<ErrorCode>(err);
 	}
 }
 
@@ -352,9 +324,7 @@ bool Stream::is_idle() const
 
 	if ((err != cudaSuccess) && (err != cudaErrorNotReady))
 	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
+		throw static_cast<ErrorCode>(err);
 	}
 
 	return err == cudaSuccess;
@@ -379,8 +349,6 @@ Stream::~Stream() noexcept
 		if (err != cudaSuccess)
 		{
 			NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-			cudaGetLastError();
 		}
 	}
 }
