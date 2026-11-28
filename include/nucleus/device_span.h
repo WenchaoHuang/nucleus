@@ -58,12 +58,12 @@ namespace NS_NAMESPACE::dev
 			constexpr SpanBase() noexcept = default;
 			
 			//!	@brief		Constructor for a span with a fixed extent.
-			NS_CUDA_CALLABLE constexpr SpanBase(Type * data, size_t = Extent) noexcept : m_data(data) {}
+			NS_CUDA_CALLABLE constexpr SpanBase(Type * data, size_t = Extent) noexcept : data_(data) {}
 
 			//!	@brief		Constant size of the span, which is equal to `Extent`.
-			static constexpr size_t m_size = Extent;
+			static constexpr size_t size_ = Extent;
 
-			Type *	m_data{ nullptr };
+			Type *	data_{ nullptr };
 		};
 
 
@@ -74,10 +74,10 @@ namespace NS_NAMESPACE::dev
 			constexpr SpanBase() noexcept = default;
 			
 			//!	@brief		Constructor for a span with a dynamic extent.
-			NS_CUDA_CALLABLE constexpr SpanBase(Type * data, size_t size) noexcept : m_data(data), m_size(size) {}
+			NS_CUDA_CALLABLE constexpr SpanBase(Type * data, size_t size) noexcept : data_(data), size_(size) {}
 			
-			Type *	m_data{ nullptr };
-			size_t	m_size{ 0 };
+			Type *	data_{ nullptr };
+			size_t	size_{ 0 };
 		};
 	}
 
@@ -159,22 +159,22 @@ namespace NS_NAMESPACE::dev
 	public: // Observers.
 
 		//!	@brief		Returns a const pointer to the underlying data.
-		NS_CUDA_CALLABLE constexpr const_pointer data() const noexcept { return _Base::m_data; }
+		NS_CUDA_CALLABLE constexpr const_pointer data() const noexcept { return _Base::data_; }
 
 		//!	@brief		Checks if the span is empty.
-		NS_CUDA_CALLABLE constexpr bool empty() const noexcept { return _Base::m_data == nullptr; }
+		NS_CUDA_CALLABLE constexpr bool empty() const noexcept { return _Base::data_ == nullptr; }
 
 		//!	@brief		Returns the number of elements in the span.
-		NS_CUDA_CALLABLE constexpr size_type size() const noexcept requires(is_dynamic_extent) { return _Base::m_size; }
+		NS_CUDA_CALLABLE constexpr size_type size() const noexcept requires(is_dynamic_extent) { return _Base::size_; }
 
 		//!	@brief		Returns the size of the span in bytes.
 		NS_CUDA_CALLABLE constexpr size_type size_bytes() const noexcept requires(is_dynamic_extent) { return size() * sizeof(Type); }
 
 		//!	@brief		Returns the number of elements in the span (static for fixed extent).
-		static constexpr size_type size_bytes() noexcept requires(!is_dynamic_extent) { return _Base::m_size * sizeof(Type); }
+		static constexpr size_type size_bytes() noexcept requires(!is_dynamic_extent) { return _Base::size_ * sizeof(Type); }
 
 		//!	@brief		Returns the number of elements in the span (static for fixed extent).
-		static constexpr size_type size() noexcept requires(!is_dynamic_extent) { return _Base::m_size; }
+		static constexpr size_type size() noexcept requires(!is_dynamic_extent) { return _Base::size_; }
 
 	public: // Iterators.
 
@@ -197,7 +197,7 @@ namespace NS_NAMESPACE::dev
 		{
 			NS_ASSERT(index < size()/* index out of range */);
 
-			return _Base::m_data[index];
+			return _Base::data_[index];
 		}
 
 		//!	@brief		Returns a const reference to the first element.
@@ -205,7 +205,7 @@ namespace NS_NAMESPACE::dev
 		{
 			NS_ASSERT(!empty()/* front() called on empty span */);
 
-			return _Base::m_data[0];
+			return _Base::data_[0];
 		}
 
 		//!	@brief		Returns a const reference to the last element.
@@ -213,7 +213,7 @@ namespace NS_NAMESPACE::dev
 		{
 			NS_ASSERT(!empty()/* back() called on empty span */);
 
-			return _Base::m_data[size() - 1];
+			return _Base::data_[size() - 1];
 		}
 
 	public: // Subviews.

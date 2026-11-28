@@ -33,6 +33,6 @@ void test_device()
 
 	device->init();
 	device->properties();
-	device->freeMemorySize();
+	device->free_memory_size();
 	device->sync();
 }

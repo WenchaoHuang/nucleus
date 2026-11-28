@@ -56,7 +56,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Return CUDA device ID.
 		 */
-		int id() const { return m_id; }
+		int id() const { return id_; }
 
 
 		/**
@@ -68,55 +68,55 @@ namespace NS_NAMESPACE
 
 		/**
 		 *	@brief		Set device to be used for GPU executions.
-		 *	@note		Mainly for internal call of Stream::Handle().
+		 *	@note		Mainly for internal call of `Stream::handle()`.
 		 *	@note		Set device as the current device for the calling host thread.
 		 *	@note		This call may be made from any host thread, to any device, and at
 		 *				any time.  This function will do no synchronization with the previous
 		 *				or new device, and should be considered a very low overhead call.
 		 *	@warning	Callling ::cudaSetDevice() in other place is not allowed!
 		 */
-		NS_API void setCurrent() const;
+		NS_API void set_current() const;
 
 
 		/**
 		 *	@brief		query the size of free device memory.
 		 *	@return		The free amount of memory available for allocation by the device in bytes.
 		 */
-		NS_API size_t freeMemorySize() const;
+		NS_API size_t free_memory_size() const;
 
 
 		/**
 		 *	@brief		Return reference of the default stream.
 		 */
-		Stream & defaultStream() { return *m_defaultStream.get(); }
+		Stream & default_stream() { return *default_stream_.get(); }
 
 
 		/**
 		 *	@brief		Return the device properties.
 		 *	@note		Requires CUDA Toolkit.
 		 */
-		const cudaDeviceProp * properties() const { return m_devProp.get(); }
+		const cudaDeviceProp * properties() const { return dev_prop_.get(); }
 
 
 		/**
 		 *	@brief		Return shared pointer to the default allocator.
 		 */
-		std::shared_ptr<DeviceAllocator> defaultAllocator() { return m_defaultAlloc; }
+		std::shared_ptr<DeviceAllocator> default_allocator() { return default_alloc_; }
 
 
 		/**
 		 *	@brief		Returns occupancy for a device function.
 		 *	@param[in]	func - Kernel function for which occupancy is calculated
-		 *	@param[in]	blockSize - Block size the kernel is intended to be launched with
-		 *	@param[in]	dynamicSMemSize - Per-block dynamic shared memory usage intended, in bytes.
+		 *	@param[in]	block_size - Block size the kernel is intended to be launched with
+		 *	@param[in]	dynamic_s_mem_size - Per-block dynamic shared memory usage intended, in bytes.
 		 */
-		int OccupancyMaxActiveBlocksPerMultiprocessor(const void * func, int blockSize, size_t dynamicSMemSize = 0);
+		int occupancy_max_active_blocks_per_multiprocessor(const void * func, int block_size, size_t dynamics_mem_size = 0);
 
 	private:
 
-		const int									m_id;
-		const std::unique_ptr<cudaDeviceProp>		m_devProp;
-		const std::shared_ptr<DeviceAllocator>		m_defaultAlloc;
-		const std::shared_ptr<Stream>				m_defaultStream;
+		const int									id_;
+		const std::unique_ptr<cudaDeviceProp>		dev_prop_;
+		const std::shared_ptr<DeviceAllocator>		default_alloc_;
+		const std::shared_ptr<Stream>				default_stream_;
 	};
 }

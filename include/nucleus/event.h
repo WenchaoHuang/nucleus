@@ -44,15 +44,15 @@ namespace NS_NAMESPACE
 
 		/**
 		 *	@brief		Create an event reference from a native CUDA event handle.
-		 *	@param[in]	hEvent - Native CUDA event handle.
+		 *	@param[in]	event - Native CUDA event handle.
 		 */
-		constexpr EventRef(cudaEvent_t event) noexcept : m_event(event) {}
+		constexpr EventRef(cudaEvent_t event) noexcept : event_(event) {}
 
 
 		/**
 		 *	@brief		Return `true` if the stored CUDA event handle is non-null.
 		 */
-		explicit constexpr operator bool() const noexcept { return m_event != nullptr; }
+		explicit constexpr operator bool() const noexcept { return event_ != nullptr; }
 
 
 		/**
@@ -67,7 +67,7 @@ namespace NS_NAMESPACE
 		 *	@return		The native handle being held by the `EventRef` object.
 		 *	@warning	Only for CUDA-based project use.
 		 */
-		constexpr cudaEvent_t handle() const noexcept { return m_event; }
+		constexpr cudaEvent_t handle() const noexcept { return event_; }
 
 
 		/**
@@ -86,7 +86,7 @@ namespace NS_NAMESPACE
 
 	private:
 
-		cudaEvent_t		m_event;
+		cudaEvent_t		event_;
 	};
 
 	/*****************************************************************************
@@ -129,7 +129,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Move constructor.
 		 */
-		Event(Event && other) noexcept : EventRef(other.release()), m_device(std::exchange(other.m_device, nullptr)) {}
+		Event(Event && other) noexcept : EventRef(other.release()), device_(std::exchange(other.device_, nullptr)) {}
 
 
 		/**
@@ -142,7 +142,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Return pointer to the device associated with.
 		 */
-		Device * device() const { return m_device; }
+		Device * device() const { return device_; }
 
 
 		/**
@@ -150,7 +150,7 @@ namespace NS_NAMESPACE
 		 *	@return		The native handle, or a null handle if this object is empty.
 		 *	@note		The caller is responsible for destroying the returned handle.
 		 */
-		cudaEvent_t release() noexcept { return std::exchange(m_event, cudaEvent_t{}); }
+		cudaEvent_t release() noexcept { return std::exchange(event_, cudaEvent_t{}); }
 
 
 		/**
@@ -162,9 +162,9 @@ namespace NS_NAMESPACE
 			{
 				this->~Event();
 
-				m_event = std::exchange(other.m_event, cudaEvent_t{});
+				event_ = std::exchange(other.event_, cudaEvent_t{});
 
-				m_device = std::exchange(other.m_device, nullptr);
+				device_ = std::exchange(other.device_, nullptr);
 			}
 
 			return *this;
@@ -172,7 +172,7 @@ namespace NS_NAMESPACE
 
 	private:
 
-		Device *		m_device;
+		Device *	device_;
 	};
 
 	/*****************************************************************************

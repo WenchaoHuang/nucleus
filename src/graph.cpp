@@ -36,131 +36,131 @@ static void IsMemcpyNode() {}
 **********************************    Graph    ***********************************
 *********************************************************************************/
 
-Graph::Graph() : m_ID(std::hash<void*>{}(this)), m_hGraph(nullptr), m_hGraphExec(nullptr), m_indicator(0), m_paramOffset(0), m_isParamChg(false), m_isTopoChg(false), m_pImmediateLaunchStream(nullptr)
+Graph::Graph() : id_(std::hash<void*>{}(this)), graph_(nullptr), graph_exec_(nullptr), indicator_(0), param_offset_(0), is_param_chg_(false), is_topo_chg_(false), immediate_launch_stream_(nullptr)
 {
-	m_depIndicesCache.reserve(32);
-	m_depHandlesCache.reserve(32);
+	dep_indices_cache_.reserve(32);
+	dep_handles_cache_.reserve(32);
 }
 
 
 ExecDep Graph::barrier(Span<const ExecDep> dependencies)
 {
-	if (m_pImmediateLaunchStream != nullptr)	//	in immediate launch mode
+	if (immediate_launch_stream_ != nullptr)	//	in immediate launch mode
 	{
-		return ExecDep{ m_ID, -1 };
+		return ExecDep{ id_, -1 };
 	}
 	else //////////////////////////////////////////////////////////////////////////////////////
 	{
-		const uint64_t depHash = this->cacheDependencies(dependencies);
+		const uint64_t dep_hash = this->cache_dependencies(dependencies);
 
-		if (m_indicator < m_nodes.size())	//	in validating state
+		if (indicator_ < nodes_.size())	//	in validating state
 		{
-			if ((m_nodes[m_indicator].func != reinterpret_cast<void*>(IsEmptyNode)) || (m_nodes[m_indicator].depHash != depHash))	//	dependencies changes
+			if ((nodes_[indicator_].func != reinterpret_cast<void*>(IsEmptyNode)) || (nodes_[indicator_].dep_hash != dep_hash))	//	dependencies changes
 			{
-				m_nodes.resize(m_indicator);
+				nodes_.resize(indicator_);
 			}
 		}
 
-		if (m_indicator >= m_nodes.size())	//	validation failed
+		if (indicator_ >= nodes_.size())	//	validation failed
 		{
-			auto createFunc = [](cudaGraph_t hGraph, const cudaGraphNode_t * pDependencies, size_t numDependencies) -> cudaGraphNode_t
+			auto create_func = [](cudaGraph_t graph, const cudaGraphNode_t * dependencies, size_t num_dependencies) -> cudaGraphNode_t
 			{
-				cudaGraphNode_t hGraphNode = nullptr;
+				cudaGraphNode_t graph_node = nullptr;
 
-				cudaError_t err = cudaGraphAddEmptyNode(&hGraphNode, hGraph, pDependencies, numDependencies);
+				cudaError_t err = cudaGraphAddEmptyNode(&graph_node, graph, dependencies, num_dependencies);
 
 				NS_ERROR_LOG_IF(err != cudaSuccess, "%s.", cudaGetErrorString(cudaGetLastError()));
 
-				return hGraphNode;
+				return graph_node;
 			};
 
-			m_nodes.emplace_back(reinterpret_cast<void*>(IsEmptyNode), depHash, 0, m_depIndicesCache, createFunc);
+			nodes_.emplace_back(reinterpret_cast<void*>(IsEmptyNode), dep_hash, 0, dep_indices_cache_, create_func);
 
-			m_isTopoChg = true;
+			is_topo_chg_ = true;
 		}
 
-		return ExecDep{ m_ID, m_indicator++ };
+		return ExecDep{ id_, indicator_++ };
 	}
 }
 
 
 ExecDep Graph::memcpy_void(void * dst, const void * src, size_t bytes, Span<const ExecDep> dependencies)
 {
-	if (m_pImmediateLaunchStream != nullptr)	//	in immediate launch mode
+	if (immediate_launch_stream_ != nullptr)	//	in immediate launch mode
 	{
-		m_pImmediateLaunchStream->memcpy(dst, src, bytes);
+		immediate_launch_stream_->memcpy(dst, src, bytes);
 
-		return ExecDep{ m_ID, -1 };
+		return ExecDep{ id_, -1 };
 	}
 	else ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	{
-		const uint64_t depHash = this->cacheDependencies(dependencies);
+		const uint64_t dep_hash = this->cache_dependencies(dependencies);
 
-		constexpr size_t paramBytes = sizeof(dst) + sizeof(src) + sizeof(bytes);
+		constexpr size_t param_bytes = sizeof(dst) + sizeof(src) + sizeof(bytes);
 
-		const size_t paramCache[3] = { reinterpret_cast<size_t>(dst), reinterpret_cast<size_t>(src), bytes };
+		const size_t param_cache[3] = { reinterpret_cast<size_t>(dst), reinterpret_cast<size_t>(src), bytes };
 
-		if (m_indicator < m_nodes.size())	//	in validating state
+		if (indicator_ < nodes_.size())	//	in validating state
 		{
-			if ((m_nodes[m_indicator].func != reinterpret_cast<void*>(IsMemcpyNode)) || (m_nodes[m_indicator].depHash != depHash))	//	dependencies changes
+			if ((nodes_[indicator_].func != reinterpret_cast<void*>(IsMemcpyNode)) || (nodes_[indicator_].dep_hash != dep_hash))	//	dependencies changes
 			{
-				m_nodes.resize(m_indicator);
+				nodes_.resize(indicator_);
 			}
-			else if (std::memcmp(m_paramBinaries.data() + m_paramOffset, paramCache, paramBytes) != 0)	//	parameters changes
+			else if (std::memcmp(param_binaries_.data() + param_offset_, param_cache, param_bytes) != 0)	//	parameters changes
 			{
-				cudaError_t err = cudaGraphMemcpyNodeSetParams1D(m_nodes[m_indicator].hGraphNode, dst, src, bytes, cudaMemcpyDefault);
+				cudaError_t err = cudaGraphMemcpyNodeSetParams1D(nodes_[indicator_].graph_node, dst, src, bytes, cudaMemcpyDefault);
 
 				NS_ERROR_LOG_IF(err != cudaSuccess, "%s.", cudaGetErrorString(cudaGetLastError()));
 
-				std::memcpy(m_paramBinaries.data() + m_paramOffset, paramCache, paramBytes);
+				std::memcpy(param_binaries_.data() + param_offset_, param_cache, param_bytes);
 
-				m_isParamChg = true;
+				is_param_chg_ = true;
 			}
 		}
 
-		if (m_indicator >= m_nodes.size())	//	topology changed
+		if (indicator_ >= nodes_.size())	//	topology changed
 		{
-			auto createFunc = [=](cudaGraph_t hGraph, const cudaGraphNode_t * pDependencies, size_t numDependencies) -> cudaGraphNode_t
+			auto create_func = [=](cudaGraph_t graph, const cudaGraphNode_t * dependencies, size_t num_dependencies) -> cudaGraphNode_t
 			{
-				cudaGraphNode_t hGraphNode = nullptr;
+				cudaGraphNode_t graph_node = nullptr;
 
-				cudaError_t err = cudaGraphAddMemcpyNode1D(&hGraphNode, hGraph, pDependencies, numDependencies, dst, src, bytes, cudaMemcpyDefault);
+				cudaError_t err = cudaGraphAddMemcpyNode1D(&graph_node, graph, dependencies, num_dependencies, dst, src, bytes, cudaMemcpyDefault);
 
 				NS_ERROR_LOG_IF(err != cudaSuccess, "%s.", cudaGetErrorString(cudaGetLastError()));
 
-				return hGraphNode;
+				return graph_node;
 			};
 
-			m_paramBinaries.resize(m_paramBinaries.size() + paramBytes);
+			param_binaries_.resize(param_binaries_.size() + param_bytes);
 
-			std::memcpy(m_paramBinaries.data() + m_paramOffset, paramCache, paramBytes);
+			std::memcpy(param_binaries_.data() + param_offset_, param_cache, param_bytes);
 
-			m_nodes.emplace_back(reinterpret_cast<void*>(IsMemcpyNode), depHash, paramBytes, m_depIndicesCache, createFunc);
+			nodes_.emplace_back(reinterpret_cast<void*>(IsMemcpyNode), dep_hash, param_bytes, dep_indices_cache_, create_func);
 
-			m_isTopoChg = true;
+			is_topo_chg_ = true;
 		}
 
-		m_paramOffset += paramBytes;
+		param_offset_ += param_bytes;
 
-		return ExecDep{ m_ID, m_indicator++ };
+		return ExecDep{ id_, indicator_++ };
 	}
 }
 
 
-uint64_t Graph::cacheDependencies(Span<const ExecDep> dependencies)
+uint64_t Graph::cache_dependencies(Span<const ExecDep> dependencies)
 {
-	m_depIndicesCache.clear();
+	dep_indices_cache_.clear();
 
 	for (size_t i = 0; i < dependencies.size(); i++)
 	{
 		if (dependencies[i].Index == -1)	continue;	//	skip ExecDep(x, -1) for convenience
 
-		NS_ASSERT_LOG_IF(dependencies[i].ID != m_ID, "Invalid dependency!");
-		NS_ASSERT_LOG_IF(dependencies[i].Index >= m_indicator, "Invalid dependency!");
+		NS_ASSERT_LOG_IF(dependencies[i].ID != id_, "Invalid dependency!");
+		NS_ASSERT_LOG_IF(dependencies[i].Index >= indicator_, "Invalid dependency!");
 
-		if ((dependencies[i].ID == m_ID) && (dependencies[i].Index < m_indicator))	//	dependency index should always smaller than current index
+		if ((dependencies[i].ID == id_) && (dependencies[i].Index < indicator_))	//	dependency index should always smaller than current index
 		{
-			m_depIndicesCache.emplace(dependencies[i].Index);
+			dep_indices_cache_.emplace(dependencies[i].Index);
 		}
 	}
 
@@ -171,120 +171,120 @@ uint64_t Graph::cacheDependencies(Span<const ExecDep> dependencies)
 		return hash_0 ^ (hash_1 + hash_magic + (hash_0 << 6) + (hash_0 >> 2));
 	};
 
-	uint64_t depHash = m_ID;
+	uint64_t dep_hash = id_;
 
-	for (auto depIndex : m_depIndicesCache)
+	for (auto dep_index : dep_indices_cache_)
 	{
-		depHash = HashCombine(depHash, depIndex);
+		dep_hash = HashCombine(dep_hash, dep_index);
 	}
 
-	return depHash;
+	return dep_hash;
 }
 
 
-void Graph::execute(Stream * pStream)
+void Graph::execute(Stream * stream)
 {
-	if (m_pImmediateLaunchStream != nullptr)	return;
+	if (immediate_launch_stream_ != nullptr)	return;
 
-	if (m_isTopoChg || (m_indicator != m_nodes.size()))
+	if (is_topo_chg_ || (indicator_ != nodes_.size()))
 	{
-		if (m_hGraph != nullptr)
+		if (graph_ != nullptr)
 		{
-			cudaError_t err = cudaGraphDestroy(m_hGraph);
+			cudaError_t err = cudaGraphDestroy(graph_);
 
 			NS_ERROR_LOG_IF(err != cudaSuccess, "%s.", cudaGetErrorString(err));
 
-			m_hGraph = nullptr;
+			graph_ = nullptr;
 		}
-		if (m_hGraph == nullptr)
+		if (graph_ == nullptr)
 		{
-			cudaError_t err = cudaGraphCreate(&m_hGraph, 0);
+			cudaError_t err = cudaGraphCreate(&graph_, 0);
 
 			NS_ERROR_LOG_IF(err != cudaSuccess, "%s.", cudaGetErrorString(err));
 		}
 
 		//////////////////////////////////////////////////////////////////////////////////
 
-		m_nodes.resize(m_indicator);
+		nodes_.resize(indicator_);
 
-		for (size_t i = 0; i < m_nodes.size(); i++)
+		for (size_t i = 0; i < nodes_.size(); i++)
 		{
-			m_depHandlesCache.clear();
+			dep_handles_cache_.clear();
 
-			for (auto depIndex : m_nodes[i].depIndices)
+			for (auto dep_index : nodes_[i].dep_indices)
 			{
-				m_depHandlesCache.emplace_back(m_nodes[depIndex].hGraphNode);
+				dep_handles_cache_.emplace_back(nodes_[dep_index].graph_node);
 			}
 
-			m_nodes[i].hGraphNode = m_nodes[i].createFunc(m_hGraph, m_depHandlesCache.data(), m_depHandlesCache.size());
+			nodes_[i].graph_node = nodes_[i].create_func(graph_, dep_handles_cache_.data(), dep_handles_cache_.size());
 		}
 
-		m_isTopoChg = true;
+		is_topo_chg_ = true;
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////
 
-	if (m_isTopoChg || m_isParamChg)
+	if (is_topo_chg_ || is_param_chg_)
 	{
-		if (m_hGraphExec != nullptr)
+		if (graph_exec_ != nullptr)
 		{
-			cudaError_t err = cudaGraphExecDestroy(m_hGraphExec);
+			cudaError_t err = cudaGraphExecDestroy(graph_exec_);
 
 			NS_ERROR_LOG_IF(err != cudaSuccess, "%s.", cudaGetErrorString(err));
 
-			m_hGraphExec = nullptr;
+			graph_exec_ = nullptr;
 		}
-		if (m_hGraphExec == nullptr)
+		if (graph_exec_ == nullptr)
 		{
-			cudaError_t err = cudaGraphInstantiate(&m_hGraphExec, m_hGraph);
+			cudaError_t err = cudaGraphInstantiate(&graph_exec_, graph_);
 
 			NS_ERROR_LOG_IF(err != cudaSuccess, "%s.", cudaGetErrorString(err));
 
-			NS_DEBUG_LOG_IF(err == cudaSuccess, "Graph instantiate succeeded with %lld nodes.", m_nodes.size());
+			NS_DEBUG_LOG_IF(err == cudaSuccess, "Graph instantiate succeeded with %lld nodes.", nodes_.size());
 		}
 
-		m_isParamChg = false;
+		is_param_chg_ = false;
 
-		m_isTopoChg = false;
+		is_topo_chg_ = false;
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////
 
-	if (m_hGraphExec != nullptr)
+	if (graph_exec_ != nullptr)
 	{
-		pStream->launchGraph(m_hGraphExec);
+		stream->launch_graph(graph_exec_);
 	}
 }
 
 
-void Graph::restart(Stream * pImmediateLaunchStream)
+void Graph::restart(Stream * immediate_launch_stream)
 {
-	m_pImmediateLaunchStream = pImmediateLaunchStream;
+	immediate_launch_stream_ = immediate_launch_stream;
 
-	if (m_hGraphExec == nullptr)
+	if (graph_exec_ == nullptr)
 	{
-		m_nodes.clear();
+		nodes_.clear();
 	}
 
-	m_isParamChg = false;
+	is_param_chg_ = false;
 
-	m_paramOffset = 0;
+	param_offset_ = 0;
 
-	m_indicator = 0;
+	indicator_ = 0;
 }
 
 
 Graph::~Graph()
 {
-	if (m_hGraphExec != nullptr)
+	if (graph_exec_ != nullptr)
 	{
-		cudaError_t err = cudaGraphExecDestroy(m_hGraphExec);
+		cudaError_t err = cudaGraphExecDestroy(graph_exec_);
 
 		NS_ERROR_LOG_IF(err != cudaSuccess, "%s.", cudaGetErrorString(err));
 	}
-	if (m_hGraph != nullptr)
+	if (graph_ != nullptr)
 	{
-		cudaError_t err = cudaGraphDestroy(m_hGraph);
+		cudaError_t err = cudaGraphDestroy(graph_);
 
 		NS_ERROR_LOG_IF(err != cudaSuccess, "%s.", cudaGetErrorString(err));
 	}

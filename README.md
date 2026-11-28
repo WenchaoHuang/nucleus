@@ -168,8 +168,8 @@ int main()
 
 	// Obtain device, allocator, and default stream from the runtime singleton.
 	auto * device    = ns::Runtime::device(0);
-	auto   allocator = device->defaultAllocator();
-	auto & stream    = device->defaultStream();
+	auto   allocator = device->default_allocator();
+	auto & stream    = device->default_stream();
 
 	// Allocate typed device arrays (RAII — freed automatically).
 	ns::Array<int> A(allocator, count);
@@ -181,8 +181,8 @@ int main()
 	stream.fill(B.data(), 2, B.size());
 
 	// Launch the kernel — grid size is computed with ceil_div.
-	constexpr int blockSize = 256;
-	stream.launch(add_kernel, ns::ceil_div(count, blockSize), blockSize)(C, A, B, count);
+	constexpr int block_size = 256;
+	stream.launch(add_kernel, ns::ceil_div(count, block_size), block_size)(C, A, B, count);
 
 	// Copy result back to host and synchronize.
 	std::vector<int> host_result(count);
@@ -206,8 +206,8 @@ public:
 	explicit MyPoolAllocator(ns::Device * device) : ns::DeviceAllocator(device) {}
 
 protected:
-	void * doAllocateMemory(size_t bytes) override { /* pool logic */ }
-	void   doDeallocateMemory(void * ptr)  override { /* pool logic */ }
+	void * do_allocate_memory(size_t bytes) override { /* pool logic */ }
+	void   do_deallocate_memory(void * ptr)  override { /* pool logic */ }
 };
 
 auto myAlloc = std::make_shared<MyPoolAllocator>(device);
@@ -221,7 +221,7 @@ ns::Array<float> buf(myAlloc, 1024);
 ns::Stream stream(device);
 
 // Force synchronization after every operation (debug mode)
-stream.setForceSync(true);
+stream.set_force_sync(true);
 ```
 
 ## Core Concepts
@@ -250,10 +250,10 @@ auto * device = ns::Runtime::device(0);
 Wraps a physical GPU. Provides access to device properties, a default allocator, and a default stream.
 
 ```cpp
-device->freeMemorySize();           // bytes of free VRAM
+device->free_memory_size();           // bytes of free VRAM
 device->properties()->name;         // device name string (cudaDeviceProp)
-device->defaultAllocator();         // shared_ptr<DeviceAllocator>
-device->defaultStream();            // Stream&
+device->default_allocator();         // shared_ptr<DeviceAllocator>
+device->default_stream();            // Stream&
 device->sync();                     // wait for all work on this device
 ```
 
@@ -272,7 +272,7 @@ stream.memcpy(dst_host, src_device, count);
 stream.sync();
 
 // Non-blocking completion query
-bool done = stream.isComplete();
+bool done = stream.is_complete();
 ```
 
 ### `ns::Array<T>` / `ns::Array2D<T>` / `ns::Array3D<T>`
@@ -297,12 +297,12 @@ A reusable linear allocation arena for temporary memory. It keeps the largest re
 ```cpp
 #include <nucleus/scratch_arena.h>
 
-size_t requiredCapacity = 0;
-requiredCapacity = ns::aligned_end_offset<float>(requiredCapacity, count);
-requiredCapacity = ns::aligned_end_offset<uint32_t>(requiredCapacity, count);
+size_t required_capacity = 0;
+required_capacity = ns::aligned_end_offset<float>(required_capacity, count);
+required_capacity = ns::aligned_end_offset<uint32_t>(required_capacity, count);
 
 ns::ScratchArena arena(allocator);
-arena.reserve(requiredCapacity);
+arena.reserve(required_capacity);
 arena.reuse();
 
 auto values  = arena.allocate<float>(count);
@@ -420,11 +420,11 @@ Nucleus always creates CUDA arrays with surface load/store support enabled. This
 
 Images, textures, and surfaces use value-oriented host APIs. Pass an Image instance directly when constructing a `Texture*` or `Surface*`; the bound object retains shared ownership of the underlying CUDA allocation, so the original Image variable does not need to outlive it. Images can be tested for validity with `operator bool()`, and their native CUDA handles are available through `handle()`.
 
-Mipmapped `Image*Lod<T>` objects own all mip levels through the same shared resource. Use `numLevels()` to query the number of levels and `level(i)` to obtain a lightweight, strongly typed Image view for level `i`. The returned view can be passed directly to a matching surface or used independently while keeping the complete mipmapped allocation alive:
+Mipmapped `Image*Lod<T>` objects own all mip levels through the same shared resource. Use `num_levels()` to query the number of levels and `level(i)` to obtain a lightweight, strongly typed Image view for level `i`. The returned view can be passed directly to a matching surface or used independently while keeping the complete mipmapped allocation alive:
 
 ```cpp
-ns::Image2DLod<float4> imageLod(allocator, width, height, 4);
-ns::Image2D<float4> level1 = imageLod.level(1);
+ns::Image2DLod<float4> image_lod(allocator, width, height, 4);
+ns::Image2D<float4> level1 = image_lod.level(1);
 ns::Surface2D<float4> surface(level1);
 ```
 
@@ -455,7 +455,7 @@ The table below lists all available Image, Texture, and Surface type combination
 #include <nucleus/sampler.h>
 
 // 1. Allocate image memory (CUDA array on the device).
-ns::Image2D<float4> image(device->defaultAllocator(), width, height);
+ns::Image2D<float4> image(device->default_allocator(), width, height);
 
 // 2. Upload data via stream.memcpy (host → image).
 stream.memcpy(image.data(), host_pixels.data(), width, height);

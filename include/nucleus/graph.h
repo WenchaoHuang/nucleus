@@ -57,7 +57,7 @@ namespace NS_NAMESPACE
 
 		/**
 		 *	@brief		Restarts the graph for a new sequence of operations, optionally switching to immediate launch mode.
-		 *	@param[in]	pImmediateLaunchStream - Optional stream to associate with the graph upon restart. If provided (non-null),
+		 *	@param[in]	immediate_launch_stream - Optional stream to associate with the graph upon restart. If provided (non-null),
 		 *              the graph switches to immediate launch mode, where operations are executed immediately on the
 		 *              specified stream. If null, the graph maintains its current execution mode without switching
 		 *              to immediate launch. Providing a non-null stream will cause subsequent calls to execute
@@ -67,12 +67,12 @@ namespace NS_NAMESPACE
 		 *              reconstruct or reinitialize the graph. The transition to immediate launch mode provides instant
 		 *              operation execution on the provided stream, beneficial in scenarios where minimal latency is critical.
 		 */
-		NS_API void restart(Stream * pImmediateLaunchStream = nullptr);
+		NS_API void restart(Stream * immediate_launch_stream = nullptr);
 
 
 		/**
 		 *	@brief		Updates the graph's configuration if necessary and executes it using the provided stream.
-		 *	@param[in]	pStream - The stream on which the graph operations will be executed. This stream manages
+		 *	@param[in]	stream - The stream on which the graph operations will be executed. This stream manages
 		 *              the execution context and ensures that the graph operations are performed in the correct sequence
 		 *              and with proper synchronization.
 		 *	@note		This method handles any changes in the graph's topology or parameter configurations before
@@ -83,7 +83,7 @@ namespace NS_NAMESPACE
 		 *	@note		Ideal for scenarios where periodic updates to the graph's configuration are necessary before execution,
 		 *              such as updating data inputs or operation parameters.
 		 */
-		NS_API void execute(Stream * pStream);
+		NS_API void execute(Stream * stream);
 
 
 		/**
@@ -96,13 +96,13 @@ namespace NS_NAMESPACE
 
 		/**
 		 *	@brief		Sets memory to a specified value across a range, with dependency tracking.
-		 *	@param[in]	pValues - Pointer to the memory location to set.
+		 *	@param[in]	values - Pointer to the memory location to set.
 		 *	@param[in]	value - Value to set at the memory location.
 		 *	@param[in]	count - Number of elements to set.
 		 *	@param[in]	dependencies - Dependencies that must be resolved before this operation can start.
 		 *	@return		ExecDep representing the dependency handle for the launched kernel.
 		 */
-		template<typename Type> ExecDep memset(Type * pValues, Type value, size_t count, Span<const ExecDep> dependencies = {});
+		template<typename Type> ExecDep memset(Type * values, Type value, size_t count, Span<const ExecDep> dependencies = {});
 
 
 		/**
@@ -125,23 +125,23 @@ namespace NS_NAMESPACE
 		 *	@param[in]	dependencies - Dependencies that must be resolved before this operation can start.
 		 *	@param[in]	gDim - Grid dimensions.
 		 *	@param[in]	bDim - Block dimensions.
-		 *	@param[in]	sharedMemBytes - Number of bytes for shared memory.
+		 *	@param[in]	shared_mem_bytes - Number of bytes for shared memory.
 		 *	@param[in]	args - Kernel launch arguments (by value).
 		 *	@note		The returned ConfigFunctor is a temporary object that should be used immediately to configure and launch the kernel.
 		 *				It encapsulates all necessary information for the kernel launch, including the kernel function, its arguments,
 		 *				and any specified dependencies.
-		 *	@example	grpah.Launch(KernelAdd, { d1, d2 }, gridDim, blockDim, sharedMem)(pResult, pA, pB, num);
+		 *	@example	grpah.launch(KernelAdd, { d1, d2 }, grid_dim, block_dim, shared_mem)(result, a, b, num);
 		 *	@warning	Only available in *.cu files.
 		 */
 	private:
-		template<typename... Args> ExecDep launchKernel(KernelFunc<Args...> func, Span<const ExecDep> dependencies, const dim3 & gridDim, const dim3 & blockDim, unsigned int sharedMem, Args... args);
+		template<typename... Args> ExecDep launch_kernel(KernelFunc<Args...> func, Span<const ExecDep> dependencies, const dim3 & grid_dim, const dim3 & block_dim, unsigned int shared_mem, Args... args);
 	public:
-		template<typename... Args> NS_NODISCARD auto launch(KernelFunc<Args...> func, Span<const ExecDep> dependencies, const dim3 & gridDim, const dim3 & blockDim, unsigned int sharedMem = 0);
-		template<typename... Args> NS_NODISCARD auto launch(KernelFunc<Args...> func, const dim3 & gridDim, const dim3 & blockDim, unsigned int sharedMem = 0);
+		template<typename... Args> NS_NODISCARD auto launch(KernelFunc<Args...> func, Span<const ExecDep> dependencies, const dim3 & grid_dim, const dim3 & block_dim, unsigned int shared_mem = 0);
+		template<typename... Args> NS_NODISCARD auto launch(KernelFunc<Args...> func, const dim3 & grid_dim, const dim3 & block_dim, unsigned int shared_mem = 0);
 
 	private:
 
-		NS_API uint64_t cacheDependencies(Span<const ExecDep> dependencies);
+		NS_API uint64_t cache_dependencies(Span<const ExecDep> dependencies);
 		
 		NS_API ExecDep memcpy_void(void * dst, const void * src, size_t bytes, Span<const ExecDep> dependencies);
 
@@ -149,36 +149,36 @@ namespace NS_NAMESPACE
 
 		struct NodeInfo
 		{
-			using CreateFunc = std::function<cudaGraphNode_t(cudaGraph_t hGraph, const cudaGraphNode_t * pDependencies, size_t numDependencies)>;
+			using CreateFunc = std::function<cudaGraphNode_t(cudaGraph_t graph, const cudaGraphNode_t * dependencies, size_t num_dependencies)>;
 
-			explicit NodeInfo(void * _func, uint64_t _depHash, uint64_t _paramBytes, const std::unordered_set<int> & _dep, const CreateFunc & _createFunc)
-				: func(_func), depHash(_depHash), paramBytes(_paramBytes), hGraphNode(nullptr), depIndices(_dep), createFunc(_createFunc)
+			explicit NodeInfo(void * _func, uint64_t _dep_hash, uint64_t _param_bytes, const std::unordered_set<int> & _dep, const CreateFunc & _create_func)
+				: func(_func), dep_hash(_dep_hash), param_bytes(_param_bytes), graph_node(nullptr), dep_indices(_dep), create_func(_create_func)
 			{
 			}
 
-			NodeInfo() : func(nullptr), depHash(0), paramBytes(0), createFunc(nullptr), hGraphNode(nullptr) {}
+			NodeInfo() : func(nullptr), dep_hash(0), param_bytes(0), create_func(nullptr), graph_node(nullptr) {}
 
 			void * const						func;
-			const uint64_t						depHash;
-			const uint64_t						paramBytes;
-			const CreateFunc					createFunc;
-			const std::unordered_set<int>		depIndices;
-			cudaGraphNode_t						hGraphNode;
+			const uint64_t						dep_hash;
+			const uint64_t						param_bytes;
+			const CreateFunc					create_func;
+			const std::unordered_set<int>		dep_indices;
+			cudaGraphNode_t						graph_node;
 		};
 
 	private:
 
-		const uint64_t						m_ID;
-		std::vector<NodeInfo>				m_nodes;
-		std::unordered_set<int>				m_depIndicesCache;
-		std::vector<cudaGraphNode_t>		m_depHandlesCache;
-		std::vector<char>					m_paramBinaries;
-		cudaGraphExec_t						m_hGraphExec;
-		cudaGraph_t							m_hGraph;
-		Stream *							m_pImmediateLaunchStream;
-		size_t								m_paramOffset;
-		bool								m_isParamChg;
-		bool								m_isTopoChg;
-		int									m_indicator;
+		const uint64_t						id_;
+		std::vector<NodeInfo>				nodes_;
+		std::unordered_set<int>				dep_indices_cache_;
+		std::vector<cudaGraphNode_t>		dep_handles_cache_;
+		std::vector<char>					param_binaries_;
+		cudaGraphExec_t						graph_exec_;
+		cudaGraph_t							graph_;
+		Stream *							immediate_launch_stream_;
+		size_t								param_offset_;
+		bool								is_param_chg_;
+		bool								is_topo_chg_;
+		int									indicator_;
 	};
 }

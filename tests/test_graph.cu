@@ -43,7 +43,7 @@ __global__ void Test0()
 void test_graph()
 {
 	auto device = ns::Runtime::device(0);
-	auto stream = &device->defaultStream();
+	auto stream = &device->default_stream();
 
 	std::vector<int>	input(100, 5);
 	std::vector<int>	output(100);

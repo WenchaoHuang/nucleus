@@ -32,7 +32,7 @@ NS_USING_NAMESPACE
 ******************************    HostAllocator    *******************************
 *********************************************************************************/
 
-void * HostAllocator::doAllocateMemory(size_t bytes)
+void * HostAllocator::do_allocate_memory(size_t bytes)
 {
 	void * ptr = nullptr;
 
@@ -55,7 +55,7 @@ void * HostAllocator::doAllocateMemory(size_t bytes)
 }
 
 
-void HostAllocator::doDeallocateMemory(void * ptr)
+void HostAllocator::do_deallocate_memory(void * ptr)
 {
 	cudaError_t err = cudaFreeHost(ptr);
 
@@ -71,55 +71,55 @@ void HostAllocator::doDeallocateMemory(void * ptr)
 *****************************    DeviceAllocator    ******************************
 *********************************************************************************/
 
-DeviceAllocator::DeviceAllocator(class Device * pDevice) : m_device(pDevice)
+DeviceAllocator::DeviceAllocator(class Device * device) : device_(device)
 {
-	NS_ASSERT(pDevice != nullptr);
+	NS_ASSERT(device != nullptr);
 }
 
 
-static cudaChannelFormatDesc createChannelDesc(Format format)
+static cudaChannelFormatDesc create_channel_desc(Format format)
 {
-	cudaChannelFormatDesc channelDesc = {};
+	cudaChannelFormatDesc channel_desc = {};
 
 	switch (format)
 	{
-		case Format::Int:		{ channelDesc = cudaCreateChannelDesc<::int1>();		break; }
-		case Format::Int2:		{ channelDesc = cudaCreateChannelDesc<::int2>();		break; }
-		case Format::Int4:		{ channelDesc = cudaCreateChannelDesc<::int4>();		break; }
-		case Format::Uint:		{ channelDesc = cudaCreateChannelDesc<::uint1>();		break; }
-		case Format::Uint2:		{ channelDesc = cudaCreateChannelDesc<::uint2>();		break; }
-		case Format::Uint4:		{ channelDesc = cudaCreateChannelDesc<::uint4>();		break; }
-		case Format::Char:		{ channelDesc = cudaCreateChannelDesc<::char1>();		break; }
-		case Format::Char2:		{ channelDesc = cudaCreateChannelDesc<::char2>();		break; }
-		case Format::Char4:		{ channelDesc = cudaCreateChannelDesc<::char4>();		break; }
-		case Format::Uchar:		{ channelDesc = cudaCreateChannelDesc<::uchar1>();		break; }
-		case Format::Uchar2:	{ channelDesc = cudaCreateChannelDesc<::uchar2>();		break; }
-		case Format::Uchar4:	{ channelDesc = cudaCreateChannelDesc<::uchar4>();		break; }
-		case Format::Short:		{ channelDesc = cudaCreateChannelDesc<::short1>();		break; }
-		case Format::Short2:	{ channelDesc = cudaCreateChannelDesc<::short2>();		break; }
-		case Format::Short4:	{ channelDesc = cudaCreateChannelDesc<::short4>();		break; }
-		case Format::Ushort:	{ channelDesc = cudaCreateChannelDesc<::ushort1>();		break; }
-		case Format::Ushort2:	{ channelDesc = cudaCreateChannelDesc<::ushort2>();		break; }
-		case Format::Ushort4:	{ channelDesc = cudaCreateChannelDesc<::ushort4>();		break; }
-		case Format::Float:		{ channelDesc = cudaCreateChannelDesc<::float1>();		break; }
-		case Format::Float2:	{ channelDesc = cudaCreateChannelDesc<::float2>();		break; }
-		case Format::Float4:	{ channelDesc = cudaCreateChannelDesc<::float4>();		break; }
+		case Format::Int:		{ channel_desc = cudaCreateChannelDesc<::int1>();		break; }
+		case Format::Int2:		{ channel_desc = cudaCreateChannelDesc<::int2>();		break; }
+		case Format::Int4:		{ channel_desc = cudaCreateChannelDesc<::int4>();		break; }
+		case Format::Uint:		{ channel_desc = cudaCreateChannelDesc<::uint1>();		break; }
+		case Format::Uint2:		{ channel_desc = cudaCreateChannelDesc<::uint2>();		break; }
+		case Format::Uint4:		{ channel_desc = cudaCreateChannelDesc<::uint4>();		break; }
+		case Format::Char:		{ channel_desc = cudaCreateChannelDesc<::char1>();		break; }
+		case Format::Char2:		{ channel_desc = cudaCreateChannelDesc<::char2>();		break; }
+		case Format::Char4:		{ channel_desc = cudaCreateChannelDesc<::char4>();		break; }
+		case Format::Uchar:		{ channel_desc = cudaCreateChannelDesc<::uchar1>();		break; }
+		case Format::Uchar2:	{ channel_desc = cudaCreateChannelDesc<::uchar2>();		break; }
+		case Format::Uchar4:	{ channel_desc = cudaCreateChannelDesc<::uchar4>();		break; }
+		case Format::Short:		{ channel_desc = cudaCreateChannelDesc<::short1>();		break; }
+		case Format::Short2:	{ channel_desc = cudaCreateChannelDesc<::short2>();		break; }
+		case Format::Short4:	{ channel_desc = cudaCreateChannelDesc<::short4>();		break; }
+		case Format::Ushort:	{ channel_desc = cudaCreateChannelDesc<::ushort1>();	break; }
+		case Format::Ushort2:	{ channel_desc = cudaCreateChannelDesc<::ushort2>();	break; }
+		case Format::Ushort4:	{ channel_desc = cudaCreateChannelDesc<::ushort4>();	break; }
+		case Format::Float:		{ channel_desc = cudaCreateChannelDesc<::float1>();		break; }
+		case Format::Float2:	{ channel_desc = cudaCreateChannelDesc<::float2>();		break; }
+		case Format::Float4:	{ channel_desc = cudaCreateChannelDesc<::float4>();		break; }
 		default:				{ NS_ERROR_LOG("Invalid format!");						break; }
 	}
 
-	return channelDesc;
+	return channel_desc;
 }
 
 
-cudaArray_t DeviceAllocator::allocateTextureMemory(Format format, size_t width, size_t height, size_t depth, int flags)
+cudaArray_t DeviceAllocator::allocate_texture_memory(Format format, size_t width, size_t height, size_t depth, int flags)
 {
-	m_device->setCurrent();
+	device_->set_current();
 
-	cudaArray_t hArray = nullptr;
+	cudaArray_t array = nullptr;
 
-	cudaChannelFormatDesc channelDesc = createChannelDesc(format);
+	cudaChannelFormatDesc channel_desc = create_channel_desc(format);
 
-	cudaError_t err = cudaMalloc3DArray(&hArray, &channelDesc, make_cudaExtent(width, height, depth), flags);
+	cudaError_t err = cudaMalloc3DArray(&array, &channel_desc, make_cudaExtent(width, height, depth), flags);
 
 	if (err != cudaSuccess)
 	{
@@ -130,19 +130,19 @@ cudaArray_t DeviceAllocator::allocateTextureMemory(Format format, size_t width, 
 		throw err;
 	}
 
-	return hArray;
+	return array;
 }
 
 
-cudaMipmappedArray_t DeviceAllocator::allocateMipmapTextureMemory(Format format, size_t width, size_t height, size_t depth, unsigned int numLevels, int flags)
+cudaMipmappedArray_t DeviceAllocator::allocate_mipmap_texture_memory(Format format, size_t width, size_t height, size_t depth, unsigned int num_levels, int flags)
 {
-	m_device->setCurrent();
+	device_->set_current();
 
-	cudaMipmappedArray_t hMipmapedArray = nullptr;
+	cudaMipmappedArray_t mipmaped_array = nullptr;
 
-	cudaChannelFormatDesc channelDesc = createChannelDesc(format);
+	cudaChannelFormatDesc channel_desc = create_channel_desc(format);
 
-	cudaError_t err = cudaMallocMipmappedArray(&hMipmapedArray, &channelDesc, make_cudaExtent(width, height, depth), numLevels, flags);
+	cudaError_t err = cudaMallocMipmappedArray(&mipmaped_array, &channel_desc, make_cudaExtent(width, height, depth), num_levels, flags);
 
 	if (err != cudaSuccess)
 	{
@@ -153,13 +153,13 @@ cudaMipmappedArray_t DeviceAllocator::allocateMipmapTextureMemory(Format format,
 		throw err;
 	}
 
-	return hMipmapedArray;
+	return mipmaped_array;
 }
 
 
-void DeviceAllocator::deallocateMipmapTextureMemory(cudaMipmappedArray_t hMipmapedArray)
+void DeviceAllocator::deallocate_mipmap_texture_memory(cudaMipmappedArray_t mipmaped_array)
 {
-	cudaError_t err = cudaFreeMipmappedArray(hMipmapedArray);
+	cudaError_t err = cudaFreeMipmappedArray(mipmaped_array);
 
 	if (err != cudaSuccess)
 	{
@@ -170,9 +170,9 @@ void DeviceAllocator::deallocateMipmapTextureMemory(cudaMipmappedArray_t hMipmap
 }
 
 
-void DeviceAllocator::deallocateTextureMemory(cudaArray_t hArray)
+void DeviceAllocator::deallocate_texture_memory(cudaArray_t array)
 {
-	cudaError_t err = cudaFreeArray(hArray);
+	cudaError_t err = cudaFreeArray(array);
 
 	if (err != cudaSuccess)
 	{
@@ -183,11 +183,11 @@ void DeviceAllocator::deallocateTextureMemory(cudaArray_t hArray)
 }
 
 
-void * DeviceAllocator::doAllocateMemory(size_t bytes)
+void * DeviceAllocator::do_allocate_memory(size_t bytes)
 {
 	void * ptr = nullptr;
 
-	m_device->setCurrent();
+	device_->set_current();
 
 	cudaError_t err = cudaMalloc(&ptr, bytes);
 
@@ -210,7 +210,7 @@ void * DeviceAllocator::doAllocateMemory(size_t bytes)
 }
 
 
-void DeviceAllocator::doDeallocateMemory(void * ptr)
+void DeviceAllocator::do_deallocate_memory(void * ptr)
 {
 	cudaError_t err = cudaFree(ptr);
 

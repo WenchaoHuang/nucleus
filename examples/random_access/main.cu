@@ -59,8 +59,8 @@ template<typename Type> __global__ void indexed_copy(dev::Span<Type> outputs, de
 int main()
 {
 	auto device = ns::Runtime::device(0);
-	auto allocator = device->defaultAllocator();
-	auto & stream = device->defaultStream();
+	auto allocator = device->default_allocator();
+	auto & stream = device->default_stream();
 
 	printf("\n |       |        sequential       |          random         |");
 	printf("\n |       |-------------------------+-------------------------|");
@@ -85,8 +85,8 @@ int main()
 		std::vector<int>						indices(test_count);
 		std::vector<std::pair<float, int>>		keyValues(test_count);
 
-		ns::Array<int>							randomIndices(allocator, test_count);
-		ns::Array<int>							sequentialIndices(allocator, test_count);
+		ns::Array<int>							random_indices(allocator, test_count);
+		ns::Array<int>							sequential_indices(allocator, test_count);
 		ns::Array<float3>						input_float3(allocator, test_count);
 		ns::Array<float3>						output_float3(allocator, test_count);
 		ns::Array<float4>						input_float4(allocator, test_count);
@@ -99,7 +99,7 @@ int main()
 			indices[i] = i;
 		}
 
-		stream.memcpy(sequentialIndices.data(), indices.data(), test_count).sync();
+		stream.memcpy(sequential_indices.data(), indices.data(), test_count).sync();
 
 		std::sort(keyValues.begin(), keyValues.end());
 
@@ -108,16 +108,16 @@ int main()
 			indices[i] = keyValues[i].second;
 		}
 
-		stream.memcpy(randomIndices.data(), indices.data(), test_count).sync();
+		stream.memcpy(random_indices.data(), indices.data(), test_count).sync();
 
-		constexpr int blockSize = 128;
+		constexpr int block_size = 128;
 		constexpr size_t ratio = 1000000000;
 		{
 			ns::ScopedTimer timer(stream, [=](std::chrono::nanoseconds ns) { printf("%s us |", to_string_aligned(size_t(ns.count() * 1e-3 * ratio) / (ratio * samples), 8).c_str()); });
 
 			for (int i = 0; i < samples; i++)
 			{
-				stream.launch(indexed_copy<float3>, ns::ceil_div(test_count, blockSize), blockSize)(output_float3, input_float3, sequentialIndices, test_count);
+				stream.launch(indexed_copy<float3>, ns::ceil_div(test_count, block_size), block_size)(output_float3, input_float3, sequential_indices, test_count);
 			}
 		}
 		{
@@ -125,7 +125,7 @@ int main()
 
 			for (int i = 0; i < samples; i++)
 			{
-				stream.launch(indexed_copy<float4>, ns::ceil_div(test_count, blockSize), blockSize)(output_float4, input_float4, sequentialIndices, test_count);
+				stream.launch(indexed_copy<float4>, ns::ceil_div(test_count, block_size), block_size)(output_float4, input_float4, sequential_indices, test_count);
 			}
 		}
 		{
@@ -133,7 +133,7 @@ int main()
 
 			for (int i = 0; i < samples; i++)
 			{
-				stream.launch(indexed_copy<float3>, ns::ceil_div(test_count, blockSize), blockSize)(output_float3, input_float3, randomIndices, test_count);
+				stream.launch(indexed_copy<float3>, ns::ceil_div(test_count, block_size), block_size)(output_float3, input_float3, random_indices, test_count);
 			}
 		}
 		{
@@ -141,7 +141,7 @@ int main()
 
 			for (int i = 0; i < samples; i++)
 			{
-				stream.launch(indexed_copy<float4>, ns::ceil_div(test_count, blockSize), blockSize)(output_float4, input_float4, randomIndices, test_count);
+				stream.launch(indexed_copy<float4>, ns::ceil_div(test_count, block_size), block_size)(output_float4, input_float4, random_indices, test_count);
 			}
 		}
 

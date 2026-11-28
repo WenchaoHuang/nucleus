@@ -51,7 +51,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Return a raw pointer to the CUDA runtime wrapper (singleton).
 		 */
-		static Runtime * getInstance()
+		static Runtime * instance()
 		{
 			static Runtime s_instance;
 
@@ -63,48 +63,48 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Return the last error from a runtime call.
 		 *	@note		Return the last error that has been produced by any of the runtime calls
-		 *				in the same host thread and reset it to Error::eSuccess.
+		 *				in the same host thread and reset it to `cudaSuccess`.
 		 */
-		NS_API static ErrorCode getLastError() noexcept;
+		NS_API static ErrorCode get_last_error() noexcept;
 
 
 		/**
 		 *	@brief		Return a string containing the name of an error code in the enum.
 		 *	@note		If the error code is not recognized, "unrecognized error code" is returned.
 		 */
-		NS_API static const char * getErrorName(ErrorCode code) noexcept;
+		NS_API static const char * get_error_name(ErrorCode error) noexcept;
 
 
 		/**
 		 *	@brief		Return the description string for an error code.
 		 *	@note		If the error code is not recognized, "unrecognized error code" is returned.
 		 */
-		NS_API static const char * getErrorString(ErrorCode code) noexcept;
+		NS_API static const char * get_error_string(ErrorCode error) noexcept;
 
 	public:
 
 		/**
 		 *	@brief		Return the version number of the current CUDA Runtime instance.
 		 */
-		static Version version() { return Runtime::getInstance()->m_runtimeVersion; }
+		static Version version() { return Runtime::instance()->runtime_version_; }
 
 
 		/**
 		 *	@brief		Return the latest version of CUDA supported by the driver.
 		 */
-		static Version driverVersion() { return Runtime::getInstance()->m_driverVersion; }
+		static Version driver_version() { return Runtime::instance()->driver_version_; }
 
 
 		/**
 		 *	@brief		Return pointer to physical device.
 		 */
-		static Device * device(size_t index) { return Runtime::getInstance()->m_cudaDevices[index]; }
+		static Device * device(size_t index) { return Runtime::instance()->cuda_devices_[index]; }
 
 
 		/**
 		 *	@brief		Return physical device array.
 		 */
-		static const std::vector<Device*> & devices() { return Runtime::getInstance()->m_cudaDevices; }
+		static const std::vector<Device*> & devices() { return Runtime::instance()->cuda_devices_; }
 
 
 		/**
@@ -112,19 +112,19 @@ namespace NS_NAMESPACE
 		 *	@note		The default device allocator is used for allocating device memory when no allocator is specified.
 		 *	@note		The default device allocator is initialized to the default allocator of the first device.
 		 */
-		static const std::shared_ptr<DeviceAllocator> & defaultAllocator() { return Runtime::getInstance()->m_defaultAlloc; }
+		static const std::shared_ptr<DeviceAllocator> & default_allocator() { return Runtime::instance()->default_alloc_; }
 
 
 		/**
 		 *	@brief		Set the default device allocator.
 		 */
-		static void setDefaultAllocator(std::shared_ptr<DeviceAllocator> alloc) { Runtime::getInstance()->m_defaultAlloc = alloc; }
+		static void set_default_allocator(std::shared_ptr<DeviceAllocator> alloc) { Runtime::instance()->default_alloc_ = alloc; }
 
 	private:
 
-		Version									m_driverVersion;
-		Version									m_runtimeVersion;
-		std::vector<Device*>					m_cudaDevices;
-		std::shared_ptr<DeviceAllocator>		m_defaultAlloc;
+		Version									driver_version_;
+		Version									runtime_version_;
+		std::shared_ptr<DeviceAllocator>		default_alloc_;
+		std::vector<Device*>					cuda_devices_;
 	};
 }

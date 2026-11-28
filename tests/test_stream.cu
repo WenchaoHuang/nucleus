@@ -51,19 +51,19 @@ __global__ void test_kernel()
 void test_stream()
 {
 	auto device = ns::Runtime::device(0);
-	auto allocator = device->defaultAllocator();
-	auto & stream = device->defaultStream();
+	auto allocator = device->default_allocator();
+	auto & stream = device->default_stream();
 
 	stream.sync();
-	stream.isComplete();
-	stream.setForceSync(true);
-	stream.setForceSync(false);
+	stream.is_complete();
+	stream.set_force_sync(true);
+	stream.set_force_sync(false);
 	assert(stream.device() == device);
 	assert(stream.handle() == nullptr);
 
 	int a;
 	auto pfnTask = [](int*) { printf("host: Happy Nucleus!\n"); };
-	stream.launchHostFunc<int>(pfnTask, &a);
+	stream.launch_host_func<int>(pfnTask, &a);
 	stream.launch(test_kernel, ns::ceil_div(15, 32), 32)();
 
 	std::vector<int>	host_data(100, 33);
@@ -83,7 +83,7 @@ void test_stream()
 	}
 
 	stream.fill(dev_data2.data(), 2, dev_data2.size());
-	stream.memcpy2D(host_data.data(), dev_data2.pitch(), dev_data2.data(), dev_data2.pitch(), dev_data2.width(), dev_data2.height());
+	stream.memcpy_2d(host_data.data(), dev_data2.pitch(), dev_data2.data(), dev_data2.pitch(), dev_data2.width(), dev_data2.height());
 	
 	for (size_t i = 0; i < host_data.size(); i++)
 	{
@@ -91,7 +91,7 @@ void test_stream()
 	}
 
 	stream.fill(dev_data3.data(), 3, dev_data3.size());
-	stream.memcpy3D(host_data.data(), dev_data3.pitch(), dev_data3.height(), dev_data3.data(), dev_data3.pitch(), dev_data3.height(), dev_data3.width(), dev_data3.height(), dev_data3.depth());
+	stream.memcpy_3d(host_data.data(), dev_data3.pitch(), dev_data3.height(), dev_data3.data(), dev_data3.pitch(), dev_data3.height(), dev_data3.width(), dev_data3.height(), dev_data3.depth());
 
 	for (size_t i = 0; i < host_data.size(); i++)
 	{
@@ -108,8 +108,8 @@ void test_stream()
 	}
 
 	stream.fill(dev_data2.data(), 5, dev_data2.size());
-	stream.memcpy2D(dev_data5.data(), dev_data2.data(), dev_data2.pitch(), dev_data2.width(), dev_data2.height());
-	stream.memcpy2D(host_data.data(), dev_data2.pitch(), dev_data5.data(), dev_data2.width(), dev_data2.height());
+	stream.memcpy_2d(dev_data5.data(), dev_data2.data(), dev_data2.pitch(), dev_data2.width(), dev_data2.height());
+	stream.memcpy_2d(host_data.data(), dev_data2.pitch(), dev_data5.data(), dev_data2.width(), dev_data2.height());
 
 	for (size_t i = 0; i < host_data.size(); i++)
 	{
@@ -117,8 +117,8 @@ void test_stream()
 	}
 
 	stream.fill(dev_data3.data(), 6, dev_data3.size());
-	stream.memcpy3D(dev_data6.data(), dev_data3.data(), dev_data3.pitch(), dev_data3.height(), dev_data3.width(), dev_data3.height(), dev_data3.depth());
-	stream.memcpy3D(host_data.data(), dev_data3.pitch(), dev_data3.height(), dev_data6.data(), dev_data3.width(), dev_data3.height(), dev_data3.depth());
+	stream.memcpy_3d(dev_data6.data(), dev_data3.data(), dev_data3.pitch(), dev_data3.height(), dev_data3.width(), dev_data3.height(), dev_data3.depth());
+	stream.memcpy_3d(host_data.data(), dev_data3.pitch(), dev_data3.height(), dev_data6.data(), dev_data3.width(), dev_data3.height(), dev_data3.depth());
 
 	for (size_t i = 0; i < host_data.size(); i++)
 	{
@@ -126,9 +126,9 @@ void test_stream()
 	}
 
 	host_data.assign(100, 7);
-	stream.memcpyToSymbol(cache, host_data.data(), host_data.size());
+	stream.memcpy_to_symbol(cache, host_data.data(), host_data.size());
 	host_data.assign(100, 0);
-	stream.memcpyFromSymbol(host_data.data(), cache, host_data.size());
+	stream.memcpy_from_symbol(host_data.data(), cache, host_data.size());
 
 	for (size_t i = 0; i < host_data.size(); i++)
 	{

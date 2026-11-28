@@ -45,10 +45,10 @@ namespace NS_NAMESPACE
 		 *	@brief		Binds a image memory as the texture resource.
 		 *	@param[in]	image - Shared pointer to the image object.
 		 *	@param[in]	sampler - Sampler for texture fetched.
-		 *	@param[in]	viewFormat - View format of texture (internal use).
+		 *	@param[in]	view_format - View format of texture (internal use).
 		 *	@throws		cudaError_t - In case of failure.
 		 */
-		NS_API explicit TextureBase(std::shared_ptr<ImageBase> image, Sampler sampler, Format viewFormat);
+		NS_API explicit TextureBase(std::shared_ptr<ImageBase> image, Sampler sampler, Format view_format);
 
 		//!	@brief		Destructor
 		NS_API ~TextureBase();
@@ -56,16 +56,16 @@ namespace NS_NAMESPACE
 	public:
 
 		//!	@brief		Returns sampler of the texture object.
-		const Sampler & sampler() const { return m_sampler; }
+		const Sampler & sampler() const { return sampler_; }
 
 		//!	@brief		Checks if the surface is empty.
-		bool empty() const { return m_hTexture == 0; }
+		bool empty() const { return texture_ == 0; }
 
 	protected:
 
-		std::shared_ptr<ImageBase>		m_image;
-		cudaTextureObject_t				m_hTexture;
-		Sampler							m_sampler;
+		std::shared_ptr<ImageBase>		image_;
+		cudaTextureObject_t				texture_;
+		Sampler							sampler_;
 	};
 
 	/*****************************************************************************
@@ -73,7 +73,7 @@ namespace NS_NAMESPACE
 	*****************************************************************************/
 
 	//!	@brief		Internal texture template for textures with floating-type texel format.
-	template<template<typename> class ImageTemplate, template<typename> class devTexTemplate, typename Type> class Texture : public TextureBase
+	template<template<typename> class ImageTemplate, template<typename> class dev_tex_template, typename Type> class Texture : public TextureBase
 	{
 
 	public:
@@ -116,12 +116,12 @@ namespace NS_NAMESPACE
 	public:
 
 		//!	@brief		Returns shared pointer to the binded texture memory.
-		ImageTemplate<void> image() const { return *std::static_pointer_cast<ImageTemplate<void>>(m_image); }
+		ImageTemplate<void> image() const { return *std::static_pointer_cast<ImageTemplate<void>>(image_); }
 
 		//!	@brief		Converts to a device texture object for kernal access.
-		operator devTexTemplate<Type>() const { return devTexTemplate<Type>(m_hTexture); }
+		operator dev_tex_template<Type>() const { return dev_tex_template<Type>(texture_); }
 
 		//!	@brief		Returns device accessor explicitly.
-		devTexTemplate<Type> accessor() const { return devTexTemplate<Type>(m_hTexture); }
+		dev_tex_template<Type> accessor() const { return dev_tex_template<Type>(texture_); }
 	};
 }

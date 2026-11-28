@@ -111,8 +111,8 @@ __global__ void test_device_texture(dev::Tex1D<int> tex0, dev::Tex1DLod<int> tex
 void test_texture()
 {
 	auto device = ns::Runtime::device(0);
-	auto allocator = device->defaultAllocator();
-	auto & stream = device->defaultStream();
+	auto allocator = device->default_allocator();
+	auto & stream = device->default_stream();
 
 	//	1D
 	ns::Texture1D<int> texture0(ns::Image1D<int>(allocator, 10));

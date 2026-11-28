@@ -55,19 +55,19 @@ __global__ void transform(dev::Span<int> outputs, dev::Span<const int> values, d
 int main()
 {
 	constexpr size_t count = 1024;
-	constexpr uint32_t blockSize = 128;
-	const auto gridSize = ns::ceil_div(count, blockSize);
+	constexpr uint32_t block_size = 128;
+	const auto grid_size = ns::ceil_div(count, block_size);
 
-	// These objects allocate through ns::Runtime::defaultAllocator().
+	// These objects allocate through ns::Runtime::default_allocator().
 	ns::Array<int> values(count);
 	ns::Array<int> outputs(count);
 	ns::ScratchArena scratch(sizeof(int) * count);
 	auto offsets = scratch.allocate<int>(count);
 
 	auto device = ns::Runtime::device(0);
-	auto & stream = device->defaultStream();
-	stream.launch(initialize, gridSize, blockSize)(values, offsets, count);
-	stream.launch(transform, gridSize, blockSize)(outputs, values, offsets, count);
+	auto & stream = device->default_stream();
+	stream.launch(initialize, grid_size, block_size)(values, offsets, count);
+	stream.launch(transform, grid_size, block_size)(outputs, values, offsets, count);
 
 	std::vector<int> results(count);
 	stream.memcpy(results.data(), outputs.data(), count).sync();

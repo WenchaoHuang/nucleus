@@ -32,8 +32,8 @@ NS_USING_NAMESPACE
 **********************************    Device    **********************************
 *********************************************************************************/
 
-Device::Device(int id, const cudaDeviceProp & devProp) : m_id(id), m_devProp(std::make_unique<cudaDeviceProp>(devProp)),
-	m_defaultAlloc(std::make_shared<DeviceAllocator>(this)), m_defaultStream(new Stream(this, nullptr))
+Device::Device(int id, const cudaDeviceProp & dev_prop) : id_(id), dev_prop_(std::make_unique<cudaDeviceProp>(dev_prop)),
+	default_alloc_(std::make_shared<DeviceAllocator>(this)), default_stream_(new Stream(this, nullptr))
 {
 
 }
@@ -41,7 +41,7 @@ Device::Device(int id, const cudaDeviceProp & devProp) : m_id(id), m_devProp(std
 
 ErrorCode Device::init() noexcept
 {
-	this->setCurrent();
+	this->set_current();
 
 	cudaError_t err = cudaFree(nullptr);
 
@@ -56,13 +56,13 @@ ErrorCode Device::init() noexcept
 }
 
 
-size_t Device::freeMemorySize() const
+size_t Device::free_memory_size() const
 {
-	this->setCurrent();
+	this->set_current();
 
-	size_t freeMemInBytes = 0, totalMemInBytes = 0;
+	size_t free_mem_in_bytes = 0, total_mem_in_bytes = 0;
 
-	cudaError_t err = cudaMemGetInfo(&freeMemInBytes, &totalMemInBytes);
+	cudaError_t err = cudaMemGetInfo(&free_mem_in_bytes, &total_mem_in_bytes);
 
 	if (err != cudaSuccess)
 	{
@@ -71,13 +71,13 @@ size_t Device::freeMemorySize() const
 		cudaGetLastError();
 	}
 
-	return freeMemInBytes;
+	return free_mem_in_bytes;
 }
 
 
 void Device::sync() const
 {
-	this->setCurrent();
+	this->set_current();
 
 	cudaError_t err = cudaDeviceSynchronize();
 
@@ -90,13 +90,13 @@ void Device::sync() const
 }
 
 
-void Device::setCurrent() const
+void Device::set_current() const
 {
-	thread_local int currentDevice = 0;
+	thread_local int current_device = 0;
 
-	if (this->m_id != currentDevice)
+	if (this->id_ != current_device)
 	{
-		cudaError_t err = cudaSetDevice(this->m_id);
+		cudaError_t err = cudaSetDevice(this->id_);
 
 		if (err != cudaSuccess)
 		{
@@ -106,7 +106,7 @@ void Device::setCurrent() const
 		}
 		else
 		{
-			currentDevice = this->m_id;
+			current_device = this->id_;
 		}
 	}
 }

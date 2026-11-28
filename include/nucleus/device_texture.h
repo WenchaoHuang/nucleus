@@ -40,23 +40,23 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Texture() {}
 
 		//!	@brief		Constructor with nullptr.
-		NS_CUDA_CALLABLE Texture(std::nullptr_t) : m_hTexture(0) {}
+		NS_CUDA_CALLABLE Texture(std::nullptr_t) : texture_(0) {}
 
 		//!	@brief		Constructor with cudaTextureObject_t.
-		NS_CUDA_CALLABLE explicit Texture(cudaTextureObject_t hTexture) : m_hTexture(hTexture) {}
+		NS_CUDA_CALLABLE explicit Texture(cudaTextureObject_t texture) : texture_(texture) {}
 
 		//!	@brief		Return CUDA type of this object for compatibility.
-		NS_CUDA_CALLABLE cudaTextureObject_t handle() const { return m_hTexture; }
+		NS_CUDA_CALLABLE cudaTextureObject_t handle() const { return texture_; }
 
 		//!	@brief		Bool conversion operator.
-		NS_CUDA_CALLABLE operator bool() const { return m_hTexture != 0; }
+		NS_CUDA_CALLABLE operator bool() const { return texture_ != 0; }
 
 		//!	@brief		Check if the surface is empty.
-		NS_CUDA_CALLABLE bool empty() const { return m_hTexture == 0; }
+		NS_CUDA_CALLABLE bool empty() const { return texture_ == 0; }
 
 	protected:
 
-		cudaTextureObject_t			m_hTexture;
+		cudaTextureObject_t			texture_;
 	};
 
 	/*****************************************************************************
@@ -80,7 +80,7 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Tex1D(std::nullptr_t) : Texture(nullptr) {}
 
 		//!	@brief		Constructor with cudaTextureObject_t.
-		NS_CUDA_CALLABLE explicit Tex1D(cudaTextureObject_t hTexture) : Texture(hTexture) {}
+		NS_CUDA_CALLABLE explicit Tex1D(cudaTextureObject_t texture) : Texture(texture) {}
 
 		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
@@ -90,7 +90,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			tex1D<decltype(value)>(&value, m_hTexture, x);
+			tex1D<decltype(value)>(&value, texture_, x);
 
 			return reinterpret_cast<value_type&>(value);
 		}
@@ -118,7 +118,7 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Tex1DLod(std::nullptr_t) : Texture(nullptr) {}
 
 		//!	@brief		Constructor with cudaTextureObject_t.
-		NS_CUDA_CALLABLE explicit Tex1DLod(cudaTextureObject_t hTexture) : Texture(hTexture) {}
+		NS_CUDA_CALLABLE explicit Tex1DLod(cudaTextureObject_t texture) : Texture(texture) {}
 
 		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
@@ -128,7 +128,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			tex1DLod<decltype(value)>(&value, m_hTexture, x, level);
+			tex1DLod<decltype(value)>(&value, texture_, x, level);
 
 			return reinterpret_cast<value_type&>(value);
 		}
@@ -142,7 +142,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			tex1DGrad<decltype(value)>(&value, m_hTexture, x, dx, dy);
+			tex1DGrad<decltype(value)>(&value, texture_, x, dx, dy);
 
 			return reinterpret_cast<value_type&>(value);
 		}
@@ -170,7 +170,7 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Tex1DLayered(std::nullptr_t) : Texture(nullptr) {}
 
 		//!	@brief		Constructor with cudaTextureObject_t.
-		NS_CUDA_CALLABLE explicit Tex1DLayered(cudaTextureObject_t hTexture) : Texture(hTexture) {}
+		NS_CUDA_CALLABLE explicit Tex1DLayered(cudaTextureObject_t texture) : Texture(texture) {}
 
 		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
@@ -180,7 +180,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			tex1DLayered<decltype(value)>(&value, m_hTexture, x, layer);
+			tex1DLayered<decltype(value)>(&value, texture_, x, layer);
 
 			return reinterpret_cast<value_type&>(value);
 		}
@@ -208,7 +208,7 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Tex1DLayeredLod(std::nullptr_t) : Texture(nullptr) {}
 
 		//!	@brief		Constructor with cudaTextureObject_t.
-		NS_CUDA_CALLABLE explicit Tex1DLayeredLod(cudaTextureObject_t hTexture) : Texture(hTexture) {}
+		NS_CUDA_CALLABLE explicit Tex1DLayeredLod(cudaTextureObject_t texture) : Texture(texture) {}
 
 		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
@@ -218,7 +218,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			tex1DLayeredLod<decltype(value)>(&value, m_hTexture, x, layer, level);
+			tex1DLayeredLod<decltype(value)>(&value, texture_, x, layer, level);
 
 			return reinterpret_cast<value_type&>(value);
 		}
@@ -232,7 +232,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			tex1DLayeredGrad<decltype(value)>(&value, m_hTexture, x, layer, dx, dy);
+			tex1DLayeredGrad<decltype(value)>(&value, texture_, x, layer, dx, dy);
 
 			return reinterpret_cast<value_type&>(value);
 		}
@@ -260,7 +260,7 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Tex2D(std::nullptr_t) : Texture(nullptr) {}
 
 		//!	@brief		Constructor with cudaTextureObject_t.
-		NS_CUDA_CALLABLE explicit Tex2D(cudaTextureObject_t hTexture) : Texture(hTexture) {}
+		NS_CUDA_CALLABLE explicit Tex2D(cudaTextureObject_t texture) : Texture(texture) {}
 
 		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
@@ -270,7 +270,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			tex2D<decltype(value)>(&value, m_hTexture, x, y);
+			tex2D<decltype(value)>(&value, texture_, x, y);
 
 			return reinterpret_cast<value_type&>(value);
 		}
@@ -298,7 +298,7 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Tex2DLod(std::nullptr_t) : Texture(nullptr) {}
 
 		//!	@brief		Constructor with cudaTextureObject_t.
-		NS_CUDA_CALLABLE explicit Tex2DLod(cudaTextureObject_t hTexture) : Texture(hTexture) {}
+		NS_CUDA_CALLABLE explicit Tex2DLod(cudaTextureObject_t texture) : Texture(texture) {}
 
 		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
@@ -308,7 +308,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			tex2DLod<decltype(value)>(&value, m_hTexture, x, y, level);
+			tex2DLod<decltype(value)>(&value, texture_, x, y, level);
 
 			return reinterpret_cast<value_type&>(value);
 		}
@@ -322,7 +322,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			tex2DGrad<decltype(value)>(&value, m_hTexture, x, y, reinterpret_cast<::float2&>(dPdx), reinterpret_cast<::float2&>(dPdy));
+			tex2DGrad<decltype(value)>(&value, texture_, x, y, reinterpret_cast<::float2&>(dPdx), reinterpret_cast<::float2&>(dPdy));
 
 			return reinterpret_cast<value_type&>(value);
 		}
@@ -350,7 +350,7 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Tex2DLayered(std::nullptr_t) : Texture(nullptr) {}
 
 		//!	@brief		Constructor with cudaTextureObject_t.
-		NS_CUDA_CALLABLE explicit Tex2DLayered(cudaTextureObject_t hTexture) : Texture(hTexture) {}
+		NS_CUDA_CALLABLE explicit Tex2DLayered(cudaTextureObject_t texture) : Texture(texture) {}
 
 		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
@@ -360,7 +360,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			tex2DLayered<decltype(value)>(&value, m_hTexture, x, y, layer);
+			tex2DLayered<decltype(value)>(&value, texture_, x, y, layer);
 
 			return reinterpret_cast<value_type&>(value);
 		}
@@ -388,7 +388,7 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Tex2DLayeredLod(std::nullptr_t) : Texture(nullptr) {}
 
 		//!	@brief		Constructor with cudaTextureObject_t.
-		NS_CUDA_CALLABLE explicit Tex2DLayeredLod(cudaTextureObject_t hTexture) : Texture(hTexture) {}
+		NS_CUDA_CALLABLE explicit Tex2DLayeredLod(cudaTextureObject_t texture) : Texture(texture) {}
 
 		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
@@ -398,7 +398,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			tex2DLayeredLod<decltype(value)>(&value, m_hTexture, x, y, layer, level);
+			tex2DLayeredLod<decltype(value)>(&value, texture_, x, y, layer, level);
 
 			return reinterpret_cast<value_type&>(value);
 		}
@@ -412,7 +412,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			tex2DLayeredGrad<decltype(value)>(&value, m_hTexture, x, y, layer, reinterpret_cast<::float2&>(dPdx), reinterpret_cast<::float2&>(dPdy));
+			tex2DLayeredGrad<decltype(value)>(&value, texture_, x, y, layer, reinterpret_cast<::float2&>(dPdx), reinterpret_cast<::float2&>(dPdy));
 
 			return reinterpret_cast<value_type&>(value);
 		}
@@ -440,7 +440,7 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Tex3D(std::nullptr_t) : Texture(nullptr) {}
 
 		//!	@brief		Constructor with cudaTextureObject_t.
-		NS_CUDA_CALLABLE explicit Tex3D(cudaTextureObject_t hTexture) : Texture(hTexture) {}
+		NS_CUDA_CALLABLE explicit Tex3D(cudaTextureObject_t texture) : Texture(texture) {}
 
 		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
@@ -450,7 +450,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			tex3D<decltype(value)>(&value, m_hTexture, x, y, z);
+			tex3D<decltype(value)>(&value, texture_, x, y, z);
 
 			return reinterpret_cast<value_type&>(value);
 		}
@@ -478,7 +478,7 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Tex3DLod(std::nullptr_t) : Texture(nullptr) {}
 
 		//!	@brief		Constructor with cudaTextureObject_t.
-		NS_CUDA_CALLABLE explicit Tex3DLod(cudaTextureObject_t hTexture) : Texture(hTexture) {}
+		NS_CUDA_CALLABLE explicit Tex3DLod(cudaTextureObject_t texture) : Texture(texture) {}
 
 		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
@@ -488,7 +488,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			tex3DLod<decltype(value)>(&value, m_hTexture, x, y, z, level);
+			tex3DLod<decltype(value)>(&value, texture_, x, y, z, level);
 
 			return reinterpret_cast<value_type&>(value);
 		}
@@ -502,7 +502,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			tex3DGrad<decltype(value)>(&value, m_hTexture, x, y, z, reinterpret_cast<::float4&>(dPdx), reinterpret_cast<::float4&>(dPdy));
+			tex3DGrad<decltype(value)>(&value, texture_, x, y, z, reinterpret_cast<::float4&>(dPdx), reinterpret_cast<::float4&>(dPdy));
 
 			return reinterpret_cast<value_type&>(value);
 		}
@@ -530,7 +530,7 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE TexCube(std::nullptr_t) : Texture(nullptr) {}
 
 		//!	@brief		Constructor with cudaTextureObject_t.
-		NS_CUDA_CALLABLE explicit TexCube(cudaTextureObject_t hTexture) : Texture(hTexture) {}
+		NS_CUDA_CALLABLE explicit TexCube(cudaTextureObject_t texture) : Texture(texture) {}
 
 		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
@@ -540,7 +540,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			texCubemap<decltype(value)>(&value, m_hTexture, x, y, z);
+			texCubemap<decltype(value)>(&value, texture_, x, y, z);
 
 			return reinterpret_cast<value_type&>(value);
 		}
@@ -568,7 +568,7 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE TexCubeLod(std::nullptr_t) : Texture(nullptr) {}
 
 		//!	@brief		Constructor with cudaTextureObject_t.
-		NS_CUDA_CALLABLE explicit TexCubeLod(cudaTextureObject_t hTexture) : Texture(hTexture) {}
+		NS_CUDA_CALLABLE explicit TexCubeLod(cudaTextureObject_t texture) : Texture(texture) {}
 
 		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
@@ -578,7 +578,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			texCubemapLod<decltype(value)>(&value, m_hTexture, x, y, z, level);
+			texCubemapLod<decltype(value)>(&value, texture_, x, y, z, level);
 
 			return reinterpret_cast<value_type&>(value);
 		}
@@ -592,7 +592,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			texCubemapGrad<decltype(value)>(&value, m_hTexture, x, y, z, reinterpret_cast<::float4&>(dPdx), reinterpret_cast<::float4&>(dPdy));
+			texCubemapGrad<decltype(value)>(&value, texture_, x, y, z, reinterpret_cast<::float4&>(dPdx), reinterpret_cast<::float4&>(dPdy));
 
 			return reinterpret_cast<value_type&>(value);
 		}
@@ -620,7 +620,7 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE TexCubeLayered(std::nullptr_t) : Texture(nullptr) {}
 
 		//!	@brief		Constructor with cudaTextureObject_t.
-		NS_CUDA_CALLABLE explicit TexCubeLayered(cudaTextureObject_t hTexture) : Texture(hTexture) {}
+		NS_CUDA_CALLABLE explicit TexCubeLayered(cudaTextureObject_t texture) : Texture(texture) {}
 
 		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
@@ -630,7 +630,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			texCubemapLayered<decltype(value)>(&value, m_hTexture, x, y, z, layer);
+			texCubemapLayered<decltype(value)>(&value, texture_, x, y, z, layer);
 
 			return reinterpret_cast<value_type&>(value);
 		}
@@ -658,7 +658,7 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE TexCubeLayeredLod(std::nullptr_t) : Texture(nullptr) {}
 
 		//!	@brief		Constructor with cudaTextureObject_t.
-		NS_CUDA_CALLABLE explicit TexCubeLayeredLod(cudaTextureObject_t hTexture) : Texture(hTexture) {}
+		NS_CUDA_CALLABLE explicit TexCubeLayeredLod(cudaTextureObject_t texture) : Texture(texture) {}
 
 		//!	@brief		Read method for CUDA texture object.
 	#ifndef __CUDACC__
@@ -668,7 +668,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			texCubemapLayeredLod<decltype(value)>(&value, m_hTexture, x, y, z, layer, level);
+			texCubemapLayeredLod<decltype(value)>(&value, texture_, x, y, z, layer, level);
 
 			return reinterpret_cast<value_type&>(value);
 		}
@@ -682,7 +682,7 @@ namespace NS_NAMESPACE::dev
 		{
 			CudaTexelType_t<Type> value;
 
-			texCubemapLayeredGrad<decltype(value)>(&value, m_hTexture, x, y, z, layer, reinterpret_cast<::float4&>(dPdx), reinterpret_cast<::float4&>(dPdy));
+			texCubemapLayeredGrad<decltype(value)>(&value, texture_, x, y, z, layer, reinterpret_cast<::float4&>(dPdx), reinterpret_cast<::float4&>(dPdy));
 
 			return reinterpret_cast<value_type&>(value);
 		}

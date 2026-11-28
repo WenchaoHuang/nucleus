@@ -65,7 +65,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	depth - Depth of the image.
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit Image3D(Format format, size_t width, size_t height, size_t depth) : Image3D(Runtime::defaultAllocator(), format, width, height, depth) {}
+		explicit Image3D(Format format, size_t width, size_t height, size_t depth) : Image3D(Runtime::default_allocator(), format, width, height, depth) {}
 
 	protected:
 
@@ -75,10 +75,10 @@ namespace NS_NAMESPACE
 	public:
 
 		//!	@brief		Returns the height of the image.
-		uint32_t height() const { return m_extent.height; }
+		uint32_t height() const { return extent_.height; }
 
 		//!	@brief		Returns the depth of the image.
-		uint32_t depth() const { return m_extent.depth; }
+		uint32_t depth() const { return extent_.depth; }
 	};
 
 	/*****************************************************************************
@@ -107,7 +107,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	depth - Depth of the image.
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit Image3D(size_t width, size_t height, size_t depth) : Image3D(Runtime::defaultAllocator(), width, height, depth) {}
+		explicit Image3D(size_t width, size_t height, size_t depth) : Image3D(Runtime::default_allocator(), width, height, depth) {}
 
 
 		/**
@@ -128,7 +128,7 @@ namespace NS_NAMESPACE
 	public:
 
 		//!	@brief		Returns accessor to the data.
-		ImageAccessor<Type> data() const { return ImageAccessor<Type>{ m_hImage }; }
+		ImageAccessor<Type> data() const { return ImageAccessor<Type>{ image_ }; }
 
 		//!	@brief		Return the texel format of the image at compile time.
 		static constexpr Format format() { return FormatOf<Type>::value; }
@@ -158,10 +158,10 @@ namespace NS_NAMESPACE
 		 *	@param[in]	width - Width of the image.
 		 *	@param[in]	height - height of the image.
 		 *	@param[in]	depth - Depth of the image.
-		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(max(width, height, depth)))].
+		 *	@param[in]	num_levels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(max(width, height, depth)))].
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		NS_API explicit Image3DLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, unsigned int numLevels);
+		NS_API explicit Image3DLod(std::shared_ptr<DeviceAllocator> allocator, Format format, size_t width, size_t height, size_t depth, unsigned int num_levels);
 
 
 		/**
@@ -170,21 +170,21 @@ namespace NS_NAMESPACE
 		 *	@param[in]	width - Width of the image.
 		 *	@param[in]	height - height of the image.
 		 *	@param[in]	depth - Depth of the image.
-		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(max(width, height, depth)))].
+		 *	@param[in]	num_levels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(max(width, height, depth)))].
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit Image3DLod(Format format, size_t width, size_t height, size_t depth, unsigned int numLevels) : Image3DLod(Runtime::defaultAllocator(), format, width, height, depth, numLevels) {}
+		explicit Image3DLod(Format format, size_t width, size_t height, size_t depth, unsigned int num_levels) : Image3DLod(Runtime::default_allocator(), format, width, height, depth, num_levels) {}
 
 	public:
 
 		//!	@brief		Return the specified level.
-		Image3D<void> level(size_t i) const { return Image3D<void>(m_mipmaps[i]); }
+		Image3D<void> level(size_t i) const { return Image3D<void>(mipmaps_[i]); }
 
 		//!	@brief		Returns the height of the image.
-		uint32_t height() const { return m_extent.height; }
+		uint32_t height() const { return extent_.height; }
 
 		//!	@brief		Returns the depth of the image.
-		uint32_t depth() const { return m_extent.depth; }
+		uint32_t depth() const { return extent_.depth; }
 	};
 
 	/*****************************************************************************
@@ -210,10 +210,10 @@ namespace NS_NAMESPACE
 		 *	@param[in]	width - Width of the image.
 		 *	@param[in]	height - height of the image.
 		 *	@param[in]	depth - Depth of the image.
-		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(max(width, height, depth)))].
+		 *	@param[in]	num_levels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(max(width, height, depth)))].
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit Image3DLod(size_t width, size_t height, size_t depth, unsigned int numLevels) : Image3DLod(Runtime::defaultAllocator(), width, height, depth, numLevels) {}
+		explicit Image3DLod(size_t width, size_t height, size_t depth, unsigned int num_levels) : Image3DLod(Runtime::default_allocator(), width, height, depth, num_levels) {}
 
 
 		/**
@@ -222,15 +222,15 @@ namespace NS_NAMESPACE
 		 *	@param[in]	width - Width of the image.
 		 *	@param[in]	height - height of the image.
 		 *	@param[in]	depth - Depth of the image.
-		 *	@param[in]	numLevels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(max(width, height, depth)))].
+		 *	@param[in]	num_levels - Number of mipmap levels to allocated, is clamped to the range [1, 1 + floor(log2(max(width, height, depth)))].
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		explicit Image3DLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t depth, unsigned int numLevels) : Image3DLod<void>(std::move(allocator), FormatOf<Type>::value, width, height, depth, numLevels) {}
+		explicit Image3DLod(std::shared_ptr<DeviceAllocator> allocator, size_t width, size_t height, size_t depth, unsigned int num_levels) : Image3DLod<void>(std::move(allocator), FormatOf<Type>::value, width, height, depth, num_levels) {}
 
 	public:
 
 		//!	@brief		Return the specified level.
-		Image3D<Type> level(size_t i) const { return Image3D<Type>(m_mipmaps[i]); }
+		Image3D<Type> level(size_t i) const { return Image3D<Type>(mipmaps_[i]); }
 
 		//!	@brief		Returns the texel format of the image at compile time.
 		static constexpr Format format() { return FormatOf<Type>::value; }

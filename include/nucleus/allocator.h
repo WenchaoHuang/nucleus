@@ -53,23 +53,23 @@ namespace NS_NAMESPACE
 		 *	@return		Pointer to newly allocated memory.
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		NS_NODISCARD void * allocateMemory(size_t bytes) { return this->doAllocateMemory(bytes); }
+		NS_NODISCARD void * allocate_memory(size_t bytes) { return this->do_allocate_memory(bytes); }
 
 
 		/**
-		 *	@brief		Deallocates memory previously allocated by Allocator::Allocate().
+		 *	@brief		Deallocates memory previously allocated by `Allocator::allocate_memory()`.
 		 *	@param[in]	ptr - A pointer to the memory to be deallocated. This must be a pointer obtained from a prior
-		 *				call to Allocator::Allocate(), and the memory it points to must not yet have been deallocated.
+		 *				call to `Allocator::allocate_memory()`, and the memory it points to must not yet have been deallocated.
 		 */
-		void deallocateMemory(void * ptr) { this->doDeallocateMemory(ptr); }
+		void deallocate_memory(void * ptr) { this->do_deallocate_memory(ptr); }
 
 	private:
 
 		//!	@brief		Allocates memory.
-		virtual void * doAllocateMemory(size_t bytes) = 0;
+		virtual void * do_allocate_memory(size_t bytes) = 0;
 
 		//!	@brief		Deallocates memory.
-		virtual void doDeallocateMemory(void * ptr) = 0;
+		virtual void do_deallocate_memory(void * ptr) = 0;
 	};
 
 	/*****************************************************************************
@@ -96,7 +96,7 @@ namespace NS_NAMESPACE
 		 *	@details	If \p bytes is 0, nullptr will be returned.
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		virtual void * doAllocateMemory(size_t bytes) override;
+		virtual void * do_allocate_memory(size_t bytes) override;
 
 
 		/**
@@ -104,7 +104,7 @@ namespace NS_NAMESPACE
 		 *	@param[in]	ptr - Memory address returned by HostAllocator::do_allocate.
 		 *	@details	If \p ptr is nullptr, no operation is performed.
 		 */
-		virtual void doDeallocateMemory(void * ptr) override;
+		virtual void do_deallocate_memory(void * ptr) override;
 	};
 
 	/*****************************************************************************
@@ -120,53 +120,53 @@ namespace NS_NAMESPACE
 	public:
 
 		//!	@brief		Constructs device memory allocator.
-		explicit DeviceAllocator(Device * pDevice);
+		explicit DeviceAllocator(Device * device);
 
 		//!	@brief		Return pointer to the device associated with.
-		Device * device() const { return m_device; }
+		Device * device() const { return device_; }
 
 	public:
 
 		/**
 		 *	@brief		Allocate texture memory on the device.
-		 *	@param[in]	eFormat - Texel format of the buffer.
+		 *	@param[in]	format - Texel format of the buffer.
 		 *	@param[in]	width - width of the buffer.
 		 *	@param[in]	height - height of the buffer.
 		 *	@param[in]	depth - depth of the buffer.
-		 *	@param[in]	flags - Flags for buffer creation (interanl use).
+		 *	@param[in]	flags - Flags for buffer creation (internal use).
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		virtual cudaArray_t allocateTextureMemory(Format eFormat, size_t width, size_t height, size_t depth, int flags = 0);
+		virtual cudaArray_t allocate_texture_memory(Format format, size_t width, size_t height, size_t depth, int flags = 0);
 
 
 		/**
 		 *	@brief		Free texture memory on the device.
-		 *	@param[in]	hArray - Returned by a previous call to DeviceAllocator::allocateTextureMemory().
-		 *	@details	If \p hArray is nullptr, no operation is performed.
+		 *	@param[in]	array - Returned by a previous call to DeviceAllocator::allocate_texture_memory().
+		 *	@details	If \p array is nullptr, no operation is performed.
 		 */
-		virtual void deallocateTextureMemory(cudaArray_t hArray);
+		virtual void deallocate_texture_memory(cudaArray_t array);
 
 	public:
 
 		/**
 		 *	@brief		Allocate mipmapped texture memory on the device.
-		 *	@param[in]	eFormat - Texel format of the buffer.
+		 *	@param[in]	format - Texel format of the buffer.
 		 *	@param[in]	width - width of the buffer.
 		 *	@param[in]	height - height of the buffer.
 		 *	@param[in]	depth - depth of the buffer.
-		 *	@param[in]	numLevels - Number of mipmap levels to allocated.
+		 *	@param[in]	num_levels - Number of mipmap levels to allocated.
 		 *	@param[in]	flags - Flags for buffer creation (interanl use).
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		virtual cudaMipmappedArray_t allocateMipmapTextureMemory(Format eFormat, size_t width, size_t height, size_t depth, unsigned int numLevels, int flags = 0);
+		virtual cudaMipmappedArray_t allocate_mipmap_texture_memory(Format format, size_t width, size_t height, size_t depth, unsigned int num_levels, int flags = 0);
 
 
 		/**
 		 *	@brief		Free mipmapped texture memory on the device.
-		 *	@param[in]	hMipmapedArray - Returned by a previous call to DeviceAllocator::allocateMipmapTextureMemory().
-		 *	@details	If \p hMipmapedArray is nullptr, no operation is performed.
+		 *	@param[in]	mipmaped_array - Returned by a previous call to DeviceAllocator::allocate_mipmap_texture_memory().
+		 *	@details	If \p mipmaped_array is nullptr, no operation is performed.
 		 */
-		virtual void deallocateMipmapTextureMemory(cudaMipmappedArray_t hMipmapedArray);
+		virtual void deallocate_mipmap_texture_memory(cudaMipmappedArray_t mipmaped_array);
 
 	protected:
 
@@ -178,18 +178,18 @@ namespace NS_NAMESPACE
 		 *	@details	If \p bytes is 0, nullptr will be returned.
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		virtual void * doAllocateMemory(size_t bytes) override;
+		virtual void * do_allocate_memory(size_t bytes) override;
 
 
 		/**
 		 *	@brief		Free memory on device.
-		 *	@param[in]	ptr - Memory address returned by DeviceAllocator::Allocate().
+		 *	@param[in]	ptr - Memory address returned by `DeviceAllocator::allocate_memory()`.
 		 *	@details	If \p ptr is nullptr, no operation is performed.
 		 */
-		virtual void doDeallocateMemory(void * ptr) override;
+		virtual void do_deallocate_memory(void * ptr) override;
 
 	private:
 
-		Device * const		m_device;
+		Device * const		device_;
 	};
 }

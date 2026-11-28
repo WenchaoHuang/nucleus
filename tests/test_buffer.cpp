@@ -34,14 +34,14 @@ public:
 
 private:
 
-	void * doAllocateMemory(size_t bytes) override
+	void * do_allocate_memory(size_t bytes) override
 	{
 		allocations++;
 
 		return ::operator new(bytes);
 	}
 
-	void doDeallocateMemory(void * ptr) override
+	void do_deallocate_memory(void * ptr) override
 	{
 		deallocations++;
 
@@ -56,7 +56,7 @@ private:
 void test_buffer()
 {
 	auto device = ns::Runtime::device(0);
-	auto allocator = device->defaultAllocator();
+	auto allocator = device->default_allocator();
 
 	ns::Buffer buffer0;
 	ns::Buffer buffer1(allocator, 1024);
@@ -64,7 +64,7 @@ void test_buffer()
 	ns::Buffer buffer3 = std::move(buffer2);
 	ns::Buffer buffer4;
 	buffer4 = std::move(buffer3);
-	std::unique_ptr<ns::Buffer> uniqueBuffer = std::make_unique<ns::Buffer>(allocator, 1024);
+	std::unique_ptr<ns::Buffer> unique_buffer = std::make_unique<ns::Buffer>(allocator, 1024);
 
 	static_assert(std::is_nothrow_copy_constructible_v<ns::Buffer>);
 	static_assert(std::is_nothrow_move_constructible_v<ns::Buffer>);
@@ -85,18 +85,18 @@ void test_buffer()
 	assert(buffer3.capacity() == 0);
 	assert(!buffer3);
 
-	auto countingAllocator = std::make_shared<CountingAllocator>();
+	auto counting_allocator = std::make_shared<CountingAllocator>();
 	{
-		ns::Buffer original(countingAllocator, 64);
+		ns::Buffer original(counting_allocator, 64);
 		ns::Buffer copy = original;
 
 		original = ns::Buffer();
-		assert(countingAllocator->allocations == 1);
-		assert(countingAllocator->deallocations == 0);
+		assert(counting_allocator->allocations == 1);
+		assert(counting_allocator->deallocations == 0);
 	}
-	assert(countingAllocator->deallocations == 1);
+	assert(counting_allocator->deallocations == 1);
 
-	uniqueBuffer = nullptr;
+	unique_buffer = nullptr;
 
 	buffer1.allocator();
 	buffer1.capacity();

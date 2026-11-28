@@ -33,15 +33,15 @@ NS_USING_NAMESPACE
 **********************************    Stream    **********************************
 *********************************************************************************/
 
-Stream::Stream(Device * device, int priority) : m_device(device), m_hStream(nullptr), m_forceSync(false), m_priority(priority)
+Stream::Stream(Device * device, int priority) : device_(device), stream_(nullptr), force_sync_(false), priority_(priority)
 {
-	device->setCurrent();
+	device->set_current();
 
-	//auto priorityRange = device->getStreamPriorityRange();
+	//auto priority_range = device->getStreamPriorityRange();
 
-	//priority = Math::Clamp(priority, priorityRange.least, priorityRange.greatest);
+	//priority = Math::Clamp(priority, priority_range.least, priority_range.greatest);
 
-	cudaError_t err = cudaStreamCreateWithPriority(&m_hStream, cudaStreamNonBlocking, -priority);
+	cudaError_t err = cudaStreamCreateWithPriority(&stream_, cudaStreamNonBlocking, -priority);
 
 	if (err != cudaSuccess)
 	{
@@ -54,7 +54,7 @@ Stream::Stream(Device * device, int priority) : m_device(device), m_hStream(null
 }
 
 
-Stream::Stream(Device * device, std::nullptr_t) : m_device(device), m_hStream(nullptr), m_forceSync(false), m_priority(0)
+Stream::Stream(Device * device, std::nullptr_t) : device_(device), stream_(nullptr), force_sync_(false), priority_(0)
 {
 
 }
@@ -62,26 +62,9 @@ Stream::Stream(Device * device, std::nullptr_t) : m_device(device), m_hStream(nu
 
 Stream & Stream::record(EventRef event)
 {
-	this->acquireDeviceContext();
+	this->acquire_device_context();
 
-	cudaError_t err = cudaEventRecord(event.handle(), m_hStream);
-
-	if (err != cudaSuccess)
-	{
-		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
-
-		cudaGetLastError();
-	}
-
-	return *this;
-}
-
-
-Stream & Stream::waitFor(EventRef event)
-{
-	this->acquireDeviceContext();
-
-	cudaError_t err = cudaStreamWaitEvent(m_hStream, event.handle(), cudaEventWaitDefault);
+	cudaError_t err = cudaEventRecord(event.handle(), stream_);
 
 	if (err != cudaSuccess)
 	{
@@ -94,11 +77,11 @@ Stream & Stream::waitFor(EventRef event)
 }
 
 
-Stream & Stream::launchGraph(cudaGraphExec_t hGraphExec)
+Stream & Stream::wait_for(EventRef event)
 {
-	this->acquireDeviceContext();
+	this->acquire_device_context();
 
-	cudaError_t err = cudaGraphLaunch(hGraphExec, m_hStream);
+	cudaError_t err = cudaStreamWaitEvent(stream_, event.handle(), cudaEventWaitDefault);
 
 	if (err != cudaSuccess)
 	{
@@ -106,7 +89,24 @@ Stream & Stream::launchGraph(cudaGraphExec_t hGraphExec)
 
 		cudaGetLastError();
 	}
-	else if (m_forceSync)
+
+	return *this;
+}
+
+
+Stream & Stream::launch_graph(cudaGraphExec_t graph_exec)
+{
+	this->acquire_device_context();
+
+	cudaError_t err = cudaGraphLaunch(graph_exec, stream_);
+
+	if (err != cudaSuccess)
+	{
+		NS_ERROR_LOG("%s.", cudaGetErrorString(err));
+
+		cudaGetLastError();
+	}
+	else if (force_sync_)
 	{
 		this->sync();
 	}
@@ -115,11 +115,11 @@ Stream & Stream::launchGraph(cudaGraphExec_t hGraphExec)
 }
 
 
-Stream & Stream::launchHostFunc(HostFunc<void> func, void * userData)
+Stream & Stream::launch_host_func(HostFunc<void> func, void * user_data)
 {
-	this->acquireDeviceContext();
+	this->acquire_device_context();
 
-	cudaError_t err = cudaLaunchHostFunc(m_hStream, func, userData);
+	cudaError_t err = cudaLaunchHostFunc(stream_, func, user_data);
 
 	if (err != cudaSuccess)
 	{
@@ -127,7 +127,7 @@ Stream & Stream::launchHostFunc(HostFunc<void> func, void * userData)
 
 		cudaGetLastError();
 	}
-	else if (m_forceSync)
+	else if (force_sync_)
 	{
 		this->sync();
 	}
@@ -136,17 +136,17 @@ Stream & Stream::launchHostFunc(HostFunc<void> func, void * userData)
 }
 
 
-Stream & Stream::memcpyLinear(void * dst, size_t dstPitch, size_t dstHeight, const void * src, size_t srcPitch, size_t srcHeight, size_t width, size_t height, size_t depth)
+Stream & Stream::memcpy_linear(void * dst, size_t dst_pitch, size_t dst_height, const void * src, size_t src_pitch, size_t src_height, size_t width, size_t height, size_t depth)
 {
-	this->acquireDeviceContext();
+	this->acquire_device_context();
 
-	cudaMemcpy3DParms mempcyParams = {};
-	mempcyParams.dstPtr	= make_cudaPitchedPtr(dst, dstPitch, 0, dstHeight);
-	mempcyParams.srcPtr = make_cudaPitchedPtr(const_cast<void*>(src), srcPitch, 0, srcHeight);
-	mempcyParams.extent = make_cudaExtent(width, height, depth);
-	mempcyParams.kind = cudaMemcpyDefault;
+	cudaMemcpy3DParms mempcy_params = {};
+	mempcy_params.dstPtr	= make_cudaPitchedPtr(dst, dst_pitch, 0, dst_height);
+	mempcy_params.srcPtr = make_cudaPitchedPtr(const_cast<void*>(src), src_pitch, 0, src_height);
+	mempcy_params.extent = make_cudaExtent(width, height, depth);
+	mempcy_params.kind = cudaMemcpyDefault;
 
-	cudaError_t err = cudaMemcpy3DAsync(&mempcyParams, m_hStream);
+	cudaError_t err = cudaMemcpy3DAsync(&mempcy_params, stream_);
 
 	if (err != cudaSuccess)
 	{
@@ -154,7 +154,7 @@ Stream & Stream::memcpyLinear(void * dst, size_t dstPitch, size_t dstHeight, con
 
 		cudaGetLastError();
 	}
-	else if (m_forceSync)
+	else if (force_sync_)
 	{
 		this->sync();
 	}
@@ -163,18 +163,18 @@ Stream & Stream::memcpyLinear(void * dst, size_t dstPitch, size_t dstHeight, con
 }
 
 
-Stream & Stream::memcpyLinearImage(void * dst, size_t dstPitch, size_t dstHeight, ImageAccessor<void> srcImg, size_t width, size_t height, size_t depth)
+Stream & Stream::memcpy_linear_image(void * dst, size_t dst_pitch, size_t dst_height, ImageAccessor<void> src_img, size_t width, size_t height, size_t depth)
 {
-	this->acquireDeviceContext();
+	this->acquire_device_context();
 
-	cudaMemcpy3DParms mempcyParams = {};
-	mempcyParams.dstPtr = make_cudaPitchedPtr(dst, dstPitch, 0, dstHeight);
-	mempcyParams.srcArray = srcImg.handle;
-	mempcyParams.srcPos = make_cudaPos(srcImg.pos.x, srcImg.pos.y, srcImg.pos.z);
-	mempcyParams.extent = make_cudaExtent(width, height, depth);
-	mempcyParams.kind = cudaMemcpyDefault;
+	cudaMemcpy3DParms mempcy_params = {};
+	mempcy_params.dstPtr = make_cudaPitchedPtr(dst, dst_pitch, 0, dst_height);
+	mempcy_params.srcArray = src_img.handle;
+	mempcy_params.srcPos = make_cudaPos(src_img.pos.x, src_img.pos.y, src_img.pos.z);
+	mempcy_params.extent = make_cudaExtent(width, height, depth);
+	mempcy_params.kind = cudaMemcpyDefault;
 
-	cudaError_t err = cudaMemcpy3DAsync(&mempcyParams, m_hStream);
+	cudaError_t err = cudaMemcpy3DAsync(&mempcy_params, stream_);
 
 	if (err != cudaSuccess)
 	{
@@ -182,7 +182,7 @@ Stream & Stream::memcpyLinearImage(void * dst, size_t dstPitch, size_t dstHeight
 
 		cudaGetLastError();
 	}
-	else if (m_forceSync)
+	else if (force_sync_)
 	{
 		this->sync();
 	}
@@ -191,18 +191,18 @@ Stream & Stream::memcpyLinearImage(void * dst, size_t dstPitch, size_t dstHeight
 }
 
 
-Stream & Stream::memcpyImageLinear(ImageAccessor<void> dstImg, const void * src, size_t srcPitch, size_t srcHeight, size_t width, size_t height, size_t depth)
+Stream & Stream::memcpy_image_linear(ImageAccessor<void> dst_img, const void * src, size_t src_pitch, size_t src_height, size_t width, size_t height, size_t depth)
 {
-	this->acquireDeviceContext();
+	this->acquire_device_context();
 
-	cudaMemcpy3DParms mempcyParams = {};
-	mempcyParams.dstArray = dstImg.handle;
-	mempcyParams.dstPos = make_cudaPos(dstImg.pos.x, dstImg.pos.y, dstImg.pos.z);
-	mempcyParams.srcPtr = make_cudaPitchedPtr(const_cast<void*>(src), srcPitch, 0, srcHeight);
-	mempcyParams.extent = make_cudaExtent(width, height, depth);
-	mempcyParams.kind = cudaMemcpyDefault;
+	cudaMemcpy3DParms mempcy_params = {};
+	mempcy_params.dstArray = dst_img.handle;
+	mempcy_params.dstPos = make_cudaPos(dst_img.pos.x, dst_img.pos.y, dst_img.pos.z);
+	mempcy_params.srcPtr = make_cudaPitchedPtr(const_cast<void*>(src), src_pitch, 0, src_height);
+	mempcy_params.extent = make_cudaExtent(width, height, depth);
+	mempcy_params.kind = cudaMemcpyDefault;
 
-	cudaError_t err = cudaMemcpy3DAsync(&mempcyParams, m_hStream);
+	cudaError_t err = cudaMemcpy3DAsync(&mempcy_params, stream_);
 
 	if (err != cudaSuccess)
 	{
@@ -210,7 +210,7 @@ Stream & Stream::memcpyImageLinear(ImageAccessor<void> dstImg, const void * src,
 
 		cudaGetLastError();
 	}
-	else if (m_forceSync)
+	else if (force_sync_)
 	{
 		this->sync();
 	}
@@ -219,19 +219,19 @@ Stream & Stream::memcpyImageLinear(ImageAccessor<void> dstImg, const void * src,
 }
 
 
-Stream & Stream::memcpyImage(ImageAccessor<void> dstImg, ImageAccessor<void> srcImg, size_t width, size_t height, size_t depth)
+Stream & Stream::memcpy_image(ImageAccessor<void> dst_img, ImageAccessor<void> src_img, size_t width, size_t height, size_t depth)
 {
-	this->acquireDeviceContext();
+	this->acquire_device_context();
 
-	cudaMemcpy3DParms mempcyParams = {};
-	mempcyParams.dstArray = dstImg.handle;
-	mempcyParams.dstPos = make_cudaPos(dstImg.pos.x, dstImg.pos.y, dstImg.pos.z);
-	mempcyParams.srcArray = srcImg.handle;
-	mempcyParams.srcPos = make_cudaPos(srcImg.pos.x, srcImg.pos.y, srcImg.pos.z);
-	mempcyParams.extent = make_cudaExtent(width, height, depth);
-	mempcyParams.kind = cudaMemcpyDefault;
+	cudaMemcpy3DParms mempcy_params = {};
+	mempcy_params.dstArray = dst_img.handle;
+	mempcy_params.dstPos = make_cudaPos(dst_img.pos.x, dst_img.pos.y, dst_img.pos.z);
+	mempcy_params.srcArray = src_img.handle;
+	mempcy_params.srcPos = make_cudaPos(src_img.pos.x, src_img.pos.y, src_img.pos.z);
+	mempcy_params.extent = make_cudaExtent(width, height, depth);
+	mempcy_params.kind = cudaMemcpyDefault;
 
-	cudaError_t err = cudaMemcpy3DAsync(&mempcyParams, m_hStream);
+	cudaError_t err = cudaMemcpy3DAsync(&mempcy_params, stream_);
 
 	if (err != cudaSuccess)
 	{
@@ -239,7 +239,7 @@ Stream & Stream::memcpyImage(ImageAccessor<void> dstImg, ImageAccessor<void> src
 
 		cudaGetLastError();
 	}
-	else if (m_forceSync)
+	else if (force_sync_)
 	{
 		this->sync();
 	}
@@ -248,11 +248,11 @@ Stream & Stream::memcpyImage(ImageAccessor<void> dstImg, ImageAccessor<void> src
 }
 
 
-Stream & Stream::memcpyToSymbolImpl(void * symbol, size_t offset, const void * src, size_t count)
+Stream & Stream::memcpy_to_symbol_impl(void * symbol, size_t offset, const void * src, size_t count)
 {
-	this->acquireDeviceContext();
+	this->acquire_device_context();
 
-	cudaError_t err = cudaMemcpyToSymbolAsync(symbol, src, count, offset, cudaMemcpyHostToDevice, m_hStream);
+	cudaError_t err = cudaMemcpyToSymbolAsync(symbol, src, count, offset, cudaMemcpyHostToDevice, stream_);
 
 	if (err != cudaSuccess)
 	{
@@ -260,7 +260,7 @@ Stream & Stream::memcpyToSymbolImpl(void * symbol, size_t offset, const void * s
 
 		cudaGetLastError();
 	}
-	else if (m_forceSync)
+	else if (force_sync_)
 	{
 		this->sync();
 	}
@@ -269,11 +269,11 @@ Stream & Stream::memcpyToSymbolImpl(void * symbol, size_t offset, const void * s
 }
 
 
-Stream & Stream::memcpyFromSymbolImpl(void * dst, const void * symbol, size_t offset, size_t count)
+Stream & Stream::memcpy_from_symbol_impl(void * dst, const void * symbol, size_t offset, size_t count)
 {
-	this->acquireDeviceContext();
+	this->acquire_device_context();
 
-	cudaError_t err = cudaMemcpyFromSymbolAsync(dst, symbol, count, offset, cudaMemcpyDeviceToHost, m_hStream);
+	cudaError_t err = cudaMemcpyFromSymbolAsync(dst, symbol, count, offset, cudaMemcpyDeviceToHost, stream_);
 
 	if (err != cudaSuccess)
 	{
@@ -281,7 +281,7 @@ Stream & Stream::memcpyFromSymbolImpl(void * dst, const void * symbol, size_t of
 
 		cudaGetLastError();
 	}
-	else if (m_forceSync)
+	else if (force_sync_)
 	{
 		this->sync();
 	}
@@ -292,9 +292,9 @@ Stream & Stream::memcpyFromSymbolImpl(void * dst, const void * symbol, size_t of
 
 Stream & Stream::memset(void * address, int value, size_t bytes)
 {
-	this->acquireDeviceContext();
+	this->acquire_device_context();
 
-	cudaError_t err = cudaMemsetAsync(address, value, bytes, m_hStream);
+	cudaError_t err = cudaMemsetAsync(address, value, bytes, stream_);
 
 	if (err != cudaSuccess)
 	{
@@ -302,7 +302,7 @@ Stream & Stream::memset(void * address, int value, size_t bytes)
 
 		cudaGetLastError();
 	}
-	else if (m_forceSync)
+	else if (force_sync_)
 	{
 		this->sync();
 	}
@@ -313,9 +313,9 @@ Stream & Stream::memset(void * address, int value, size_t bytes)
 
 void Stream::sync() const
 {
-	this->acquireDeviceContext();
+	this->acquire_device_context();
 
-	cudaError_t err = cudaStreamSynchronize(m_hStream);
+	cudaError_t err = cudaStreamSynchronize(stream_);
 
 	if (err != cudaSuccess)
 	{
@@ -326,9 +326,9 @@ void Stream::sync() const
 }
 
 
-void Stream::setForceSync(bool enable)
+void Stream::set_force_sync(bool enable)
 {
-	if (m_forceSync != enable)
+	if (force_sync_ != enable)
 	{
 		if (enable)
 		{
@@ -339,16 +339,16 @@ void Stream::setForceSync(bool enable)
 			NS_INFO_LOG("Force-Sync disabled. Stream will not be forced to synchronize.");
 		}
 
-		m_forceSync = enable;
+		force_sync_ = enable;
 	}
 }
 
 
-bool Stream::isComplete() const
+bool Stream::is_complete() const
 {
-	this->acquireDeviceContext();
+	this->acquire_device_context();
 
-	cudaError_t err = cudaStreamQuery(m_hStream);
+	cudaError_t err = cudaStreamQuery(stream_);
 
 	if ((err != cudaSuccess) && (err != cudaErrorNotReady))
 	{
@@ -361,20 +361,20 @@ bool Stream::isComplete() const
 }
 
 
-void Stream::acquireDeviceContext() const
+void Stream::acquire_device_context() const
 {
-	if (m_hStream == nullptr)
+	if (stream_ == nullptr)
 	{
-		m_device->setCurrent();
+		device_->set_current();
 	}
 }
 
 
 Stream::~Stream() noexcept
 {
-	if (m_hStream != nullptr)
+	if (stream_ != nullptr)
 	{
-		cudaError_t err = cudaStreamDestroy(m_hStream);
+		cudaError_t err = cudaStreamDestroy(stream_);
 
 		if (err != cudaSuccess)
 		{

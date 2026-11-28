@@ -43,17 +43,17 @@ namespace NS_NAMESPACE
 	public:
 
 		//!	@brief		Construct an empty array.
-		Array3D() noexcept : dev::Ptr3<Type>(nullptr), m_buffer() {}
+		Array3D() noexcept : dev::Ptr3<Type>(nullptr), buffer_() {}
 
 		//!	@brief		Allocates a 3D array with specified dimensions using the default allocator.
-		explicit Array3D(size_t width, size_t height, size_t depth) : Array3D(Runtime::defaultAllocator(), width, height, depth) {}
+		explicit Array3D(size_t width, size_t height, size_t depth) : Array3D(Runtime::default_allocator(), width, height, depth) {}
 
 		//!	@brief		Constructs and allocates a 2D array with specified dimensions.
 		explicit Array3D(std::shared_ptr<Allocator> allocator, size_t width, size_t height, size_t depth) : Array3D() { this->resize(std::move(allocator), width, height, depth); }
 
 		//!	@brief		Move constructor. Transfers ownership from another array.
-		Array3D(Array3D && rhs) : m_buffer(std::move(rhs.m_buffer)),
-			dev::Ptr3<Type>(std::exchange(rhs.m_data, nullptr), std::exchange(rhs.m_height, 0), std::exchange(rhs.m_width, 0), std::exchange(rhs.m_depth, 0)) {}
+		Array3D(Array3D && rhs) : buffer_(std::move(rhs.buffer_)),
+			dev::Ptr3<Type>(std::exchange(rhs.data_, nullptr), std::exchange(rhs.height_, 0), std::exchange(rhs.width_, 0), std::exchange(rhs.depth_, 0)) {}
 
 	public:
 
@@ -71,23 +71,23 @@ namespace NS_NAMESPACE
 
 			if ((this->allocator() != allocator) || (this->size() != width * height * depth))
 			{
-				m_buffer = Buffer(std::move(allocator), sizeof(Type) * width * height * depth);
+				buffer_ = Buffer(std::move(allocator), sizeof(Type) * width * height * depth);
 
-				dev::Ptr3<Type>::m_data = reinterpret_cast<Type*>(m_buffer.data());
+				dev::Ptr3<Type>::data_ = reinterpret_cast<Type*>(buffer_.data());
 
-				dev::Ptr3<Type>::m_height = static_cast<uint32_t>(height);
+				dev::Ptr3<Type>::height_ = static_cast<uint32_t>(height);
 
-				dev::Ptr3<Type>::m_width = static_cast<uint32_t>(width);
+				dev::Ptr3<Type>::width_ = static_cast<uint32_t>(width);
 
-				dev::Ptr3<Type>::m_depth = static_cast<uint32_t>(depth);
+				dev::Ptr3<Type>::depth_ = static_cast<uint32_t>(depth);
 			}
 			else if ((this->width() != width) || (this->height() != height) || (this->depth() != depth))
 			{
-				dev::Ptr3<Type>::m_height = static_cast<uint32_t>(height);
+				dev::Ptr3<Type>::height_ = static_cast<uint32_t>(height);
 
-				dev::Ptr3<Type>::m_width = static_cast<uint32_t>(width);
+				dev::Ptr3<Type>::width_ = static_cast<uint32_t>(width);
 
-				dev::Ptr3<Type>::m_depth = static_cast<uint32_t>(depth);
+				dev::Ptr3<Type>::depth_ = static_cast<uint32_t>(depth);
 			}
 		}
 
@@ -100,7 +100,7 @@ namespace NS_NAMESPACE
 		 */
 		void resize(size_t width, size_t height, size_t depth)
 		{
-			auto allocator = Runtime::defaultAllocator();
+			auto allocator = Runtime::default_allocator();
 
 			NS_ASSERT_LOG_IF(!allocator, "No default allocator!");
 			
@@ -120,11 +120,11 @@ namespace NS_NAMESPACE
 
 			if (this->size() == width * height * depth)
 			{
-				dev::Ptr3<Type>::m_height = static_cast<uint32_t>(height);
+				dev::Ptr3<Type>::height_ = static_cast<uint32_t>(height);
 
-				dev::Ptr3<Type>::m_width = static_cast<uint32_t>(width);
+				dev::Ptr3<Type>::width_ = static_cast<uint32_t>(width);
 
-				dev::Ptr3<Type>::m_depth = static_cast<uint32_t>(depth);
+				dev::Ptr3<Type>::depth_ = static_cast<uint32_t>(depth);
 			}
 		}
 
@@ -134,7 +134,7 @@ namespace NS_NAMESPACE
 		 */
 		const std::shared_ptr<Allocator> & allocator() const
 		{
-			return m_buffer.allocator();
+			return buffer_.allocator();
 		}
 
 
@@ -142,17 +142,17 @@ namespace NS_NAMESPACE
 		 *	@brief		Releases the ownership of the internal buffer and returns it.
 		 *	@note		After this call, the Array3D will be in an empty state.
 		 */
-		Buffer releaseBuffer()
+		Buffer release_buffer()
 		{
-			dev::Ptr3<Type>::m_width = 0;
+			dev::Ptr3<Type>::width_ = 0;
 			
-			dev::Ptr3<Type>::m_depth = 0;
+			dev::Ptr3<Type>::depth_ = 0;
 
-			dev::Ptr3<Type>::m_height = 0;
+			dev::Ptr3<Type>::height_ = 0;
 
-			dev::Ptr3<Type>::m_data = nullptr;
+			dev::Ptr3<Type>::data_ = nullptr;
 
-			return std::exchange(m_buffer, Buffer());
+			return std::exchange(buffer_, Buffer());
 		}
 
 
@@ -161,15 +161,15 @@ namespace NS_NAMESPACE
 		 */
 		void operator=(Array3D && rhs) noexcept
 		{
-			dev::Ptr3<Type>::m_data = std::exchange(rhs.m_data, nullptr);
+			dev::Ptr3<Type>::data_ = std::exchange(rhs.data_, nullptr);
 
-			dev::Ptr3<Type>::m_height = std::exchange(rhs.m_height, 0);
+			dev::Ptr3<Type>::height_ = std::exchange(rhs.height_, 0);
 
-			dev::Ptr3<Type>::m_width = std::exchange(rhs.m_width, 0);
+			dev::Ptr3<Type>::width_ = std::exchange(rhs.width_, 0);
 
-			dev::Ptr3<Type>::m_depth = std::exchange(rhs.m_depth, 0);
+			dev::Ptr3<Type>::depth_ = std::exchange(rhs.depth_, 0);
 
-			m_buffer = std::move(rhs.m_buffer);
+			buffer_ = std::move(rhs.buffer_);
 		}
 
 
@@ -179,15 +179,15 @@ namespace NS_NAMESPACE
 		 */
 		void swap(Array3D & rhs) noexcept
 		{
-			std::swap(dev::Ptr3<Type>::m_height, rhs.m_height);
+			std::swap(dev::Ptr3<Type>::height_, rhs.height_);
 
-			std::swap(dev::Ptr3<Type>::m_width, rhs.m_width);
+			std::swap(dev::Ptr3<Type>::width_, rhs.width_);
 
-			std::swap(dev::Ptr3<Type>::m_depth, rhs.m_depth);
+			std::swap(dev::Ptr3<Type>::depth_, rhs.depth_);
 
-			std::swap(dev::Ptr3<Type>::m_data, rhs.m_data);
+			std::swap(dev::Ptr3<Type>::data_, rhs.data_);
 
-			std::swap(m_buffer, rhs.m_buffer);
+			std::swap(buffer_, rhs.buffer_);
 		}
 
 
@@ -196,17 +196,17 @@ namespace NS_NAMESPACE
 		 */
 		void clear() noexcept
 		{
-			if (m_buffer)
+			if (buffer_)
 			{
-				dev::Ptr3<Type>::m_data = nullptr;
+				dev::Ptr3<Type>::data_ = nullptr;
 
-				dev::Ptr3<Type>::m_height = 0;
+				dev::Ptr3<Type>::height_ = 0;
 
-				dev::Ptr3<Type>::m_depth = 0;
+				dev::Ptr3<Type>::depth_ = 0;
 
-				dev::Ptr3<Type>::m_width = 0;
+				dev::Ptr3<Type>::width_ = 0;
 
-				m_buffer = Buffer();
+				buffer_ = Buffer();
 			}
 		}
 
@@ -226,6 +226,6 @@ namespace NS_NAMESPACE
 
 	private:
 
-		Buffer		m_buffer;
+		Buffer		buffer_;
 	};
 }

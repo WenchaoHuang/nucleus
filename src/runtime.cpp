@@ -37,53 +37,53 @@ Runtime::Runtime()
 
 	//////////////////////////////////////////////////////////////////////
 
-	int driverVersion = 0;
+	int driver_version = 0;
 
-	cudaDriverGetVersion(&driverVersion);
+	cudaDriverGetVersion(&driver_version);
 
-	m_driverVersion.major = driverVersion / 1000;
-	m_driverVersion.minor = (driverVersion % 1000) / 10;
+	driver_version_.major = driver_version / 1000;
+	driver_version_.minor = (driver_version % 1000) / 10;
 
-	NS_INFO_LOG("CUDA driver version: %d.%d", m_driverVersion.major, m_driverVersion.minor);
+	NS_INFO_LOG("CUDA driver version: %d.%d", driver_version_.major, driver_version_.minor);
 
 	//////////////////////////////////////////////////////////////////////
 
-	int runtimeVersion = 0;
+	int runtime_version = 0;
 
-	cudaRuntimeGetVersion(&runtimeVersion);
+	cudaRuntimeGetVersion(&runtime_version);
 
-	m_runtimeVersion.major = runtimeVersion / 1000;
-	m_runtimeVersion.minor = (runtimeVersion % 1000) / 10;
+	runtime_version_.major = runtime_version / 1000;
+	runtime_version_.minor = (runtime_version % 1000) / 10;
 
-	NS_INFO_LOG("CUDA runtime version: %d.%d", m_runtimeVersion.major, m_runtimeVersion.minor);
+	NS_INFO_LOG("CUDA runtime version: %d.%d", runtime_version_.major, runtime_version_.minor);
 
 	//////////////////////////////////////////////////////////////////////
 
 	cudaGetLastError();
 
-	int deviceCount = 0;
+	int device_count = 0;
 
-	auto err = cudaGetDeviceCount(&deviceCount);
+	auto err = cudaGetDeviceCount(&device_count);
 
-	m_cudaDevices.resize(deviceCount, nullptr);
+	cuda_devices_.resize(device_count, nullptr);
 
 	NS_INFO_LOG_IF(err == cudaErrorNoDevice, "No CUDA-capable devices were detected.");
 
 	//////////////////////////////////////////////////////////////////////
 
-	for (int i = 0; i < deviceCount; i++)
+	for (int i = 0; i < device_count; i++)
 	{
-		cudaDeviceProp devProp = {};
+		cudaDeviceProp dev_prop = {};
 
-		cudaGetDeviceProperties(reinterpret_cast<cudaDeviceProp*>(&devProp), i);
+		cudaGetDeviceProperties(reinterpret_cast<cudaDeviceProp*>(&dev_prop), i);
 
-		NS_INFO_LOG("CUDA device(%d): %s, compute capability: %d.%d", i, devProp.name, devProp.major, devProp.minor);
+		NS_INFO_LOG("CUDA device(%d): %s, compute capability: %d.%d", i, dev_prop.name, dev_prop.major, dev_prop.minor);
 
-		m_cudaDevices[i] = new Device(i, devProp);
+		cuda_devices_[i] = new Device(i, dev_prop);
 
 		if (i == 0)
 		{
-			m_defaultAlloc = m_cudaDevices[0]->defaultAllocator();
+			default_alloc_ = cuda_devices_[0]->default_allocator();
 		}
 	}
 
@@ -91,19 +91,19 @@ Runtime::Runtime()
 }
 
 
-const char * Runtime::getErrorString(ErrorCode code) noexcept
+const char * Runtime::get_error_string(ErrorCode error) noexcept
 {
-	return cudaGetErrorString(static_cast<cudaError_t>(code));
+	return cudaGetErrorString(static_cast<cudaError_t>(error));
 }
 
 
-const char * Runtime::getErrorName(ErrorCode code) noexcept
+const char * Runtime::get_error_name(ErrorCode error) noexcept
 {
-	return cudaGetErrorName(static_cast<cudaError_t>(code));
+	return cudaGetErrorName(static_cast<cudaError_t>(error));
 }
 
 
-ErrorCode Runtime::getLastError() noexcept
+ErrorCode Runtime::get_last_error() noexcept
 {
 	return cudaGetLastError();
 }
@@ -111,10 +111,10 @@ ErrorCode Runtime::getLastError() noexcept
 
 Runtime::~Runtime()
 {
-	for (size_t i = 0; i < m_cudaDevices.size(); i++)
+	for (size_t i = 0; i < cuda_devices_.size(); i++)
 	{
-		delete m_cudaDevices[i];
+		delete cuda_devices_[i];
 	}
 
-	m_cudaDevices.clear();
+	cuda_devices_.clear();
 }

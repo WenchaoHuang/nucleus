@@ -40,7 +40,7 @@ static void test(dev::Span<int> a, dev::Ptr2<const float> b, dev::Ptr3<float> c)
 void test_array()
 {
 	auto device = ns::Runtime::device(0);
-	auto allocator = device->defaultAllocator();
+	auto allocator = device->default_allocator();
 
 	ns::Array<int>					array0;
 	ns::Array<int>					array1(allocator, 100);
@@ -70,15 +70,15 @@ void test_array()
 	assert(array1.empty());
 	assert(!array11.empty());
 	assert(arrArray1[0].size() == 10);
-	assert(array1Default.allocator() == ns::Runtime::defaultAllocator());
-	assert(array2Default.allocator() == ns::Runtime::defaultAllocator());
-	assert(array3Default.allocator() == ns::Runtime::defaultAllocator());
+	assert(array1Default.allocator() == ns::Runtime::default_allocator());
+	assert(array2Default.allocator() == ns::Runtime::default_allocator());
+	assert(array3Default.allocator() == ns::Runtime::default_allocator());
 
 	if (!array11.empty())
 	{
 		assert(array11.size() == 100);
 		assert(array11.size_bytes() == 100 * sizeof(int));
-		assert(!array11.releaseBuffer().empty());
+		assert(!array11.release_buffer().empty());
 		assert(array11.allocator() == nullptr);
 		array11.resize(allocator, 200);
 		array11.resize(300);
@@ -99,7 +99,7 @@ void test_array()
 		assert(array33.pitch() == 100 * sizeof(float));
 		assert(array33.height() == 100);
 		assert(array33.allocator() == allocator);
-		assert(!array33.releaseBuffer().empty());
+		assert(!array33.release_buffer().empty());
 		array33.resize(allocator, 200, 400);
 		array33.reshape(100, 800);
 		array33.resize(400, 200);

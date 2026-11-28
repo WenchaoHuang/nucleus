@@ -47,33 +47,33 @@ namespace NS_NAMESPACE
 	public:
 
 		//!	@brief		Constructs an empty scratch arena using the default allocator.
-		ScratchArena() : ScratchArena(Runtime::defaultAllocator()) {}
+		ScratchArena() : ScratchArena(Runtime::default_allocator()) {}
 
 		//!	@brief		Constructs a scratch arena with initial capacity using the default allocator.
-		explicit ScratchArena(size_t capacity) : ScratchArena(Runtime::defaultAllocator(), capacity) {}
+		explicit ScratchArena(size_t capacity) : ScratchArena(Runtime::default_allocator(), capacity) {}
 
 		//! @brief		Constructs an empty scratch arena using the specified allocator.
 		explicit ScratchArena(std::shared_ptr<Allocator> allocator) : ScratchArena(std::move(allocator), 0) {}
 
 		//! @brief		Constructs a scratch arena with the specified allocator and initial capacity.
-		explicit ScratchArena(std::shared_ptr<Allocator> allocator, size_t capacity) : m_allocator(std::move(allocator)), m_offset(0) { this->reserve(capacity); }
+		explicit ScratchArena(std::shared_ptr<Allocator> allocator, size_t capacity) : allocator_(std::move(allocator)), offset_(0) { this->reserve(capacity); }
 
 	public:
 
 		//!	@brief		Checks whether the scratch arena has no cached buffer.
-		bool empty() const noexcept { return m_buffer.empty(); }
+		bool empty() const noexcept { return buffer_.empty(); }
 
 		//! @brief		Returns the cached buffer capacity in bytes.
-		size_t capacity() const noexcept { return m_buffer.capacity(); }
+		size_t capacity() const noexcept { return buffer_.capacity(); }
 
 		//! @brief		Returns the number of bytes used since the last reuse.
-		size_t used() const noexcept { return m_offset; }
+		size_t used() const noexcept { return offset_; }
 
 		//! @brief		Returns the number of unused bytes in the cached buffer.
-		size_t remaining() const noexcept { return this->capacity() - m_offset; }
+		size_t remaining() const noexcept { return this->capacity() - offset_; }
 
 		//! @brief		Returns the scratch arena allocator.
-		const std::shared_ptr<Allocator> & allocator() const noexcept { return m_allocator; }
+		const std::shared_ptr<Allocator> & allocator() const noexcept { return allocator_; }
 
 	public:
 
@@ -92,14 +92,14 @@ namespace NS_NAMESPACE
 			if (count == 0)
 				return dev::Span<Type>(nullptr, 0);
 
-			const size_t alignedOffset = align_up(m_offset, alignof(Type));
-			const size_t allocationEnd = alignedOffset + sizeof(Type) * count;
+			const size_t aligned_offset = align_up(offset_, alignof(Type));
+			const size_t allocation_end = aligned_offset + sizeof(Type) * count;
 
-			NS_ASSERT(allocationEnd <= m_buffer.capacity());
+			NS_ASSERT(allocation_end <= buffer_.capacity());
 
-			m_offset = allocationEnd;
+			offset_ = allocation_end;
 
-			auto address = m_buffer.address() + alignedOffset;
+			auto address = buffer_.address() + aligned_offset;
 
 			return dev::Span<Type>(reinterpret_cast<Type*>(address), count);
 		}
@@ -141,11 +141,11 @@ namespace NS_NAMESPACE
 		 */
 		void reserve(size_t capacity)
 		{
-			if (capacity > m_buffer.capacity())
+			if (capacity > buffer_.capacity())
 			{
-				m_buffer = Buffer(m_allocator, capacity);
+				buffer_ = Buffer(allocator_, capacity);
 
-				m_offset = 0;
+				offset_ = 0;
 			}
 		}
 
@@ -154,7 +154,7 @@ namespace NS_NAMESPACE
 		 *	@brief		Makes all temporary allocations available for reuse.
 		 *	@warning	All previously returned pointers become invalid for subsequent operations.
 		 */
-		void reuse() noexcept { m_offset = 0; }
+		void reuse() noexcept { offset_ = 0; }
 
 
 		/**
@@ -162,15 +162,15 @@ namespace NS_NAMESPACE
 		 */
 		void clear() noexcept
 		{
-			m_buffer = Buffer();
+			buffer_ = Buffer();
 
-			m_offset = 0;
+			offset_ = 0;
 		}
 
 	private:
 
-		std::shared_ptr<Allocator>		m_allocator;
-		Buffer							m_buffer;
-		size_t							m_offset;
+		std::shared_ptr<Allocator>		allocator_;
+		Buffer							buffer_;
+		size_t							offset_;
 	};
 }

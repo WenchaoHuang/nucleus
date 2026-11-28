@@ -33,7 +33,7 @@ NS_USING_NAMESPACE
 
 void EventRef::sync() const
 {
-	cudaError_t err = cudaEventSynchronize(m_event);
+	cudaError_t err = cudaEventSynchronize(event_);
 
 	if (err != cudaSuccess)
 	{
@@ -44,7 +44,7 @@ void EventRef::sync() const
 
 bool EventRef::is_done() const
 {
-	cudaError_t err = cudaEventQuery(m_event);
+	cudaError_t err = cudaEventQuery(event_);
 
 	if (err != cudaSuccess && err != cudaErrorNotReady)
 	{
@@ -58,13 +58,13 @@ bool EventRef::is_done() const
 **********************************    Event    ***********************************
 *********************************************************************************/
 
-Event::Event(Device * device, int flags) : EventRef(cudaEvent_t{}), m_device(device)
+Event::Event(Device * device, int flags) : EventRef(cudaEvent_t{}), device_(device)
 {
 	NS_ASSERT(device != nullptr);
 
-	device->setCurrent();
+	device->set_current();
 
-	cudaError_t err = cudaEventCreateWithFlags(&m_event, flags);
+	cudaError_t err = cudaEventCreateWithFlags(&event_, flags);
 
 	if (err != cudaSuccess)
 	{
@@ -81,9 +81,9 @@ Event::Event(Device * device, bool blocking_sync) : Event(device, blocking_sync 
 
 Event::~Event() noexcept
 {
-	if (m_event != nullptr)
+	if (event_ != nullptr)
 	{
-		cudaError_t err = cudaEventDestroy(m_event);
+		cudaError_t err = cudaEventDestroy(event_);
 
 		if (err != cudaSuccess)
 		{

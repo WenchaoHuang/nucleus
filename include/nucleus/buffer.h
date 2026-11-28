@@ -49,7 +49,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Constructs a buffer with specified capacity using the default allocator.
 		 */
-		explicit Buffer(size_t capacity) : Buffer(ns::Runtime::defaultAllocator(), capacity) {}
+		explicit Buffer(size_t capacity) : Buffer(ns::Runtime::default_allocator(), capacity) {}
 
 
 		/**
@@ -61,21 +61,21 @@ namespace NS_NAMESPACE
 		 */
 		explicit Buffer(std::shared_ptr<Allocator> allocator, size_t capacity)
 		{
-			if (capacity > 0) { m_storage = std::make_shared<Storage>(std::move(allocator), capacity); }
+			if (capacity > 0) { storage_ = std::make_shared<Storage>(std::move(allocator), capacity); }
 		}
 
 	public:
 
 		//!	@brief		Checks if buffer is empty.
-		bool empty() const noexcept { return m_storage == nullptr; }
+		bool empty() const noexcept { return storage_ == nullptr; }
 
 
 		//!	@brief		Checks whether this handle references a buffer body.
-		explicit operator bool() const noexcept { return m_storage != nullptr; }
+		explicit operator bool() const noexcept { return storage_ != nullptr; }
 
 
 		//!	@brief		Gets the buffer capacity.
-		size_t capacity() const noexcept { return m_storage ? m_storage->capacity : 0; }
+		size_t capacity() const noexcept { return storage_ ? storage_->capacity : 0; }
 
 
 		//!	@brief		Retrun logical address of the memory.
@@ -83,19 +83,19 @@ namespace NS_NAMESPACE
 
 
 		//!	@brief		Gets constant pointer to the underlying data.
-		const void * data() const noexcept { return m_storage ? m_storage->data : nullptr; }
+		const void * data() const noexcept { return storage_ ? storage_->data : nullptr; }
 
 
 		//!	@brief		Gets mutable pointer to the underlying data.
-		void * data() noexcept { return m_storage ? m_storage->data : nullptr; }
+		void * data() noexcept { return storage_ ? storage_->data : nullptr; }
 
 
 		//!	@brief		Gets the associated memory allocator.
 		const std::shared_ptr<Allocator> & allocator() const noexcept
 		{
-			static const std::shared_ptr<Allocator> nullAllocator;
+			static const std::shared_ptr<Allocator> null_allocator;
 
-			return m_storage ? m_storage->allocator : nullAllocator;
+			return storage_ ? storage_->allocator : null_allocator;
 		}
 
 	private:
@@ -109,12 +109,12 @@ namespace NS_NAMESPACE
 
 			//!	@brief		Constructs a Storage instance with specified allocator and capacity.
 			explicit Storage(std::shared_ptr<Allocator> allocator, size_t capacity)
-				: allocator(std::move(allocator)), capacity(capacity), data(this->allocator->allocateMemory(capacity)) {}
+				: allocator(std::move(allocator)), capacity(capacity), data(this->allocator->allocate_memory(capacity)) {}
 
 			//!	@brief		Destructs the Storage instance and deallocates the associated memory.	
-			~Storage() noexcept { if (data != nullptr) { allocator->deallocateMemory(data); } }
+			~Storage() noexcept { if (data != nullptr) { allocator->deallocate_memory(data); } }
 		};
 		
-		std::shared_ptr<Storage>		m_storage;
+		std::shared_ptr<Storage>		storage_;
 	};
 }

@@ -56,82 +56,82 @@ namespace NS_NAMESPACE
 	{
 		/**
 		 *	@brief		Specifies the addressing mode for each dimension of the texture data.
-		 *	@details	If Sampler::normalizedCoords is set to zero, AddressMode::eWrap and AddressMode::eMirror won't be supported and will be switched to AddressMode::eClamp.
+		 *	@details	If Sampler::normalized_coords is set to zero, AddressMode::eWrap and AddressMode::eMirror won't be supported and will be switched to AddressMode::eClamp.
 		 */
-		AddressMode addressMode[3] = { AddressMode::Wrap, AddressMode::Wrap, AddressMode::Wrap };
+		AddressMode address_mode[3] = { AddressMode::Wrap, AddressMode::Wrap, AddressMode::Wrap };
 
 
 		/**
 		 *	@brief		Specifies the filtering mode to be used when fetching from the texture.
 		 */
-		FilterMode filterMode = FilterMode::Linear;
+		FilterMode filter_mode = FilterMode::Linear;
 
 
 		/**
 		 *	@brief		Specifies the filter mode when the calculated mipmap level lies between two defined mipmap levels.
 		 */
-		FilterMode mipmapFilterMode = FilterMode::Linear;
+		FilterMode mipmap_filter_mode = FilterMode::Linear;
 
 
 		/**
 		 *	@brief		Specifies the float values of color.
 		 *	@note		Application using integer border color values will need to <reinterpret_cast> these values to float.
-		 *				The values are set only when the addressing mode specified by Sampler::addressMode is AddressMode::eBorder.
+		 *				The values are set only when the addressing mode specified by Sampler::address_mode is AddressMode::eBorder.
 		 */
-		float borderColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+		float border_color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 
 		/**
 		 *	@brief		Specifies the maximum anistropy ratio to be used when doing anisotropic filtering.
 		 *	@note		This value will be clamped to the range [1,16].
 		 */
-		unsigned int maxAnisotropy = 1;
+		unsigned int max_anisotropy = 1;
 
 
 		/**
 		 *	@brief		Specifies the offset to be applied to the calculated mipmap level.
 		 */
-		float mipmapLevelBias = 0.0f;
+		float mipmap_level_bias = 0.0f;
 
 
 		/**
 		 *	@brief		Specifies the lower end of the mipmap level range to clamp access to.
 		 */
-		float minMipmapLevelClamp = 0.0f;
+		float min_mipmap_level_clamp = 0.0f;
 
 
 		/**
 		 *	@brief		Specifies the upper end of the mipmap level range to clamp access to.
 		 */
-		float maxMipmapLevelClamp = std::numeric_limits<float>::max();
+		float max_mipmap_level_clamp = std::numeric_limits<float>::max();
 
 
 		/**
-		 *	@brief		Specifies whether sRGB to linear conversion should be performed during texture fetch.
+		 *	@brief		Specifies whether s_rgb to linear conversion should be performed during texture fetch.
 		 *	@note		This applies only to 8-bit and 16-bit unsigned integer formats.
 		 */
-		bool sRGB = true;
+		bool s_rgb = true;
 
 
 		/**
 		 *	@brief		Specifies whether the texture coordinates will be normalized or not.
 		 */
-		bool normalizedCoords = true;
+		bool normalized_coords = true;
 
 
 		/**
 		 *	@brief		Specifies whether the trilinear filtering optimizations will be disabled.
 		 */
-		bool disableTrilinearOptimization = false;
+		bool disable_trilinear_optimization = false;
 
 
 		/**
 		 *	@brief		Specifies whether seamless cube map filtering is enabled.
 		 *	@note		This flag can only be specified if the underlying resource is a ImageCube, ImageCubeLod or ImageCubeLayeredLod.
-		 *	@note		When seamless cube map filtering is enabled, texture address modes specified by Sampler::addressMode are ignored.
-		 *	@note		Instead, if the Sampler::filterMode is set to FilterMode::eNearest the address mode AddressMode::eClamp will be applied for all dimensions.
-		 *	@note		If the Sampler::filterMode is set to FilterMode::eLinear seamless cube map filtering will be performed when sampling along the cube face borders.
+		 *	@note		When seamless cube map filtering is enabled, texture address modes specified by Sampler::address_mode are ignored.
+		 *	@note		Instead, if the Sampler::filter_mode is set to FilterMode::eNearest the address mode AddressMode::eClamp will be applied for all dimensions.
+		 *	@note		If the Sampler::filter_mode is set to FilterMode::eLinear seamless cube map filtering will be performed when sampling along the cube face borders.
 		 */
-		bool seamlessCubemap = true;
+		bool seamless_cubemap = true;
 	};
 }

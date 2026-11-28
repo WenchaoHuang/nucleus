@@ -39,32 +39,32 @@ class ExampleWindow
 
 public:
 
-	ExampleWindow() : m_hwnd(NULL), m_width(0), m_height(0) {}
+	ExampleWindow() : hwnd_(NULL), width_(0), height_(0) {}
 
 	explicit ExampleWindow(const char * title, int width, int height) : ExampleWindow()
 	{
-		m_hwnd = this->create_window(title, width, height);
+		hwnd_ = this->create_window(title, width, height);
 
-		m_image.assign(width * height, ColorRGB{ 255, 255, 255, 255 });
+		image_.assign(width * height, ColorRGB{ 255, 255, 255, 255 });
 
-		m_height = height;
+		height_ = height;
 
-		m_width = width;
+		width_ = width;
 	}
 
 public:
 
-	bool closed() const { return m_hwnd == NULL; }
+	bool closed() const { return hwnd_ == NULL; }
 
-	void show() { ShowWindow(m_hwnd, SW_SHOWNORMAL); }
+	void show() { ShowWindow(hwnd_, SW_SHOWNORMAL); }
 
 	void processEvents()
 	{
-		if (m_hwnd)
+		if (hwnd_)
 		{
 			MSG message = {};
 
-			while (::PeekMessage(&message, m_hwnd, 0, 0, PM_REMOVE))
+			while (::PeekMessage(&message, hwnd_, 0, 0, PM_REMOVE))
 			{
 				::TranslateMessage(&message);
 
@@ -75,14 +75,14 @@ public:
 
 	void updateImage(const std::vector<ColorRGB> & image)
 	{
-		m_image = image;
-		UpdateWindow(m_hwnd);
-		InvalidateRect(m_hwnd, NULL, FALSE);
+		image_ = image;
+		UpdateWindow(hwnd_);
+		InvalidateRect(hwnd_, NULL, FALSE);
 	}
 
 	void setTitle(const std::string & text)
 	{
-		::SetWindowText(m_hwnd, text.c_str());
+		::SetWindowText(hwnd_, text.c_str());
 	}
 
 private:
@@ -145,16 +145,16 @@ private:
 
 					BITMAPINFO bmi = {};
 					bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-					bmi.bmiHeader.biWidth = window->m_width;
-					bmi.bmiHeader.biHeight = -window->m_height;
+					bmi.bmiHeader.biWidth = window->width_;
+					bmi.bmiHeader.biHeight = -window->height_;
 					bmi.bmiHeader.biPlanes = 1;
 					bmi.bmiHeader.biBitCount = 32;
 					bmi.bmiHeader.biCompression = BI_RGB;
 
 					StretchDIBits(hdc,
-								  0, 0, window->m_width, window->m_height,
-								  0, 0, window->m_width, window->m_height,
-								  window->m_image.data(), &bmi, DIB_RGB_COLORS, SRCCOPY);
+								  0, 0, window->width_, window->height_,
+								  0, 0, window->width_, window->height_,
+								  window->image_.data(), &bmi, DIB_RGB_COLORS, SRCCOPY);
 
 					EndPaint(hwnd, &ps);
 				}
@@ -162,7 +162,7 @@ private:
 				break;
 			}
 			case WM_CLOSE:
-				window->m_hwnd = NULL;
+				window->hwnd_ = NULL;
 				break;
 			case WM_DESTROY:
 				PostQuitMessage(0);
@@ -174,8 +174,8 @@ private:
 
 private:
 
-	HWND						m_hwnd;
-	int							m_width;
-	int							m_height;
-	std::vector<ColorRGB>		m_image;
+	HWND						hwnd_;
+	int							width_;
+	int							height_;
+	std::vector<ColorRGB>		image_;
 };

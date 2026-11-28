@@ -31,7 +31,7 @@
 void test_buffer_slice()
 {
 	auto device = ns::Runtime::device(0);
-	auto allocator = device->defaultAllocator();
+	auto allocator = device->default_allocator();
 	ns::Buffer buffer(allocator, sizeof(int) * 1024);
 
 	ns::BufferSlice<int> bufferSlice0;

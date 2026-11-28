@@ -54,10 +54,10 @@ namespace NS_NAMESPACE
 		 *	@param[in]	stream - The CUDA stream to time operations on.
 		 *	@param[in]	callback - Function to receive timing results.
 		 */
-		explicit ScopedTimer(Stream & stream, const CallbackFunc & callback) : m_stream(stream),
-			m_callback(callback), m_startEvent(stream.device()), m_endEvent(stream.device())
+		explicit ScopedTimer(Stream & stream, const CallbackFunc & callback) : stream_(stream),
+			callback_(callback), start_event_(stream.device()), end_event_(stream.device())
 		{
-			m_stream.record(m_startEvent);
+			stream_.record(start_event_);
 		}
 
 
@@ -84,27 +84,27 @@ namespace NS_NAMESPACE
 		 */
 		~ScopedTimer()
 		{
-			m_stream.record(m_endEvent).sync();
+			stream_.record(end_event_).sync();
 
 			std::chrono::nanoseconds elapsed{};
 
 			try
 			{
-				elapsed = m_endEvent - m_startEvent;
+				elapsed = end_event_ - start_event_;
 			}
 			catch (ErrorCode)
 			{
 				return;
 			}
 
-			m_callback(elapsed);
+			callback_(elapsed);
 		}
 
 	private:
 
-		Stream &			m_stream;
-		TimedEvent			m_endEvent;
-		TimedEvent			m_startEvent;
-		CallbackFunc		m_callback;
+		Stream &			stream_;
+		TimedEvent			end_event_;
+		TimedEvent			start_event_;
+		CallbackFunc		callback_;
 	};
 }

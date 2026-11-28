@@ -34,7 +34,7 @@
 void test_image()
 {
 	auto device = ns::Runtime::device(0);
-	auto allocator = device->defaultAllocator();
+	auto allocator = device->default_allocator();
 
 	//=========================    1D    =========================
 
@@ -48,7 +48,7 @@ void test_image()
 	static_assert(image2.format() == ns::Format::Float);
 	assert(image2.allocator() == allocator);
 	assert(image2.data() != nullptr);
-	assert(image2.numLayers() == 5);
+	assert(image2.num_layers() == 5);
 	assert(image2.width() == 1024);
 
 	ns::Image1DLod<short> image3(allocator, 1024, 3);
@@ -58,7 +58,7 @@ void test_image()
 	assert(image3.level(2).width() == 256);
 	assert(image3.allocator() == allocator);
 	assert(image3.handle() != nullptr);
-	assert(image3.numLevels() == 3);
+	assert(image3.num_levels() == 3);
 	assert(image3.width() == 1024);
 
 	ns::Image1DLayeredLod<char> image4(allocator, 1024, 10, 5);
@@ -70,8 +70,8 @@ void test_image()
 	assert(image4.level(4).width() == 64);
 	assert(image4.allocator() == allocator);
 	assert(image4.handle() != nullptr);
-	assert(image4.numLayers() == 10);
-	assert(image4.numLevels() == 5);
+	assert(image4.num_layers() == 10);
+	assert(image4.num_levels() == 5);
 	assert(image4.width() == 1024);
 
 	//=========================    2D    =========================
@@ -87,7 +87,7 @@ void test_image()
 	static_assert(image6.format() == ns::Format::Float);
 	assert(image6.allocator() == allocator);
 	assert(image6.data() != nullptr);
-	assert(image6.numLayers() == 5);
+	assert(image6.num_layers() == 5);
 	assert(image6.width() == 1024);
 	assert(image6.height() == 256);
 
@@ -101,7 +101,7 @@ void test_image()
 	assert(image7.level(2).height() == 32);
 	assert(image7.allocator() == allocator);
 	assert(image7.handle() != nullptr);
-	assert(image7.numLevels() == 3);
+	assert(image7.num_levels() == 3);
 	assert(image7.width() == 1024);
 	assert(image7.height() == 128);
 
@@ -119,8 +119,8 @@ void test_image()
 	assert(image8.level(4).height() == 4);
 	assert(image8.allocator() == allocator);
 	assert(image8.handle() != nullptr);
-	assert(image8.numLayers() == 10);
-	assert(image8.numLevels() == 5);
+	assert(image8.num_layers() == 10);
+	assert(image8.num_levels() == 5);
 	assert(image8.width() == 1024);
 	assert(image8.height() == 64);
 
@@ -147,7 +147,7 @@ void test_image()
 	assert(image10.level(2).depth() == 64);
 	assert(image10.allocator() == allocator);
 	assert(image10.handle() != nullptr);
-	assert(image10.numLevels() == 3);
+	assert(image10.num_levels() == 3);
 	assert(image10.height() == 128);
 	assert(image10.width() == 1024);
 	assert(image10.depth() == 256);
@@ -164,7 +164,7 @@ void test_image()
 	assert(image12.format() == ns::Format::Float);
 	assert(image12.allocator() == allocator);
 	assert(image12.data() != nullptr);
-	assert(image12.numLayers() == 5);
+	assert(image12.num_layers() == 5);
 	assert(image12.width() == 1024);
 
 	ns::ImageCubeLod<short> image13(allocator, 1024, 3);
@@ -174,7 +174,7 @@ void test_image()
 	assert(image13.level(2).width() == 256);
 	assert(image13.allocator() == allocator);
 	assert(image13.handle() != nullptr);
-	assert(image13.numLevels() == 3);
+	assert(image13.num_levels() == 3);
 	assert(image13.width() == 1024);
 
 	ns::ImageCubeLayeredLod<char> image14(allocator, 1024, 64, 2);
@@ -183,7 +183,7 @@ void test_image()
 	assert(image14.level(1).width() == 512);
 	assert(image14.allocator() == allocator);
 	assert(image14.handle() != nullptr);
-	assert(image14.numLayers() == 64);
-	assert(image14.numLevels() == 2);
+	assert(image14.num_layers() == 64);
+	assert(image14.num_levels() == 2);
 	assert(image14.width() == 1024);
 }

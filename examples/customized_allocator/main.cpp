@@ -38,52 +38,52 @@ public:
 
 private:
 
-	virtual void * doAllocateMemory(size_t bytes) override
+	virtual void * do_allocate_memory(size_t bytes) override
 	{
-		m_totalMem += bytes;
+		total_mem_ += bytes;
 
-		printf(" Allocate global memory: %lld, total allocated: %lld.\n", bytes, m_totalMem);
+		printf(" Allocate global memory: %lld, total allocated: %lld.\n", bytes, total_mem_);
 
-		auto ptr = ns::DeviceAllocator::doAllocateMemory(bytes);
+		auto ptr = ns::DeviceAllocator::do_allocate_memory(bytes);
 
-		m_ptrSizeTable[ptr] = bytes;
+		ptr_size_table_[ptr] = bytes;
 
 		return ptr;
 	}
 
-	virtual void doDeallocateMemory(void * ptr) override
+	virtual void do_deallocate_memory(void * ptr) override
 	{
-		if (m_ptrSizeTable.find(ptr) != m_ptrSizeTable.end())
+		if (ptr_size_table_.find(ptr) != ptr_size_table_.end())
 		{
-			m_totalMem -= m_ptrSizeTable[ptr];
+			total_mem_ -= ptr_size_table_[ptr];
 
-			ns::DeviceAllocator::doDeallocateMemory(ptr);
+			ns::DeviceAllocator::do_deallocate_memory(ptr);
 
-			printf(" Deallocate global memory, total allocated: %lld.\n", m_totalMem);
+			printf(" Deallocate global memory, total allocated: %lld.\n", total_mem_);
 
-			m_ptrSizeTable.erase(ptr);
+			ptr_size_table_.erase(ptr);
 		}
 	}
 
 private:
 
-	size_t						m_totalMem = 0;
-	std::map<void*, size_t>		m_ptrSizeTable;
+	size_t						total_mem_ = 0;
+	std::map<void*, size_t>		ptr_size_table_;
 };
 
 
 int main()
 {
 	auto device = ns::Runtime::device(0);
-	auto devAlloc = std::make_shared<MyAllocator>(device);
+	auto dev_alloc = std::make_shared<MyAllocator>(device);
 
 	printf("\n");
 
-	ns::Array<int>		myData(devAlloc, 100);
-	myData.resize(200);
-	myData.resize(300);
-	myData.resize(400);
-	myData.clear();
+	ns::Array<int>		my_data(dev_alloc, 100);
+	my_data.resize(200);
+	my_data.resize(300);
+	my_data.resize(400);
+	my_data.clear();
 
 	printf("\n");
 	system("pause");

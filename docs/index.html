@@ -69,7 +69,7 @@
 						<pre><code><span class="c-comment">// Allocate. Submit. Synchronize.</span>
 <span class="c-keyword">constexpr</span> <span class="c-type">size_t</span> count = <span class="c-number">1024</span>;
 <span class="c-keyword">auto</span> * device = <span class="c-type">ns::Runtime</span>::device(<span class="c-number">0</span>);
-<span class="c-keyword">auto</span> &amp; stream = device-&gt;defaultStream();
+<span class="c-keyword">auto</span> &amp; stream = device-&gt;default_stream();
 
 <span class="c-type">ns::Array</span>&lt;<span class="c-type">float</span>&gt; values(count);
 <span class="c-type">std::vector</span>&lt;<span class="c-type">float</span>&gt; result(count);
@@ -157,15 +157,15 @@ cmake --install build --config Release --prefix /path/to/nucleus</code></pre></d
 		<span class="c-keyword">return</span> <span class="c-number">1</span>;
 
 	<span class="c-keyword">auto</span> * device = ns::Runtime::device(<span class="c-number">0</span>);
-	<span class="c-keyword">auto</span> &amp; stream = device-&gt;defaultStream();
+	<span class="c-keyword">auto</span> &amp; stream = device-&gt;default_stream();
 	<span class="c-keyword">constexpr</span> <span class="c-type">size_t</span> count = <span class="c-number">1024</span>;
-	<span class="c-keyword">constexpr</span> <span class="c-type">unsigned int</span> blockSize = <span class="c-number">256</span>;
+	<span class="c-keyword">constexpr</span> <span class="c-type">unsigned int</span> block_size = <span class="c-number">256</span>;
 
-	<span class="c-type">ns::Array</span>&lt;<span class="c-type">float</span>&gt; values(device-&gt;defaultAllocator(), count);
+	<span class="c-type">ns::Array</span>&lt;<span class="c-type">float</span>&gt; values(device-&gt;default_allocator(), count);
 	<span class="c-type">std::vector</span>&lt;<span class="c-type">float</span>&gt; result(count);
 
 	stream.fill(values.data(), <span class="c-number">1.0f</span>, count)
-		.launch(scale, ns::ceil_div(count, blockSize), blockSize)(values)
+		.launch(scale, ns::ceil_div(count, block_size), block_size)(values)
 		.memcpy(result.data(), values.data(), count)
 		.sync();
 

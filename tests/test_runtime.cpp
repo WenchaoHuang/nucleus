@@ -28,12 +28,12 @@
 
 void test_runtime()
 {
-	auto runtime = ns::Runtime::getInstance();
-	auto allocator = ns::Runtime::defaultAllocator();
-	auto driverVersion = ns::Runtime::driverVersion();
-	auto runtimeVersion = ns::Runtime::version();
+	auto runtime = ns::Runtime::instance();
+	auto allocator = ns::Runtime::default_allocator();
+	auto driver_version = ns::Runtime::driver_version();
+	auto runtime_version = ns::Runtime::version();
 	auto devices = ns::Runtime::devices();
 	auto device = ns::Runtime::device(0);
 
-	ns::Runtime::setDefaultAllocator(allocator);
+	ns::Runtime::set_default_allocator(allocator);
 }

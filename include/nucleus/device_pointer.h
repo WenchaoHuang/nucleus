@@ -36,67 +36,67 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Ptr() noexcept {}
 
 		//!	@brief		Constructor with zero initialization.
-		NS_CUDA_CALLABLE Ptr(std::nullptr_t) : m_data(nullptr), m_width(0) {}
+		NS_CUDA_CALLABLE Ptr(std::nullptr_t) : data_(nullptr), width_(0) {}
 
 		//!	@brief		Construct with pointer, width.
-		NS_CUDA_CALLABLE Ptr(Type * ptr, size_t width = SIZE_MAX) : m_data(ptr), m_width(width) {}
+		NS_CUDA_CALLABLE Ptr(Type * ptr, size_t width = SIZE_MAX) : data_(ptr), width_(width) {}
 
 		//!	@brief		Copy constructor.
-		NS_CUDA_CALLABLE Ptr(const Ptr<std::remove_cv_t<Type>> &rhs) : m_data(rhs.data()), m_width(rhs.width()) {}
+		NS_CUDA_CALLABLE Ptr(const Ptr<std::remove_cv_t<Type>> &rhs) : data_(rhs.data()), width_(rhs.width()) {}
 
 		//!	@brief		Copy constructor, construct with a given 2D device pointer.
-		NS_CUDA_CALLABLE explicit Ptr(const Ptr2<std::remove_cv_t<Type>> &rhs) : m_data(rhs.data()), m_width(rhs.size()) {}
+		NS_CUDA_CALLABLE explicit Ptr(const Ptr2<std::remove_cv_t<Type>> &rhs) : data_(rhs.data()), width_(rhs.size()) {}
 
 		//!	@brief		Copy constructor, construct with a given 3D device pointer.
-		NS_CUDA_CALLABLE explicit Ptr(const Ptr3<std::remove_cv_t<Type>> &rhs) : m_data(rhs.data()), m_width(rhs.size()) {}
+		NS_CUDA_CALLABLE explicit Ptr(const Ptr3<std::remove_cv_t<Type>> &rhs) : data_(rhs.data()), width_(rhs.size()) {}
 
 		//!	@brief		Returns size of the array in bytes.
-		NS_CUDA_CALLABLE size_t bytes() const { return sizeof(Type) * m_width; }
+		NS_CUDA_CALLABLE size_t bytes() const { return sizeof(Type) * width_; }
 
 		//!	@brief		Return pitch the of array in bytes.
-		NS_CUDA_CALLABLE size_t pitch() const { return sizeof(Type) * m_width; }
+		NS_CUDA_CALLABLE size_t pitch() const { return sizeof(Type) * width_; }
 
 		// Tests if the array is empty.
-		NS_CUDA_CALLABLE bool empty() const { return m_data == nullptr; }
+		NS_CUDA_CALLABLE bool empty() const { return data_ == nullptr; }
 
-		//!	@brief		Treat as a raw pointer. e.g. if (pX == nullptr). 
-		NS_CUDA_CALLABLE operator Type*() const { return m_data; }
+		//!	@brief		Treat as a raw pointer. e.g. if (x == nullptr). 
+		NS_CUDA_CALLABLE operator Type*() const { return data_; }
 
 		//!	@brief		Return width the of array.
-		NS_CUDA_CALLABLE size_t width() const { return m_width; }
+		NS_CUDA_CALLABLE size_t width() const { return width_; }
 
 		//!	@brief		Return size of the array.
-		NS_CUDA_CALLABLE size_t size() const { return m_width; }
+		NS_CUDA_CALLABLE size_t size() const { return width_; }
 
 		//!	@brief		Returns the raw pointer explicitly.
-		NS_CUDA_CALLABLE Type * data() const { return m_data; }
+		NS_CUDA_CALLABLE Type * data() const { return data_; }
 
 		//!	@brief		Get address to the first element at [i]-th row.
 		NS_CUDA_CALLABLE Type & operator[](size_t i) const
 		{
-			NS_ASSERT((m_data != nullptr) && (i < m_width));
+			NS_ASSERT((data_ != nullptr) && (i < width_));
 
 		#ifdef NS_CUDA_MEMORY_CHECK
 
-			if (m_data == nullptr)
+			if (data_ == nullptr)
 			{
-				printf("Invalid memory address (nullptr)!\ndevPtr<%s> with size of %lld, width = %lld.\n", TypeName<Type>(), sizeof(Type), m_width);
+				printf("Invalid memory address (nullptr)!\ndevPtr<%s> with size of %lld, width = %lld.\n", TypeName<Type>(), sizeof(Type), width_);
 
 			#ifdef __CUDA_ARCH__
 				__trap();
 			#endif
 			}
-			else if (i >= m_width)
+			else if (i >= width_)
 			{
-				printf("Illegal memory access!\ndevPtr<%s> with size of %lld, width = %lld, index = %d.\n", TypeName<Type>(), sizeof(Type), m_width, i);
+				printf("Illegal memory access!\ndevPtr<%s> with size of %lld, width = %lld, index = %d.\n", TypeName<Type>(), sizeof(Type), width_, i);
 
 			#ifdef __CUDA_ARCH__
 				__trap();
 			#endif
 			}
-			else if (std::is_const_v<Type> && Math::IsNaN(m_data[i]))
+			else if (std::is_const_v<Type> && Math::IsNaN(data_[i]))
 			{
-				printf("Reading a NaN!\ndevPtr<%s> with size of %lld, width = %lld, index = %d.\n", TypeName<Type>(), sizeof(Type), m_width, i);
+				printf("Reading a NaN!\ndevPtr<%s> with size of %lld, width = %lld, index = %d.\n", TypeName<Type>(), sizeof(Type), width_, i);
 
 			#ifdef __CUDA_ARCH__
 				__trap();
@@ -104,13 +104,13 @@ namespace NS_NAMESPACE::dev
 			}
 		#endif
 
-			return m_data[i];
+			return data_[i];
 		}
 
 	protected:
 
-		Type *		m_data;
-		size_t		m_width;
+		Type *		data_;
+		size_t		width_;
 	};
 
 	/*****************************************************************************
@@ -124,62 +124,62 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Ptr2() noexcept {}
 
 		//!	@brief		Constructor with zero initialization.
-		NS_CUDA_CALLABLE Ptr2(std::nullptr_t) : m_data(nullptr), m_width(0), m_height(0) {}
+		NS_CUDA_CALLABLE Ptr2(std::nullptr_t) : data_(nullptr), width_(0), height_(0) {}
 
 		//!	@brief		Construct with pointer, width and height.
-		NS_CUDA_CALLABLE Ptr2(Type * ptr, uint32_t width, uint32_t height) : m_data(ptr), m_width(width), m_height(height) {}
+		NS_CUDA_CALLABLE Ptr2(Type * ptr, uint32_t width, uint32_t height) : data_(ptr), width_(width), height_(height) {}
 
 		//!	@brief		Copy constructor.
-		NS_CUDA_CALLABLE Ptr2(const Ptr2<std::remove_cv_t<Type>> &rhs) : m_data(rhs.data()), m_width(rhs.width()), m_height(rhs.height()) {}
+		NS_CUDA_CALLABLE Ptr2(const Ptr2<std::remove_cv_t<Type>> &rhs) : data_(rhs.data()), width_(rhs.width()), height_(rhs.height()) {}
 
 		//!	@brief		Copy constructor, construct with a given 3D device pointer.
-		NS_CUDA_CALLABLE explicit Ptr2(const Ptr3<std::remove_cv_t<Type>> &rhs) : m_data(rhs.data()), m_width(rhs.width()), m_height(rhs.height() * rhs.depth()) {}
+		NS_CUDA_CALLABLE explicit Ptr2(const Ptr3<std::remove_cv_t<Type>> &rhs) : data_(rhs.data()), width_(rhs.width()), height_(rhs.height() * rhs.depth()) {}
 
 		//!	@brief		Copy constructor, construct with a given 1D device pointer.
-		NS_CUDA_CALLABLE explicit Ptr2(const Ptr<std::remove_cv_t<Type>> &rhs) : m_data(rhs.data()), m_width(rhs.width()), m_height(1) {}
+		NS_CUDA_CALLABLE explicit Ptr2(const Ptr<std::remove_cv_t<Type>> &rhs) : data_(rhs.data()), width_(rhs.width()), height_(1) {}
 
 		//!	@brief		Returns size of the array in bytes.
-		NS_CUDA_CALLABLE size_t bytes() const { return sizeof(Type) * m_width * m_height; }
+		NS_CUDA_CALLABLE size_t bytes() const { return sizeof(Type) * width_ * height_; }
 
 		//!	@brief		Returns pitch of the array in bytes.
-		NS_CUDA_CALLABLE uint32_t pitch() const { return sizeof(Type) * m_width; }
+		NS_CUDA_CALLABLE uint32_t pitch() const { return sizeof(Type) * width_; }
 
 		//!	@brief		Returns element count.
-		NS_CUDA_CALLABLE size_t size() const { return m_height * m_width; }
+		NS_CUDA_CALLABLE size_t size() const { return height_ * width_; }
 
 		//!	@brief		Tests if the array is empty.
-		NS_CUDA_CALLABLE bool empty() const { return m_data == nullptr; }
+		NS_CUDA_CALLABLE bool empty() const { return data_ == nullptr; }
 
 		//!	@brief		Returns height of the array.
-		NS_CUDA_CALLABLE uint32_t height() const { return m_height; }
+		NS_CUDA_CALLABLE uint32_t height() const { return height_; }
 
 		//!	@brief		Returns width the of array.
-		NS_CUDA_CALLABLE uint32_t width() const { return m_width; }
+		NS_CUDA_CALLABLE uint32_t width() const { return width_; }
 
-		//!	@brief		Treat as a raw pointer. e.g. if (pX == nullptr). 
-		NS_CUDA_CALLABLE operator Type*() const { return m_data; }
+		//!	@brief		Treat as a raw pointer. e.g. if (x == nullptr). 
+		NS_CUDA_CALLABLE operator Type*() const { return data_; }
 
 		//!	@brief		Returns the raw pointer explicitly.
-		NS_CUDA_CALLABLE Type * data() const { return m_data; }
+		NS_CUDA_CALLABLE Type * data() const { return data_; }
 
 		//!	@brief		Get address to the first element at [i]-th row.
 		NS_CUDA_CALLABLE Ptr<Type> operator[](size_t i) const
 		{
-			NS_ASSERT((m_data != nullptr) && (i < m_height));
+			NS_ASSERT((data_ != nullptr) && (i < height_));
 
 		#ifdef NS_CUDA_MEMORY_CHECK
 
-			if (m_data == nullptr)
+			if (data_ == nullptr)
 			{
-				printf("Invalid memory address (nullptr)!\ndevPtr2<%s> with size of %lld, width = %d, height = %d.\n", TypeName<Type>(), sizeof(Type), m_width, m_height);
+				printf("Invalid memory address (nullptr)!\ndevPtr2<%s> with size of %lld, width = %d, height = %d.\n", TypeName<Type>(), sizeof(Type), width_, height_);
 
 			#ifdef __CUDA_ARCH__
 				__trap();
 			#endif
 			}
-			else if (i >= m_height)
+			else if (i >= height_)
 			{
-				printf("Illegal memory access!\ndevPtr2<%s> with size of %lld, width = %d, height = %d, index = %d.\n", TypeName<Type>(), sizeof(Type), m_width, m_height, i);
+				printf("Illegal memory access!\ndevPtr2<%s> with size of %lld, width = %d, height = %d, index = %d.\n", TypeName<Type>(), sizeof(Type), width_, height_, i);
 
 			#ifdef __CUDA_ARCH__
 				__trap();
@@ -187,14 +187,14 @@ namespace NS_NAMESPACE::dev
 			}
 		#endif
 
-			return Ptr<Type>(m_data + i * m_width, m_width);
+			return Ptr<Type>(data_ + i * width_, width_);
 		}
 
 	protected:
 
-		Type *			m_data;
-		uint32_t		m_width;
-		uint32_t		m_height;
+		Type *			data_;
+		uint32_t		width_;
+		uint32_t		height_;
 	};
 
 	/*****************************************************************************
@@ -208,65 +208,65 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Ptr3() noexcept {}
 
 		//!	@brief		Constructor with zero initialization.
-		NS_CUDA_CALLABLE Ptr3(std::nullptr_t) : m_data(nullptr), m_width(0), m_height(0), m_depth(0) {}
+		NS_CUDA_CALLABLE Ptr3(std::nullptr_t) : data_(nullptr), width_(0), height_(0), depth_(0) {}
 
 		//!	@brief		Construct with pointer, width and height.
-		NS_CUDA_CALLABLE Ptr3(Type * ptr, uint32_t width, uint32_t height, uint32_t depth) : m_data(ptr), m_width(width), m_height(height), m_depth(depth) {}
+		NS_CUDA_CALLABLE Ptr3(Type * ptr, uint32_t width, uint32_t height, uint32_t depth) : data_(ptr), width_(width), height_(height), depth_(depth) {}
 
 		//!	@brief		Copy constructor.
-		NS_CUDA_CALLABLE Ptr3(const Ptr3<std::remove_cv_t<Type>> & rhs) : m_data(rhs.data()), m_width(rhs.width()), m_height(rhs.height()), m_depth(rhs.depth()) {}
+		NS_CUDA_CALLABLE Ptr3(const Ptr3<std::remove_cv_t<Type>> & rhs) : data_(rhs.data()), width_(rhs.width()), height_(rhs.height()), depth_(rhs.depth()) {}
 
 		//!	@brief		Copy constructor, construct with a given 2D device pointer.
-		NS_CUDA_CALLABLE explicit Ptr3(const Ptr2<std::remove_cv_t<Type>> & rhs) : m_data(rhs.data()), m_width(rhs.width()), m_height(rhs.height()), m_depth(1) {}
+		NS_CUDA_CALLABLE explicit Ptr3(const Ptr2<std::remove_cv_t<Type>> & rhs) : data_(rhs.data()), width_(rhs.width()), height_(rhs.height()), depth_(1) {}
 
 		//!	@brief		Copy constructor, construct with a given 1D device pointer.
-		NS_CUDA_CALLABLE explicit Ptr3(const Ptr<std::remove_cv_t<Type>> & rhs) : m_data(rhs.data()), m_width(rhs.width()), m_height(1), m_depth(1) {}
+		NS_CUDA_CALLABLE explicit Ptr3(const Ptr<std::remove_cv_t<Type>> & rhs) : data_(rhs.data()), width_(rhs.width()), height_(1), depth_(1) {}
 
 		//!	@brief		Returns size of the array in bytes.
-		NS_CUDA_CALLABLE size_t bytes() const { return sizeof(Type) * m_width * m_height * m_depth; }
+		NS_CUDA_CALLABLE size_t bytes() const { return sizeof(Type) * width_ * height_ * depth_; }
 
 		//!	@brief		Returns element count of the array.
-		NS_CUDA_CALLABLE size_t size() const { return m_width * m_height * m_depth; }
+		NS_CUDA_CALLABLE size_t size() const { return width_ * height_ * depth_; }
 
 		//!	@brief		Returns pitch of the array in bytes.
-		NS_CUDA_CALLABLE uint32_t pitch() const { return sizeof(Type) * m_width; }
+		NS_CUDA_CALLABLE uint32_t pitch() const { return sizeof(Type) * width_; }
 
 		// Tests if the array is empty.
-		NS_CUDA_CALLABLE bool empty() const { return m_data == nullptr; }
+		NS_CUDA_CALLABLE bool empty() const { return data_ == nullptr; }
 
 		//!	@brief		Returns height of the array.
-		NS_CUDA_CALLABLE uint32_t height() const { return m_height; }
+		NS_CUDA_CALLABLE uint32_t height() const { return height_; }
 
 		//!	@brief		Returns width the of array.
-		NS_CUDA_CALLABLE uint32_t width() const { return m_width; }
+		NS_CUDA_CALLABLE uint32_t width() const { return width_; }
 
 		//!	@brief		Returns depth the of array.
-		NS_CUDA_CALLABLE uint32_t depth() const { return m_depth; }
+		NS_CUDA_CALLABLE uint32_t depth() const { return depth_; }
 
-		//!	@brief		Treat as a raw pointer. e.g. if (pX == nullptr). 
-		NS_CUDA_CALLABLE operator Type*() const { return m_data; }
+		//!	@brief		Treat as a raw pointer. e.g. if (x == nullptr). 
+		NS_CUDA_CALLABLE operator Type*() const { return data_; }
 
 		//!	@brief		Returns the raw pointer explicitly.
-		NS_CUDA_CALLABLE Type * data() const { return m_data; }
+		NS_CUDA_CALLABLE Type * data() const { return data_; }
 
 		//!	@brief		Get address to the first element at [i]-th row.
 		NS_CUDA_CALLABLE Ptr2<Type> operator[](size_t i) const
 		{
-			NS_ASSERT((m_data != nullptr) && (i < m_depth));
+			NS_ASSERT((data_ != nullptr) && (i < depth_));
 
 		#ifdef NS_CUDA_MEMORY_CHECK
 
-			if (m_data == nullptr)
+			if (data_ == nullptr)
 			{
-				printf("Invalid memory address (nullptr)!\ndevPtr3<%s> with size of %lld, width = %d, height = %d, depth = %d.\n", TypeName<Type>(), sizeof(Type), m_width, m_height, m_depth);
+				printf("Invalid memory address (nullptr)!\ndevPtr3<%s> with size of %lld, width = %d, height = %d, depth = %d.\n", TypeName<Type>(), sizeof(Type), width_, height_, depth_);
 
 			#ifdef __CUDA_ARCH__
 				__trap();
 			#endif
 			}
-			else if (i >= m_depth)
+			else if (i >= depth_)
 			{
-				printf("Illegal memory access!\ndevPtr3<%s> with size of %lld, width = %d, height = %d, depth = %d, index = %d.\n", TypeName<Type>(), sizeof(Type), m_width, m_height, m_depth, i);
+				printf("Illegal memory access!\ndevPtr3<%s> with size of %lld, width = %d, height = %d, depth = %d, index = %d.\n", TypeName<Type>(), sizeof(Type), width_, height_, depth_, i);
 
 			#ifdef __CUDA_ARCH__
 				__trap();
@@ -274,15 +274,15 @@ namespace NS_NAMESPACE::dev
 			}
 		#endif
 
-			return Ptr2<Type>(m_data + i * (m_width * m_height), m_width, m_height);
+			return Ptr2<Type>(data_ + i * (width_ * height_), width_, height_);
 		}
 
 	protected:
 
-		Type *			m_data;
-		uint32_t		m_width;
-		uint32_t		m_height;
-		uint32_t		m_depth;
+		Type *			data_;
+		uint32_t		width_;
+		uint32_t		height_;
+		uint32_t		depth_;
 	};
 }
 

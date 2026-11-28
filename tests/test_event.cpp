@@ -34,7 +34,7 @@
 void test_event()
 {
 	auto device = ns::Runtime::device(0);
-	auto & stream = device->defaultStream();
+	auto & stream = device->default_stream();
 
 	ns::Event		event0(device);
 	ns::TimedEvent	event1(device);
@@ -54,7 +54,7 @@ void test_event()
 		assert(copy == borrowed && copy != event1);
 
 		producer.record(borrowed);
-		stream.waitFor(copy).sync();
+		stream.wait_for(copy).sync();
 		assert(copy.is_done());
 	}
 
@@ -63,7 +63,7 @@ void test_event()
 	event0.sync();
 	stream.record(event1);
 	stream.record(event2);
-	stream.waitFor(event2).sync();
+	stream.wait_for(event2).sync();
 	assert(event0.is_done());
 
 

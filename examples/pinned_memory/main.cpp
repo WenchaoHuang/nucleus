@@ -48,15 +48,15 @@ template<typename Type> std::string to_string_aligned(Type value, int align)
 int main()
 {
 	auto device = ns::Runtime::device(0);
-	auto hostAlloc = std::make_shared<ns::HostAllocator>();
-	auto devAlloc = device->defaultAllocator();
+	auto host_alloc = std::make_shared<ns::HostAllocator>();
+	auto dev_alloc = device->default_allocator();
 
 	size_t samples = 10;
 	size_t count = 1024 * 1024 * 128;
 
 	ns::Stream			stream(device);
-	ns::Array<int>		global(devAlloc, count);
-	ns::Array<int>		pinned(hostAlloc, count);
+	ns::Array<int>		global(dev_alloc, count);
+	ns::Array<int>		pinned(host_alloc, count);
 	std::vector<int>	pageable(count);
 
 	printf("\n | bytes | pageable <--> global | pinned <--> global | pinned <--> pageable |\n");

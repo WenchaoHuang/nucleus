@@ -58,21 +58,21 @@ struct TemporaryOperation
 	{
 		NS_ASSERT(outputs.size() >= count);
 
-		size_t requiredCapacity = 0;
-		requiredCapacity = ns::aligned_end_offset<float>(requiredCapacity, count);
-		requiredCapacity = ns::aligned_end_offset<uint32_t>(requiredCapacity, count);
+		size_t required_capacity = 0;
+		required_capacity = ns::aligned_end_offset<float>(required_capacity, count);
+		required_capacity = ns::aligned_end_offset<uint32_t>(required_capacity, count);
 
-		arena.reserve(requiredCapacity);
+		arena.reserve(required_capacity);
 		arena.reuse();
 
 		auto values = arena.allocate<float>(count);
 		auto indices = arena.allocate<uint32_t>(count);
 
-		constexpr uint32_t blockSize = 128;
-		const auto gridSize = ns::ceil_div(count, blockSize);
+		constexpr uint32_t block_size = 128;
+		const auto grid_size = ns::ceil_div(count, block_size);
 
-		stream.launch(initialize, gridSize, blockSize)(values, indices, count);
-		stream.launch(reorder, gridSize, blockSize)(outputs, values, indices, count);
+		stream.launch(initialize, grid_size, block_size)(values, indices, count);
+		stream.launch(reorder, grid_size, block_size)(outputs, values, indices, count);
 	}
 };
 
@@ -80,35 +80,35 @@ struct TemporaryOperation
 int main()
 {
 	auto device = ns::Runtime::device(0);
-	auto & stream = device->defaultStream();
-	auto allocator = device->defaultAllocator();
+	auto & stream = device->default_stream();
+	auto allocator = device->default_allocator();
 
-	constexpr size_t firstCount = 1024;
-	constexpr size_t secondCount = 512;
+	constexpr size_t first_count = 1024;
+	constexpr size_t second_count = 512;
 
-	ns::Array<float> outputs(allocator, firstCount);
+	ns::Array<float> outputs(allocator, first_count);
 	ns::ScratchArena arena(allocator);
 	TemporaryOperation operation;
 
-	operation.execute(stream, arena, outputs, firstCount);
+	operation.execute(stream, arena, outputs, first_count);
 	stream.sync();
 
-	const size_t cachedCapacity = arena.capacity();
+	const size_t cached_capacity = arena.capacity();
 
-	operation.execute(stream, arena, outputs, secondCount);
+	operation.execute(stream, arena, outputs, second_count);
 
-	std::vector<float> results(secondCount);
-	stream.memcpy(results.data(), outputs.data(), secondCount).sync();
+	std::vector<float> results(second_count);
+	stream.memcpy(results.data(), outputs.data(), second_count).sync();
 
 	for (size_t i = 0; i < results.size(); i++)
 	{
-		if (results[i] != static_cast<float>(secondCount - i - 1))
+		if (results[i] != static_cast<float>(second_count - i - 1))
 			return EXIT_FAILURE;
 	}
 
-	printf("First call scratch arena capacity:  %zu bytes\n", cachedCapacity);
+	printf("First call scratch arena capacity:  %zu bytes\n", cached_capacity);
 	printf("Second call scratch arena capacity: %zu bytes\n", arena.capacity());
-	printf("Cached allocation reused:           %s\n", arena.capacity() == cachedCapacity ? "yes" : "no");
+	printf("Cached allocation reused:           %s\n", arena.capacity() == cached_capacity ? "yes" : "no");
 
 #ifdef _WIN32
 	system("pause");

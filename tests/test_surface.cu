@@ -99,14 +99,14 @@ __global__ void test_device_surface(dev::Surf1D<int> surface0, dev::Surf1D<const
 	//==	1D Layered	  ==
 	surface8.empty();
 	surface8.width();
-	surface8.numLayers();
+	surface8.num_layers();
 	surface8.read(10, 2);
 	surface8.write(10.0f, 50, 0);
 	surface8.handle();
 
 	surface9.empty();
 	surface9.width();
-	surface9.numLayers();
+	surface9.num_layers();
 	surface9.read(10, 2);
 //	surface9.write(10.0f, 50, 0);
 	surface9.handle();
@@ -115,7 +115,7 @@ __global__ void test_device_surface(dev::Surf1D<int> surface0, dev::Surf1D<const
 	surface10.empty();
 	surface10.width();
 	surface10.height();
-	surface10.numLayers();
+	surface10.num_layers();
 	surface10.read(10, 2, 0);
 	surface10.write(10.0f, 50, 2, 0);
 	surface10.handle();
@@ -123,7 +123,7 @@ __global__ void test_device_surface(dev::Surf1D<int> surface0, dev::Surf1D<const
 	surface11.empty();
 	surface11.width();
 	surface11.height();
-	surface11.numLayers();
+	surface11.num_layers();
 	surface11.read(10, 2, 0);
 //	surface11.write(10.0f, 50, 2, 0);
 	surface11.handle();
@@ -146,10 +146,10 @@ __global__ void test_device_surface(dev::Surf1D<int> surface0, dev::Surf1D<const
 void test_surface()
 {
 	auto device = ns::Runtime::device(0);
-	auto allocator = device->defaultAllocator();
+	auto allocator = device->default_allocator();
 
-	auto imageLod = ns::Image1DLod<int>(allocator, 128, 3);
-	ns::Surface1D<int> surface0(imageLod.level(1));
+	auto image_lod = ns::Image1DLod<int>(allocator, 128, 3);
+	ns::Surface1D<int> surface0(image_lod.level(1));
 	surface0.empty();
 	surface0.image();
 	surface0.accessor();

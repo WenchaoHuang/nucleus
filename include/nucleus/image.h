@@ -51,7 +51,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Default constructor.
 		 */
-		ImageBase() : m_format(Format::Undefined), m_extent({ 0, 0, 0 }) {}
+		ImageBase() : format_(Format::Undefined), extent_({ 0, 0, 0 }) {}
 
 
 		/**
@@ -74,22 +74,22 @@ namespace NS_NAMESPACE
 		NS_API const std::shared_ptr<DeviceAllocator> & allocator() const;
 
 		//!	@brief		Tests if the image is valid (non-null).
-		operator bool() const { return m_resource != nullptr; }
+		operator bool() const { return resource_ != nullptr; }
 
 		//!	@brief		Tests if the image is empty (null).
-		bool empty() const { return m_resource == nullptr; }
+		bool empty() const { return resource_ == nullptr; }
 
 		//!	@brief		Retruns the width of the image.
-		uint32_t width() const { return m_extent.width; }
+		uint32_t width() const { return extent_.width; }
 
 		//!	@brief		Returns the texel format of the image.
-		Format format() const { return m_format; }
+		Format format() const { return format_; }
 
 	protected:
 
-		std::shared_ptr<Resource>		m_resource;
-		Format							m_format;
-		Extent							m_extent;
+		std::shared_ptr<Resource>		resource_;
+		Format							format_;
+		Extent							extent_;
 	};
 
 	/*****************************************************************************
@@ -113,7 +113,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Default constructor.
 		 */
-		Image() : m_hImage(nullptr) {}
+		Image() : image_(nullptr) {}
 
 
 		/**
@@ -137,14 +137,14 @@ namespace NS_NAMESPACE
 	public:
 
 		//!	@brief		Returns accessor to the data.
-		ImageAccessor<void> data() const { return ImageAccessor<void>{ m_hImage }; }
+		ImageAccessor<void> data() const { return ImageAccessor<void>{ image_ }; }
 
 		//!	@brief		Returns CUDA type of this object.
-		cudaArray_t handle() const { return m_hImage; }
+		cudaArray_t handle() const { return image_; }
 
 	protected:
         
-        cudaArray_t		m_hImage;
+        cudaArray_t		image_;
 	};
 
 	/*****************************************************************************
@@ -167,7 +167,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Default constructor.
 		 */
-		ImageLod() : m_hImageLod(nullptr), m_numLevels(0) {}
+		ImageLod() : image_lod_(nullptr), num_levels_(0) {}
 
 
 		/**
@@ -175,30 +175,30 @@ namespace NS_NAMESPACE
 		 *	@param[in]	allocator - Pointer to the associated allocator.
 		 *	@param[in]	format - Texel format of the image.
 		 *	@param[in]	extent - Dimensions of the image.
-		 *	@param[in]	numLevels - Number of mipmap levels to allocated.
+		 *	@param[in]	num_levels - Number of mipmap levels to allocated.
 		 *	@param[in]	flags - Flags for image creation (interanl use).
 		 *	@throw		cudaError_t - In case of failure.
 		 */
-		NS_API explicit ImageLod(std::shared_ptr<DeviceAllocator> allocator, Format format, Extent extent, unsigned int numLevels, int flags);
+		NS_API explicit ImageLod(std::shared_ptr<DeviceAllocator> allocator, Format format, Extent extent, unsigned int num_levels, int flags);
 
 	public:
 
 		//!	@brief		Returns reference to the mipmap levels.
-		const std::vector<Image> & mipmaps() const { return m_mipmaps; }
+		const std::vector<Image> & mipmaps() const { return mipmaps_; }
 
 		//!	@brief		Return reference to the specified level.
-		const Image & level(size_t i) const { return m_mipmaps[i]; }
+		const Image & level(size_t i) const { return mipmaps_[i]; }
 
 		//!	@brief		Returns CUDA type of this object.
-		cudaMipmappedArray_t handle() const { return m_hImageLod; }
+		cudaMipmappedArray_t handle() const { return image_lod_; }
 
 		//!	@brief		Returns the number of mipmap levels.
-		unsigned int numLevels() const { return m_numLevels; }
+		unsigned int num_levels() const { return num_levels_; }
 
 	protected:
 
-		std::vector<Image>			m_mipmaps;
-		cudaMipmappedArray_t		m_hImageLod;
-		unsigned int				m_numLevels;
+		std::vector<Image>			mipmaps_;
+		cudaMipmappedArray_t		image_lod_;
+		unsigned int				num_levels_;
 	};
 }

@@ -47,7 +47,7 @@ __device__ Complex complex_sqr(Complex z)
 }
 
 
-__global__ void paint_kernel(dev::Span<ColorRGB> pixels, int width, float invN, float t, int num, int deviceId)
+__global__ void paint_kernel(dev::Span<ColorRGB> pixels, int width, float invN, float t, int num, int device_id)
 {
 	CUDA_for(tid, num);
 
@@ -74,7 +74,7 @@ __global__ void paint_kernel(dev::Span<ColorRGB> pixels, int width, float invN, 
 
 	unsigned char color255 = value * 255;
 
-	if (deviceId != 0)
+	if (device_id != 0)
 	{
 		color255 = 255 - value * 255;
 	}
@@ -108,14 +108,14 @@ int main()
 
 	//	GPU 0 runtime
 	auto device0 = ns::Runtime::device(0);
-	auto allocator0 = device0->defaultAllocator();
-	auto & stream0 = device0->defaultStream();
+	auto allocator0 = device0->default_allocator();
+	auto & stream0 = device0->default_stream();
 	ns::Array<ColorRGB>		d_pixels0(allocator0, width * height);
 
 	// GPU 1 runtime
 	auto device1 = ns::Runtime::device(1);
-	auto allocator1 = device1->defaultAllocator();
-	auto & stream1 = device1->defaultStream();
+	auto allocator1 = device1->default_allocator();
+	auto & stream1 = device1->default_stream();
 	ns::Array<ColorRGB>		d_pixels1(allocator1, width * height);
 
 	/////////////////////////////////////////////////////////////////
@@ -134,11 +134,11 @@ int main()
 		////////////////////////////////////////////////////////////
 
 		float t = i * 0.03f;
-		constexpr int blockSize = 256;
+		constexpr int block_size = 256;
 
 		//	Although half the computations would suffice here, we keep the full calculation for clearer multi-GPU demonstration purposes.
-		stream0.launch(paint_kernel, ns::ceil_div(num_pixels, blockSize), blockSize)(d_pixels0, width, 1.0f / height, t, num_pixels, 0);
-		stream1.launch(paint_kernel, ns::ceil_div(num_pixels, blockSize), blockSize)(d_pixels1, width, 1.0f / height, t, num_pixels, 1);
+		stream0.launch(paint_kernel, ns::ceil_div(num_pixels, block_size), block_size)(d_pixels0, width, 1.0f / height, t, num_pixels, 0);
+		stream1.launch(paint_kernel, ns::ceil_div(num_pixels, block_size), block_size)(d_pixels1, width, 1.0f / height, t, num_pixels, 1);
 
 		size_t offset = d_pixels0.size() / 2;
 		stream0.memcpy(h_pixels.data(), d_pixels0.data(), d_pixels0.size() / 2);

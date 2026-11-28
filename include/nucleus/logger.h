@@ -56,7 +56,7 @@ namespace NS_NAMESPACE
 		/**
 		 *	@brief		Type of message callback function.
 		 */
-		using LogCallback = std::function<void(const char * fileName, int line, const char * funcName, Level level, const char * logMsg)>;
+		using LogCallback = std::function<void(const char * file_name, int line, const char * func_name, Level level, const char * log_msg)>;
 
 	public:
 
@@ -64,7 +64,7 @@ namespace NS_NAMESPACE
 		 *	@brief		Return the singleton instance.
 		 *	@warning	Be cautious when multiple dynamic libraries call this function (no longer a singleton in that case).
 		 */
-		NS_API static Logger * getInstance()
+		NS_API static Logger * instance()
 		{
 			static Logger s_instance;
 
@@ -74,24 +74,24 @@ namespace NS_NAMESPACE
 
 		/**
 		 *	@brief		Specify a callback function.
-		 *	@param[in]	pfnCallback - User-defined callback function for receiving log message.
+		 *	@param[in]	callback - User-defined callback function for receiving log message.
 		 *	@note		Pass nullptr will unregister the callback function.
 		 */
-		void registerCallback(LogCallback pfnCallback) noexcept { m_pfnCallback = pfnCallback; }
+		void register_callback(LogCallback callback) noexcept { callback_ = callback; }
 
 
 		/**
 		 *	@brief		Transfer log message to the specified callback function (if registered).
-		 *	@param[in]	fileName - Which file sends this message.
+		 *	@param[in]	file_name - Which file sends this message.
 		 *	@param[in]	line - Which line in the file invokes this function.
-		 *	@param[in]	funcName - Which function invokes this functin.
+		 *	@param[in]	func_name - Which function invokes this function.
 		 *	@param[in]	level - Log level of this message.
 		 */
-		NS_API void log(const char * fileName, int line, const char * funcName, Level level, const char * format, ...);
+		NS_API void log(const char * file_name, int line, const char * func_name, Level level, const char * format, ...);
 
 	private:
 
-		LogCallback		m_pfnCallback;
+		LogCallback		callback_;
 	};
 }
 
@@ -99,11 +99,11 @@ namespace NS_NAMESPACE
 ********************************    Log Macros    ********************************
 *********************************************************************************/
 
-#define NS_INFO_LOG(...)		NS_NAMESPACE::Logger::getInstance()->log(__FILE__, __LINE__, __FUNCTION__, NS_NAMESPACE::Logger::Info, __VA_ARGS__)
-#define NS_DEBUG_LOG(...)		NS_NAMESPACE::Logger::getInstance()->log(__FILE__, __LINE__, __FUNCTION__, NS_NAMESPACE::Logger::Debug, __VA_ARGS__)
-#define NS_ERROR_LOG(...)		NS_NAMESPACE::Logger::getInstance()->log(__FILE__, __LINE__, __FUNCTION__, NS_NAMESPACE::Logger::Error, __VA_ARGS__)
-#define NS_ASSERT_LOG(...)		NS_NAMESPACE::Logger::getInstance()->log(__FILE__, __LINE__, __FUNCTION__, NS_NAMESPACE::Logger::Assert, __VA_ARGS__)
-#define NS_WARNING_LOG(...)		NS_NAMESPACE::Logger::getInstance()->log(__FILE__, __LINE__, __FUNCTION__, NS_NAMESPACE::Logger::Warning, __VA_ARGS__)
+#define NS_INFO_LOG(...)		NS_NAMESPACE::Logger::instance()->log(__FILE__, __LINE__, __FUNCTION__, NS_NAMESPACE::Logger::Info, __VA_ARGS__)
+#define NS_DEBUG_LOG(...)		NS_NAMESPACE::Logger::instance()->log(__FILE__, __LINE__, __FUNCTION__, NS_NAMESPACE::Logger::Debug, __VA_ARGS__)
+#define NS_ERROR_LOG(...)		NS_NAMESPACE::Logger::instance()->log(__FILE__, __LINE__, __FUNCTION__, NS_NAMESPACE::Logger::Error, __VA_ARGS__)
+#define NS_ASSERT_LOG(...)		NS_NAMESPACE::Logger::instance()->log(__FILE__, __LINE__, __FUNCTION__, NS_NAMESPACE::Logger::Assert, __VA_ARGS__)
+#define NS_WARNING_LOG(...)		NS_NAMESPACE::Logger::instance()->log(__FILE__, __LINE__, __FUNCTION__, NS_NAMESPACE::Logger::Warning, __VA_ARGS__)
 
 #define NS_INFO_LOG_IF(condition, ...)			if (condition)	NS_INFO_LOG(__VA_ARGS__)
 #define NS_ERROR_LOG_IF(condition, ...)			if (condition)	NS_ERROR_LOG(__VA_ARGS__)

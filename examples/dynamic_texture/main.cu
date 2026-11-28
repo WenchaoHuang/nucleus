@@ -101,7 +101,7 @@ namespace math
 	__device__ __inline__ float dot(float3 a, float3 b) { return (a.x * b.x) + (a.y * b.y) + (a.z * b.z); }
 	__device__ __inline__ float3 pow(float3 a, float b) { return make_float3(powf(a.x, b), powf(a.y, b), powf(a.z, b)); }
 	__device__ __inline__ float3 cross(float3 a, float3 b) { return make_float3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x); }
-	__device__ __inline__ float3 normalize(float3 a) { float sqrLen = dot(a, a); return sqrLen > 0.0f ? a / sqrtf(sqrLen) : make_float3(0.0f, 0.0f, 0.0f); }
+	__device__ __inline__ float3 normalize(float3 a) { float sqr_len = dot(a, a); return sqr_len > 0.0f ? a / sqrtf(sqr_len) : make_float3(0.0f, 0.0f, 0.0f); }
 	__device__ __inline__ float3 clamp(float3 a, float _min, float _max) { return make_float3(clamp(a.x, _min, _max), clamp(a.y, _min, _max), clamp(a.z, _min, _max)); }
 }
 
@@ -121,68 +121,68 @@ __global__ void ray_tracing_kernel(dev::Ptr2<ColorRGB> output, dev::Tex2D<float>
 	float ny = 2.0f * py / output.height() - 1.0f;
 
 	//	Configure ray
-	float3 eyePos = make_float3(0.0f, 0.0f, 2.5f);
+	float3 eye_pos = make_float3(0.0f, 0.0f, 2.5f);
 	float3 lookAt = make_float3(0.0f, 0.0f, 0.0f);
-	float3 axisZ = math::normalize(eyePos - lookAt);
-	float3 axisX = math::normalize(math::cross(make_float3(0, 1, 0), axisZ));
-	float3 axisY = math::normalize(math::cross(axisZ, axisX));
+	float3 axis_z = math::normalize(eye_pos - lookAt);
+	float3 axis_x = math::normalize(math::cross(make_float3(0, 1, 0), axis_z));
+	float3 axis_y = math::normalize(math::cross(axis_z, axis_x));
 
 	float aspect = float(output.width()) / output.height();
-	float tanHalfFov = tanf(math::radians(45.0f)) / 2.0f;
-	float u = nx * tanHalfFov * aspect;
-	float v = ny * tanHalfFov;
+	float tan_half_fov = tanf(math::radians(45.0f)) / 2.0f;
+	float u = nx * tan_half_fov * aspect;
+	float v = ny * tan_half_fov;
 
 	//	ray direction
-	float3 rayDir = math::normalize(axisX * u - axisY * v - axisZ);
+	float3 ray_dir = math::normalize(axis_x * u - axis_y * v - axis_z);
 
 	//	ray-sphere hit
 	float radius = 1.0f;
 	float3 center = make_float3(0.0f, 0.0f, 0.0f);
-	float3 eyeToCenter = center - eyePos;
-	float rayDot = math::dot(eyeToCenter, rayDir);
-	float raySphereDist = sqrt(math::dot(eyeToCenter, eyeToCenter) - rayDot * rayDot);
+	float3 eye_to_center = center - eye_pos;
+	float ray_dot = math::dot(eye_to_center, ray_dir);
+	float ray_sphere_dist = sqrt(math::dot(eye_to_center, eye_to_center) - ray_dot * ray_dot);
 
 	//	Background color
 	float3 color = make_float3(0.1f, 0.2f, 0.1f);
 
 	//	Hit or miss?
-	if (raySphereDist < radius)
+	if (ray_sphere_dist < radius)
 	{
-		//	Solve: || (eyePos + rayDir * rayTime) - center || == radius
-		float a = math::dot(rayDir, rayDir);
-		float b = -2 * math::dot(rayDir, eyeToCenter);
-		float c = math::dot(eyeToCenter, eyeToCenter) - (radius * radius);
-		float rayTime = -(b + sqrt(b * b - 4 * a * c)) / (2 * a);
-		float3 hitPt = eyePos + rayDir * rayTime;
+		//	Solve: || (eye_pos + ray_dir * ray_time) - center || == radius
+		float a = math::dot(ray_dir, ray_dir);
+		float b = -2 * math::dot(ray_dir, eye_to_center);
+		float c = math::dot(eye_to_center, eye_to_center) - (radius * radius);
+		float ray_time = -(b + sqrt(b * b - 4 * a * c)) / (2 * a);
+		float3 hit_pt = eye_pos + ray_dir * ray_time;
 
 		//	Shading
-		float3 N = math::normalize(hitPt);
-		float3 V = math::normalize(eyePos - hitPt);
+		float3 N = math::normalize(hit_pt);
+		float3 V = math::normalize(eye_pos - hit_pt);
 		float3 L = V;
 		float3 H = math::normalize(V + L);		// Half-Way
-		float3 baseColor = make_float3(1, 1, 1);
+		float3 base_color = make_float3(1, 1, 1);
 		float diffuse = abs(math::dot(N, H));
 		float ambient = 0.1f;
 
-		float theta = acosf(hitPt.y);
-		float r = sqrt(hitPt.x * hitPt.x + hitPt.z * hitPt.z);
-		float phi = atan2f(hitPt.x / r, hitPt.z / r) + t;
+		float theta = acosf(hit_pt.y);
+		float r = sqrt(hit_pt.x * hit_pt.x + hit_pt.z * hit_pt.z);
+		float phi = atan2f(hit_pt.x / r, hit_pt.z / r) + t;
 
-		float2 texCoord;
-		texCoord.x = 3.0f * phi / math::pi;
-		texCoord.y = 3.0f * theta / math::pi;
+		float2 tex_coord;
+		tex_coord.x = 3.0f * phi / math::pi;
+		tex_coord.y = 3.0f * theta / math::pi;
 
-		baseColor = baseColor * texture.fetch(texCoord.x, texCoord.y);
-		color = baseColor * diffuse + ambient;
+		base_color = base_color * texture.fetch(tex_coord.x, tex_coord.y);
+		color = base_color * diffuse + ambient;
 	}
 
 	color = math::clamp(color * 255.0f, 0.0f, 255.0f);
 
-	ColorRGB colorRGB;
-	colorRGB.R = static_cast<unsigned char>(color.x);
-	colorRGB.G = static_cast<unsigned char>(color.y);
-	colorRGB.B = static_cast<unsigned char>(color.z);
-	output[py][px] = colorRGB;
+	ColorRGB color_rgb;
+	color_rgb.R = static_cast<unsigned char>(color.x);
+	color_rgb.G = static_cast<unsigned char>(color.y);
+	color_rgb.B = static_cast<unsigned char>(color.z);
+	output[py][px] = color_rgb;
 }
 
 
@@ -199,8 +199,8 @@ int main()
 	/////////////////////////////////////////////////////////////////
 
 	auto device = ns::Runtime::device(0);
-	auto allocator = device->defaultAllocator();
-	auto & stream = device->defaultStream();
+	auto allocator = device->default_allocator();
+	auto & stream = device->default_stream();
 	
 	auto image = ns::Image2D<unsigned char>(allocator, width, height);
 
@@ -225,10 +225,10 @@ int main()
 		////////////////////////////////////////////////////////////
 
 		float t = i * 0.005f;
-		constexpr int blockSize = 16;
+		constexpr int block_size = 16;
 
-		stream.launch(paint_kernel, { ns::ceil_div(width, blockSize), ns::ceil_div(height, blockSize) }, { blockSize, blockSize })(surface, width, 1.0f / height, t, num_pixels);
-		stream.launch(ray_tracing_kernel, { ns::ceil_div(width, blockSize), ns::ceil_div(height, blockSize) }, { blockSize, blockSize })(d_pixels, texture, t * 0.2f);
+		stream.launch(paint_kernel, { ns::ceil_div(width, block_size), ns::ceil_div(height, block_size) }, { block_size, block_size })(surface, width, 1.0f / height, t, num_pixels);
+		stream.launch(ray_tracing_kernel, { ns::ceil_div(width, block_size), ns::ceil_div(height, block_size) }, { block_size, block_size })(d_pixels, texture, t * 0.2f);
 		stream.memcpy(h_pixels.data(), d_pixels.data(), d_pixels.size());
 		stream.sync();
 

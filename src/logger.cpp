@@ -22,12 +22,12 @@
 
 #include "logger.h"
 
-#include <cstdarg>
-#include <cstdio>
-#include <iostream>
 #include <mutex>
 #include <thread>
+#include <cstdio>
 #include <string>
+#include <cstdarg>
+#include <iostream>
 
 #ifdef _WIN32
 	#include <windows.h>
@@ -41,55 +41,55 @@ NS_USING_NAMESPACE
 
 #ifdef _WIN32
 
-static void enableAnsiColors()
+static void enable_ansi_colors()
 {
-	HANDLE hOut = ::GetStdHandle(STD_OUTPUT_HANDLE);
+	HANDLE handle = ::GetStdHandle(STD_OUTPUT_HANDLE);
 
-	if (hOut == INVALID_HANDLE_VALUE)
+	if (handle == INVALID_HANDLE_VALUE)
 		return;
 
-	DWORD dwMode = 0;
+	DWORD mode = 0;
 
-	if (!::GetConsoleMode(hOut, &dwMode))
+	if (!::GetConsoleMode(handle, &mode))
 		return;
 
-	::SetConsoleMode(hOut, dwMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+	::SetConsoleMode(handle, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
 }
 #endif
 
 
-void Logger::log(const char * fileName, int line, const char * funcName, Level level, const char * format, ...)
+void Logger::log(const char * file_name, int line, const char * func_name, Level level, const char * format, ...)
 {
 #ifdef _WIN32
-	static std::once_flag s_ansiFlag;
+	static std::once_flag s_ansi_flag;
 
-	std::call_once(s_ansiFlag, enableAnsiColors);
+	std::call_once(s_ansi_flag, enable_ansi_colors);
 #endif
 
-	va_list argPtr;
-	va_list argPtrCopy;
+	va_list arg_ptr;
+	va_list arg_ptr_copy;
 
-	va_start(argPtr, format);
-	va_copy(argPtrCopy, argPtr);
+	va_start(arg_ptr, format);
+	va_copy(arg_ptr_copy, arg_ptr);
 
-	int size = std::vsnprintf(nullptr, 0, format, argPtr);
+	int size = std::vsnprintf(nullptr, 0, format, arg_ptr);
 
-	va_end(argPtr);
+	va_end(arg_ptr);
 
 	if (size < 0)
 	{
-		va_end(argPtrCopy);
+		va_end(arg_ptr_copy);
 
 		return;
 	}
 
-	thread_local std::string logString;
+	thread_local std::string log_str;
 
-	logString.resize(static_cast<size_t>(size) + 1);
+	log_str.resize(static_cast<size_t>(size) + 1);
 
-	std::vsnprintf(const_cast<char*>(logString.data()), logString.size(), format, argPtrCopy);
+	std::vsnprintf(const_cast<char*>(log_str.data()), log_str.size(), format, arg_ptr_copy);
 
-	va_end(argPtrCopy);
+	va_end(arg_ptr_copy);
 
 	//	ANSI color codes
 	constexpr const char * COLOR_RED = "\033[31m";
@@ -101,30 +101,30 @@ void Logger::log(const char * fileName, int line, const char * funcName, Level l
 	constexpr const char * COLOR_CYAN = "\033[36m";
 #endif
 
-	if (m_pfnCallback != nullptr)
+	if (callback_ != nullptr)
 	{
-		m_pfnCallback(fileName, line, funcName, level, logString.c_str());
+		callback_(file_name, line, func_name, level, log_str.c_str());
 	}
 	else if (level == Level::Assert)
 	{
-		std::cout << COLOR_MAGENTA << " [" << std::this_thread::get_id() << "] Assert: " << funcName << "() => " << logString << COLOR_RESET << std::endl;
+		std::cout << COLOR_MAGENTA << " [" << std::this_thread::get_id() << "] Assert: " << func_name << "() => " << log_str << COLOR_RESET << std::endl;
 	}
 	else if (level == Level::Error)
 	{
-		std::cout << COLOR_RED << " [" << std::this_thread::get_id() << "] Error: " << funcName << "() => " << logString << COLOR_RESET << std::endl;
+		std::cout << COLOR_RED << " [" << std::this_thread::get_id() << "] Error: " << func_name << "() => " << log_str << COLOR_RESET << std::endl;
 	}
 	else if (level == Level::Warning)
 	{
-		std::cout << COLOR_ORANGE << " [" << std::this_thread::get_id() << "] Warning: " << funcName << "() => " << logString << COLOR_RESET << std::endl;
+		std::cout << COLOR_ORANGE << " [" << std::this_thread::get_id() << "] Warning: " << func_name << "() => " << log_str << COLOR_RESET << std::endl;
 	}
 	else if (level == Level::Info)
 	{
-		std::cout << COLOR_GREEN << " [" << std::this_thread::get_id() << "] Info: " << funcName << "() => " << logString << COLOR_RESET << std::endl;
+		std::cout << COLOR_GREEN << " [" << std::this_thread::get_id() << "] Info: " << func_name << "() => " << log_str << COLOR_RESET << std::endl;
 	}
 	else if (level == Level::Debug)
 	{
 	#ifdef NS_DEBUG
-		std::cout << COLOR_CYAN << " [" << std::this_thread::get_id() << "] Debug: " << funcName << "() => " << logString << COLOR_RESET << std::endl;
+		std::cout << COLOR_CYAN << " [" << std::this_thread::get_id() << "] Debug: " << func_name << "() => " << log_str << COLOR_RESET << std::endl;
 	#endif
 	}
 }

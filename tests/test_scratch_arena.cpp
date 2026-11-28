@@ -39,14 +39,14 @@ public:
 
 private:
 
-	void * doAllocateMemory(size_t bytes) override
+	void * do_allocate_memory(size_t bytes) override
 	{
 		allocations++;
 
 		return ::operator new(bytes);
 	}
 
-	void doDeallocateMemory(void * ptr) override
+	void do_deallocate_memory(void * ptr) override
 	{
 		deallocations++;
 
@@ -69,24 +69,24 @@ void test_scratch_arena()
 	assert(arena.remaining() == 0);
 	assert(arena.allocator() == allocator);
 
-	size_t requiredCapacity = 0;
-	requiredCapacity = ns::aligned_end_offset<int>(requiredCapacity, 1);
-	requiredCapacity = ns::aligned_end_offset<double>(requiredCapacity, 12);
-	requiredCapacity = ns::aligned_end_offset<ns::byte>(requiredCapacity, 24);
+	size_t required_capacity = 0;
+	required_capacity = ns::aligned_end_offset<int>(required_capacity, 1);
+	required_capacity = ns::aligned_end_offset<double>(required_capacity, 12);
+	required_capacity = ns::aligned_end_offset<ns::byte>(required_capacity, 24);
 
-	arena.reserve(requiredCapacity);
+	arena.reserve(required_capacity);
 	arena.reuse();
 
 	assert(!arena.empty());
 	assert(arena.used() == 0);
-	assert(arena.capacity() == requiredCapacity);
-	assert(arena.remaining() == requiredCapacity);
+	assert(arena.capacity() == required_capacity);
+	assert(arena.remaining() == required_capacity);
 
 	auto marker = arena.allocate<int>(1);
 	auto matrix = arena.allocate2D<double>(3, 4);
 	auto volume = arena.allocate3D<ns::byte>(2, 3, 4);
 
-	const auto cachedAddress = reinterpret_cast<std::uintptr_t>(marker.data());
+	const auto cached_address = reinterpret_cast<std::uintptr_t>(marker.data());
 
 	assert(marker.size() == 1);
 	assert(matrix.width() == 3);
@@ -98,37 +98,37 @@ void test_scratch_arena()
 	assert(volume.size() == 24);
 	assert(reinterpret_cast<std::uintptr_t>(matrix.data()) % alignof(int) == 0);
 	assert(reinterpret_cast<std::uintptr_t>(volume.data()) % alignof(double) == 0);
-	assert(arena.used() == requiredCapacity);
+	assert(arena.used() == required_capacity);
 	assert(arena.remaining() == 0);
 
 	arena.reuse();
 
 	assert(arena.used() == 0);
-	assert(arena.remaining() == requiredCapacity);
+	assert(arena.remaining() == required_capacity);
 	assert(allocator->allocations == 1);
 	assert(allocator->deallocations == 0);
 
-	constexpr size_t smallerCapacity = ns::aligned_end_offset<int>(0, 4);
+	constexpr size_t smaller_capacity = ns::aligned_end_offset<int>(0, 4);
 
-	arena.reserve(smallerCapacity);
+	arena.reserve(smaller_capacity);
 	arena.reuse();
 
 	auto values = arena.allocate<int>(4);
 
-	assert(reinterpret_cast<std::uintptr_t>(values.data()) == cachedAddress);
-	assert(arena.capacity() == requiredCapacity);
-	assert(arena.used() == smallerCapacity);
+	assert(reinterpret_cast<std::uintptr_t>(values.data()) == cached_address);
+	assert(arena.capacity() == required_capacity);
+	assert(arena.used() == smaller_capacity);
 	assert(allocator->deallocations == 0);
 	assert(allocator->allocations == 1);
 
-	arena.reserve(requiredCapacity * 2);
+	arena.reserve(required_capacity * 2);
 
 	assert(arena.used() == 0);
-	assert(arena.capacity() == requiredCapacity * 2);
+	assert(arena.capacity() == required_capacity * 2);
 	assert(allocator->deallocations == 1);
 	assert(allocator->allocations == 2);
 
-	arena.reserve(requiredCapacity);
+	arena.reserve(required_capacity);
 
 	assert(allocator->allocations == 2);
 	assert(allocator->deallocations == 1);

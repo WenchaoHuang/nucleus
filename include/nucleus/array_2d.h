@@ -43,16 +43,16 @@ namespace NS_NAMESPACE
 	public:
 
 		//!	@brief		Construct an empty array.
-		Array2D() noexcept : dev::Ptr2<Type>(nullptr), m_buffer() {}
+		Array2D() noexcept : dev::Ptr2<Type>(nullptr), buffer_() {}
 
 		//!	@brief		Allocates a 2D array with specified dimensions using the default allocator.
-		explicit Array2D(size_t width, size_t height) : Array2D(Runtime::defaultAllocator(), width, height) {}
+		explicit Array2D(size_t width, size_t height) : Array2D(Runtime::default_allocator(), width, height) {}
 
 		//!	@brief		Constructs and allocates a 2D array with specified dimensions.
 		explicit Array2D(std::shared_ptr<Allocator> alloctor, size_t width, size_t height) : Array2D() { this->resize(std::move(alloctor), width, height); }
 
 		//!	@brief		Move constructor. Transfers ownership from another array.
-		Array2D(Array2D && rhs) : dev::Ptr2<Type>(std::exchange(rhs.m_data, nullptr), std::exchange(rhs.m_width, 0), std::exchange(rhs.m_height, 0)),  m_buffer(std::move(rhs.m_buffer)) {}
+		Array2D(Array2D && rhs) : dev::Ptr2<Type>(std::exchange(rhs.data_, nullptr), std::exchange(rhs.width_, 0), std::exchange(rhs.height_, 0)),  buffer_(std::move(rhs.buffer_)) {}
 
 	public:
 
@@ -69,19 +69,19 @@ namespace NS_NAMESPACE
 
 			if ((this->allocator() != allocator) || (this->size() != width * height))
 			{
-				m_buffer = Buffer(std::move(allocator), sizeof(Type) * width * height);
+				buffer_ = Buffer(std::move(allocator), sizeof(Type) * width * height);
 
-				dev::Ptr2<Type>::m_data = reinterpret_cast<Type*>(m_buffer.data());
+				dev::Ptr2<Type>::data_ = reinterpret_cast<Type*>(buffer_.data());
 
-				dev::Ptr2<Type>::m_height = static_cast<uint32_t>(height);
+				dev::Ptr2<Type>::height_ = static_cast<uint32_t>(height);
 
-				dev::Ptr2<Type>::m_width = static_cast<uint32_t>(width);
+				dev::Ptr2<Type>::width_ = static_cast<uint32_t>(width);
 			}
 			else if ((this->width() != width) || (this->height() != height))
 			{
-				dev::Ptr2<Type>::m_height = static_cast<uint32_t>(height);
+				dev::Ptr2<Type>::height_ = static_cast<uint32_t>(height);
 
-				dev::Ptr2<Type>::m_width = static_cast<uint32_t>(width);
+				dev::Ptr2<Type>::width_ = static_cast<uint32_t>(width);
 			}
 		}
 
@@ -94,7 +94,7 @@ namespace NS_NAMESPACE
 		 */
 		void resize(size_t width, size_t height)
 		{
-			auto allocator = Runtime::defaultAllocator();
+			auto allocator = Runtime::default_allocator();
 
 			NS_ASSERT_LOG_IF(!allocator, "No default allocator!");
 
@@ -113,9 +113,9 @@ namespace NS_NAMESPACE
 
 			if (this->size() == width * height)
 			{
-				dev::Ptr2<Type>::m_height = static_cast<uint32_t>(height);
+				dev::Ptr2<Type>::height_ = static_cast<uint32_t>(height);
 
-				dev::Ptr2<Type>::m_width = static_cast<uint32_t>(width);
+				dev::Ptr2<Type>::width_ = static_cast<uint32_t>(width);
 			}
 		}
 
@@ -125,7 +125,7 @@ namespace NS_NAMESPACE
 		 */
 		const std::shared_ptr<Allocator> & allocator() const
 		{
-			return m_buffer.allocator();
+			return buffer_.allocator();
 		}
 
 
@@ -133,15 +133,15 @@ namespace NS_NAMESPACE
 		 *	@brief		Releases the ownership of the internal buffer and returns it.
 		 *	@note		After this call, the Array2D will be in an empty state.
 		 */
-		Buffer releaseBuffer()
+		Buffer release_buffer()
 		{
-			dev::Ptr2<Type>::m_width = 0;
+			dev::Ptr2<Type>::width_ = 0;
 
-			dev::Ptr2<Type>::m_height = 0;
+			dev::Ptr2<Type>::height_ = 0;
 
-			dev::Ptr2<Type>::m_data = nullptr;
+			dev::Ptr2<Type>::data_ = nullptr;
 
-			return std::exchange(m_buffer, Buffer());
+			return std::exchange(buffer_, Buffer());
 		}
 
 
@@ -150,13 +150,13 @@ namespace NS_NAMESPACE
 		 */
 		void operator=(Array2D && rhs) noexcept
 		{
-			dev::Ptr2<Type>::m_data = std::exchange(rhs.m_data, nullptr);
+			dev::Ptr2<Type>::data_ = std::exchange(rhs.data_, nullptr);
 
-			dev::Ptr2<Type>::m_height = std::exchange(rhs.m_height, 0);
+			dev::Ptr2<Type>::height_ = std::exchange(rhs.height_, 0);
 
-			dev::Ptr2<Type>::m_width = std::exchange(rhs.m_width, 0);
+			dev::Ptr2<Type>::width_ = std::exchange(rhs.width_, 0);
 
-			m_buffer = std::move(rhs.m_buffer);
+			buffer_ = std::move(rhs.buffer_);
 		}
 
 
@@ -165,13 +165,13 @@ namespace NS_NAMESPACE
 		 */
 		void swap(Array2D & rhs) noexcept
 		{
-			std::swap(dev::Ptr2<Type>::m_height, rhs.m_height);
+			std::swap(dev::Ptr2<Type>::height_, rhs.height_);
 
-			std::swap(dev::Ptr2<Type>::m_width, rhs.m_width);
+			std::swap(dev::Ptr2<Type>::width_, rhs.width_);
 
-			std::swap(dev::Ptr2<Type>::m_data, rhs.m_data);
+			std::swap(dev::Ptr2<Type>::data_, rhs.data_);
 
-			std::swap(m_buffer, rhs.m_buffer);
+			std::swap(buffer_, rhs.buffer_);
 		}
 
 
@@ -180,15 +180,15 @@ namespace NS_NAMESPACE
 		 */
 		void clear() noexcept
 		{
-			if (m_buffer)
+			if (buffer_)
 			{
-				dev::Ptr2<Type>::m_data = nullptr;
+				dev::Ptr2<Type>::data_ = nullptr;
 
-				dev::Ptr2<Type>::m_height = 0;
+				dev::Ptr2<Type>::height_ = 0;
 				
-				dev::Ptr2<Type>::m_width = 0;
+				dev::Ptr2<Type>::width_ = 0;
 
-				m_buffer = Buffer();
+				buffer_ = Buffer();
 			}
 		}
 
@@ -208,6 +208,6 @@ namespace NS_NAMESPACE
 
 	private:
 
-		Buffer		m_buffer;
+		Buffer		buffer_;
 	};
 }

@@ -47,23 +47,23 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Surface() {}
 
 		//!	@brief		Constructor with nullptr.
-		NS_CUDA_CALLABLE Surface(std::nullptr_t) : m_hSurface(0) {}
+		NS_CUDA_CALLABLE Surface(std::nullptr_t) : surface_(0) {}
 
 		//!	@brief		Constructor with cudaSurfaceObject_t.
-		NS_CUDA_CALLABLE explicit Surface(cudaSurfaceObject_t hSurface) : m_hSurface(hSurface) {}
+		NS_CUDA_CALLABLE explicit Surface(cudaSurfaceObject_t surface) : surface_(surface) {}
 
 		//!	@brief		Return CUDA type of this object for compatibility.
-		NS_CUDA_CALLABLE cudaSurfaceObject_t handle() const { return m_hSurface; }
+		NS_CUDA_CALLABLE cudaSurfaceObject_t handle() const { return surface_; }
 
 		//!	@brief		Bool conversion operator.
-		NS_CUDA_CALLABLE operator bool() const { return m_hSurface != 0; }
+		NS_CUDA_CALLABLE operator bool() const { return surface_ != 0; }
 
 		//!	@brief		Check if the surface is empty.
-		NS_CUDA_CALLABLE bool empty() const { return m_hSurface == 0; }
+		NS_CUDA_CALLABLE bool empty() const { return surface_ == 0; }
 
 	protected:
 
-		cudaSurfaceObject_t		m_hSurface;
+		cudaSurfaceObject_t		surface_;
 	};
 
 	/*****************************************************************************
@@ -82,23 +82,23 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Surf1D() {}
 
 		//!	@brief		Constructor with nullptr.
-		NS_CUDA_CALLABLE Surf1D(std::nullptr_t) : Surface(nullptr), m_width(0) {}
+		NS_CUDA_CALLABLE Surf1D(std::nullptr_t) : Surface(nullptr), width_(0) {}
 
 		//!	@brief		Constructor with cudaSurfaceObject_t.
-		NS_CUDA_CALLABLE explicit Surf1D(cudaSurfaceObject_t hSurface, uint32_t width) : Surface(hSurface), m_width(width) {}
+		NS_CUDA_CALLABLE explicit Surf1D(cudaSurfaceObject_t surface, uint32_t width) : Surface(surface), width_(width) {}
 
 		//!	@brief		Return width of the buffer.
-		NS_CUDA_CALLABLE uint32_t width() const { return m_width; }
+		NS_CUDA_CALLABLE uint32_t width() const { return width_; }
 
 		//!	@brief		Read method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ Type read(int x, int boundaryMode = 2) const;
+		__device__ Type read(int x, int boundary_mode = 2) const;
 	#else
-		__device__ Type read(int x, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
+		__device__ Type read(int x, cudaSurfaceBoundaryMode boundary_mode = cudaBoundaryModeTrap) const
 		{
 			CudaTexelType_t<Type> value;
 
-			surf1Dread<decltype(value)>(&value, Surface::m_hSurface, sizeof(Type) * x, boundaryMode);
+			surf1Dread<decltype(value)>(&value, Surface::surface_, sizeof(Type) * x, boundary_mode);
 
 			return reinterpret_cast<Type&>(value);
 		}
@@ -106,7 +106,7 @@ namespace NS_NAMESPACE::dev
 
 	protected:
 
-		uint32_t		m_width;
+		uint32_t		width_;
 	};
 
 	/*****************************************************************************
@@ -128,15 +128,15 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Surf1D(std::nullptr_t) : Surf1D<const Type>(nullptr) {}
 
 		//!	@brief		Constructor with cudaSurfaceObject_t.
-		NS_CUDA_CALLABLE explicit Surf1D(cudaSurfaceObject_t hSurface, uint32_t width) : Surf1D<const Type>(hSurface, width) {}
+		NS_CUDA_CALLABLE explicit Surf1D(cudaSurfaceObject_t surface, uint32_t width) : Surf1D<const Type>(surface, width) {}
 		
 		//!	@brief		Write method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ void write(Type value, int x, int boundaryMode = 2) const;
+		__device__ void write(Type value, int x, int boundary_mode = 2) const;
 	#else
-		__device__ void write(Type value, int x, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
+		__device__ void write(Type value, int x, cudaSurfaceBoundaryMode boundary_mode = cudaBoundaryModeTrap) const
 		{
-			surf1Dwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, boundaryMode);
+			surf1Dwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::surface_, sizeof(Type) * x, boundary_mode);
 		}
 	#endif
 	};
@@ -157,26 +157,26 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Surf2D() {}
 
 		//!	@brief		Constructor with nullptr.
-		NS_CUDA_CALLABLE Surf2D(std::nullptr_t) : Surface(nullptr), m_width(0), m_height(0) {}
+		NS_CUDA_CALLABLE Surf2D(std::nullptr_t) : Surface(nullptr), width_(0), height_(0) {}
 
 		//!	@brief		Constructor with cudaSurfaceObject_t.
-		NS_CUDA_CALLABLE explicit Surf2D(cudaSurfaceObject_t hSurface, uint32_t width, uint32_t height) : Surface(hSurface), m_width(width), m_height(height) {}
+		NS_CUDA_CALLABLE explicit Surf2D(cudaSurfaceObject_t surface, uint32_t width, uint32_t height) : Surface(surface), width_(width), height_(height) {}
 
 		//!	@brief		Return height of the buffer.
-		NS_CUDA_CALLABLE uint32_t height() const { return m_height; }
+		NS_CUDA_CALLABLE uint32_t height() const { return height_; }
 
 		//!	@brief		Return width of the buffer.
-		NS_CUDA_CALLABLE uint32_t width() const { return m_width; }
+		NS_CUDA_CALLABLE uint32_t width() const { return width_; }
 
 		//!	@brief		Read method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ Type read(int x, int y, int boundaryMode = 2) const;
+		__device__ Type read(int x, int y, int boundary_mode = 2) const;
 	#else
-		__device__ Type read(int x, int y, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
+		__device__ Type read(int x, int y, cudaSurfaceBoundaryMode boundary_mode = cudaBoundaryModeTrap) const
 		{
 			CudaTexelType_t<Type> value;
 
-			surf2Dread<decltype(value)>(&value, Surface::m_hSurface, sizeof(Type) * x, y, boundaryMode);
+			surf2Dread<decltype(value)>(&value, Surface::surface_, sizeof(Type) * x, y, boundary_mode);
 
 			return reinterpret_cast<Type&>(value);
 		}
@@ -184,8 +184,8 @@ namespace NS_NAMESPACE::dev
 
 	protected:
 
-		uint32_t		m_width;
-		uint32_t		m_height;
+		uint32_t		width_;
+		uint32_t		height_;
 	};
 
 	/*****************************************************************************
@@ -207,15 +207,15 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Surf2D(std::nullptr_t) : Surf2D<const Type>(nullptr) {}
 
 		//!	@brief		Constructor with cudaSurfaceObject_t.
-		NS_CUDA_CALLABLE explicit Surf2D(cudaSurfaceObject_t hSurface, uint32_t width, uint32_t height) : Surf2D<const Type>(hSurface, width, height) {}
+		NS_CUDA_CALLABLE explicit Surf2D(cudaSurfaceObject_t surface, uint32_t width, uint32_t height) : Surf2D<const Type>(surface, width, height) {}
 
 		//!	@brief		Write method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ void write(Type value, int x, int y, int boundaryMode = 2) const;
+		__device__ void write(Type value, int x, int y, int boundary_mode = 2) const;
 	#else
-		__device__ void write(Type value, int x, int y, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
+		__device__ void write(Type value, int x, int y, cudaSurfaceBoundaryMode boundary_mode = cudaBoundaryModeTrap) const
 		{
-			surf2Dwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, y, boundaryMode);
+			surf2Dwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::surface_, sizeof(Type) * x, y, boundary_mode);
 		}
 	#endif
 	};
@@ -236,29 +236,29 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Surf3D() {}
 
 		//!	@brief		Constructor with nullptr.
-		NS_CUDA_CALLABLE Surf3D(std::nullptr_t) : Surface(nullptr), m_width(0), m_height(0), m_depth(0) {}
+		NS_CUDA_CALLABLE Surf3D(std::nullptr_t) : Surface(nullptr), width_(0), height_(0), depth_(0) {}
 
 		//!	@brief		Constructor with cudaSurfaceObject_t.
-		NS_CUDA_CALLABLE explicit Surf3D(cudaSurfaceObject_t hSurface, uint32_t width, uint32_t height, uint32_t depth) : Surface(hSurface), m_width(width), m_height(height), m_depth(depth) {}
+		NS_CUDA_CALLABLE explicit Surf3D(cudaSurfaceObject_t surface, uint32_t width, uint32_t height, uint32_t depth) : Surface(surface), width_(width), height_(height), depth_(depth) {}
 
 		//!	@brief		Return height of the buffer.
-		NS_CUDA_CALLABLE uint32_t height() const { return m_height; }
+		NS_CUDA_CALLABLE uint32_t height() const { return height_; }
 
 		//!	@brief		Return depth of the buffer.
-		NS_CUDA_CALLABLE uint32_t depth() const { return m_depth; }
+		NS_CUDA_CALLABLE uint32_t depth() const { return depth_; }
 
 		//!	@brief		Return width of the buffer.
-		NS_CUDA_CALLABLE uint32_t width() const { return m_width; }
+		NS_CUDA_CALLABLE uint32_t width() const { return width_; }
 
 		//!	@brief		Read method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ Type read(int x, int y, int z, int boundaryMode = 2) const;
+		__device__ Type read(int x, int y, int z, int boundary_mode = 2) const;
 	#else
-		__device__ Type read(int x, int y, int z, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
+		__device__ Type read(int x, int y, int z, cudaSurfaceBoundaryMode boundary_mode = cudaBoundaryModeTrap) const
 		{
 			CudaTexelType_t<Type> value;
 
-			surf3Dread<decltype(value)>(&value, Surface::m_hSurface, sizeof(Type) * x, y, z, boundaryMode);
+			surf3Dread<decltype(value)>(&value, Surface::surface_, sizeof(Type) * x, y, z, boundary_mode);
 
 			return reinterpret_cast<Type&>(value);
 		}
@@ -266,9 +266,9 @@ namespace NS_NAMESPACE::dev
 
 	protected:
 
-		uint32_t		m_width;
-		uint32_t		m_height;
-		uint32_t		m_depth;
+		uint32_t		width_;
+		uint32_t		height_;
+		uint32_t		depth_;
 	};
 
 	/*****************************************************************************
@@ -290,15 +290,15 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Surf3D(std::nullptr_t) : Surf3D<const Type>(nullptr) {}
 
 		//!	@brief		Constructor with cudaSurfaceObject_t.
-		NS_CUDA_CALLABLE explicit Surf3D(cudaSurfaceObject_t hSurface, uint32_t width, uint32_t height, uint32_t depth) : Surf3D<const Type>(hSurface, width, height, depth) {}
+		NS_CUDA_CALLABLE explicit Surf3D(cudaSurfaceObject_t surface, uint32_t width, uint32_t height, uint32_t depth) : Surf3D<const Type>(surface, width, height, depth) {}
 
 		//!	@brief		Write method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ void write(Type value, int x, int y, int z, int boundaryMode = 2) const;
+		__device__ void write(Type value, int x, int y, int z, int boundary_mode = 2) const;
 	#else
-		__device__ void write(Type value, int x, int y, int z, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
+		__device__ void write(Type value, int x, int y, int z, cudaSurfaceBoundaryMode boundary_mode = cudaBoundaryModeTrap) const
 		{
-			surf3Dwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, y, z, boundaryMode);
+			surf3Dwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::surface_, sizeof(Type) * x, y, z, boundary_mode);
 		}
 	#endif
 	};
@@ -319,26 +319,26 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Surf1DLayered() {}
 
 		//!	@brief		Constructor with nullptr.
-		NS_CUDA_CALLABLE Surf1DLayered(std::nullptr_t) : Surface(nullptr), m_width(0), m_numLayers(0) {}
+		NS_CUDA_CALLABLE Surf1DLayered(std::nullptr_t) : Surface(nullptr), width_(0), num_layers_(0) {}
 
 		//!	@brief		Constructor with cudaSurfaceObject_t.
-		NS_CUDA_CALLABLE explicit Surf1DLayered(cudaSurfaceObject_t hSurface, uint32_t width, uint32_t numLayers) : Surface(hSurface), m_width(width), m_numLayers(numLayers) {}
+		NS_CUDA_CALLABLE explicit Surf1DLayered(cudaSurfaceObject_t surface, uint32_t width, uint32_t num_layers) : Surface(surface), width_(width), num_layers_(num_layers) {}
 
 		//!	@brief		Return the number of layers.
-		NS_CUDA_CALLABLE uint32_t numLayers() const { return m_numLayers; }
+		NS_CUDA_CALLABLE uint32_t num_layers() const { return num_layers_; }
 
 		//!	@brief		Return width of the buffer.
-		NS_CUDA_CALLABLE uint32_t width() const { return m_width; }
+		NS_CUDA_CALLABLE uint32_t width() const { return width_; }
 
 		//!	@brief		Read method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ Type read(int x, int layer, int boundaryMode = 2) const;
+		__device__ Type read(int x, int layer, int boundary_mode = 2) const;
 	#else
-		__device__ Type read(int x, int layer, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
+		__device__ Type read(int x, int layer, cudaSurfaceBoundaryMode boundary_mode = cudaBoundaryModeTrap) const
 		{
 			CudaTexelType_t<Type> value;
 
-			surf1DLayeredread<decltype(value)>(&value, Surface::m_hSurface, sizeof(Type) * x, layer, boundaryMode);
+			surf1DLayeredread<decltype(value)>(&value, Surface::surface_, sizeof(Type) * x, layer, boundary_mode);
 
 			return reinterpret_cast<Type&>(value);
 		}
@@ -346,8 +346,8 @@ namespace NS_NAMESPACE::dev
 
 	protected:
 
-		uint32_t		m_width;
-		uint32_t		m_numLayers;
+		uint32_t		width_;
+		uint32_t		num_layers_;
 	};
 
 	/*****************************************************************************
@@ -369,15 +369,15 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Surf1DLayered(std::nullptr_t) : Surf1DLayered<const Type>(nullptr) {}
 
 		//!	@brief		Constructor with cudaSurfaceObject_t.
-		NS_CUDA_CALLABLE explicit Surf1DLayered(cudaSurfaceObject_t hSurface, uint32_t width, uint32_t numLayers) : Surf1DLayered<const Type>(hSurface, width, numLayers) {}
+		NS_CUDA_CALLABLE explicit Surf1DLayered(cudaSurfaceObject_t surface, uint32_t width, uint32_t num_layers) : Surf1DLayered<const Type>(surface, width, num_layers) {}
 
 		//!	@brief		Write method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ void write(Type value, int x, int layer, int boundaryMode = 2) const;
+		__device__ void write(Type value, int x, int layer, int boundary_mode = 2) const;
 	#else
-		__device__ void write(Type value, int x, int layer, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
+		__device__ void write(Type value, int x, int layer, cudaSurfaceBoundaryMode boundary_mode = cudaBoundaryModeTrap) const
 		{
-			surf1DLayeredwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, layer, boundaryMode);
+			surf1DLayeredwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::surface_, sizeof(Type) * x, layer, boundary_mode);
 		}
 	#endif
 	};
@@ -398,29 +398,29 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Surf2DLayered() {}
 
 		//!	@brief		Constructor with nullptr.
-		NS_CUDA_CALLABLE Surf2DLayered(std::nullptr_t) : Surface(nullptr), m_width(0), m_height(0), m_numLayers(0) {}
+		NS_CUDA_CALLABLE Surf2DLayered(std::nullptr_t) : Surface(nullptr), width_(0), height_(0), num_layers_(0) {}
 
 		//!	@brief		Constructor with cudaSurfaceObject_t.
-		NS_CUDA_CALLABLE explicit Surf2DLayered(cudaSurfaceObject_t hSurface, uint32_t width, uint32_t height, uint32_t numLayers) : Surface(hSurface), m_width(width), m_height(height), m_numLayers(numLayers) {}
+		NS_CUDA_CALLABLE explicit Surf2DLayered(cudaSurfaceObject_t surface, uint32_t width, uint32_t height, uint32_t num_layers) : Surface(surface), width_(width), height_(height), num_layers_(num_layers) {}
 
 		//!	@brief		Return the number of layers.
-		NS_CUDA_CALLABLE uint32_t numLayers() const { return m_numLayers; }
+		NS_CUDA_CALLABLE uint32_t num_layers() const { return num_layers_; }
 
 		//!	@brief		Return height of the buffer.
-		NS_CUDA_CALLABLE uint32_t height() const { return m_height; }
+		NS_CUDA_CALLABLE uint32_t height() const { return height_; }
 
 		//!	@brief		Return width of the buffer.
-		NS_CUDA_CALLABLE uint32_t width() const { return m_width; }
+		NS_CUDA_CALLABLE uint32_t width() const { return width_; }
 
 		//!	@brief		Read method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ Type read(int x, int y, int layer, int boundaryMode = 2) const;
+		__device__ Type read(int x, int y, int layer, int boundary_mode = 2) const;
 	#else
-		__device__ Type read(int x, int y, int layer, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
+		__device__ Type read(int x, int y, int layer, cudaSurfaceBoundaryMode boundary_mode = cudaBoundaryModeTrap) const
 		{
 			CudaTexelType_t<Type> value;
 
-			surf2DLayeredread<decltype(value)>(&value, Surface::m_hSurface, sizeof(Type) * x, y, layer, boundaryMode);
+			surf2DLayeredread<decltype(value)>(&value, Surface::surface_, sizeof(Type) * x, y, layer, boundary_mode);
 
 			return reinterpret_cast<Type&>(value);
 		}
@@ -428,9 +428,9 @@ namespace NS_NAMESPACE::dev
 
 	protected:
 
-		uint32_t		m_width;
-		uint32_t		m_height;
-		uint32_t		m_numLayers;
+		uint32_t		width_;
+		uint32_t		height_;
+		uint32_t		num_layers_;
 	};
 
 	/*****************************************************************************
@@ -452,15 +452,15 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE Surf2DLayered(std::nullptr_t) : Surf2DLayered<const Type>(nullptr) {}
 
 		//!	@brief		Constructor with cudaSurfaceObject_t.
-		NS_CUDA_CALLABLE explicit Surf2DLayered(cudaSurfaceObject_t hSurface, uint32_t width, uint32_t height, uint32_t numLayers) : Surf2DLayered<const Type>(hSurface, width, height, numLayers) {}
+		NS_CUDA_CALLABLE explicit Surf2DLayered(cudaSurfaceObject_t surface, uint32_t width, uint32_t height, uint32_t num_layers) : Surf2DLayered<const Type>(surface, width, height, num_layers) {}
 
 		//!	@brief		Write method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ void write(Type value, int x, int y, int layer, int boundaryMode = 2) const;
+		__device__ void write(Type value, int x, int y, int layer, int boundary_mode = 2) const;
 	#else
-		__device__ void write(Type value, int x, int y, int layer, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
+		__device__ void write(Type value, int x, int y, int layer, cudaSurfaceBoundaryMode boundary_mode = cudaBoundaryModeTrap) const
 		{
-			surf2DLayeredwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, y, layer, boundaryMode);
+			surf2DLayeredwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::surface_, sizeof(Type) * x, y, layer, boundary_mode);
 		}
 	#endif
 	};
@@ -481,23 +481,23 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE SurfCube() {}
 
 		//!	@brief		Constructor with nullptr.
-		NS_CUDA_CALLABLE SurfCube(std::nullptr_t) : Surface(nullptr), m_width(0) {}
+		NS_CUDA_CALLABLE SurfCube(std::nullptr_t) : Surface(nullptr), width_(0) {}
 
 		//!	@brief		Constructor with cudaSurfaceObject_t.
-		NS_CUDA_CALLABLE explicit SurfCube(cudaSurfaceObject_t hSurface, uint32_t width) : Surface(hSurface), m_width(width) {}
+		NS_CUDA_CALLABLE explicit SurfCube(cudaSurfaceObject_t surface, uint32_t width) : Surface(surface), width_(width) {}
 
 		//!	@brief		Return width of the buffer.
-		NS_CUDA_CALLABLE uint32_t width() const { return m_width; }
+		NS_CUDA_CALLABLE uint32_t width() const { return width_; }
 
 		//!	@brief		Read method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ Type read(int x, int y, int face, int boundaryMode = 2) const;
+		__device__ Type read(int x, int y, int face, int boundary_mode = 2) const;
 	#else
-		__device__ Type read(int x, int y, int face, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
+		__device__ Type read(int x, int y, int face, cudaSurfaceBoundaryMode boundary_mode = cudaBoundaryModeTrap) const
 		{
 			CudaTexelType_t<Type> value;
 
-			surfCubemapread<decltype(value)>(&value, Surface::m_hSurface, sizeof(Type) * x, y, face, boundaryMode);
+			surfCubemapread<decltype(value)>(&value, Surface::surface_, sizeof(Type) * x, y, face, boundary_mode);
 
 			return reinterpret_cast<Type&>(value);
 		}
@@ -505,7 +505,7 @@ namespace NS_NAMESPACE::dev
 
 	protected:
 
-		uint32_t		m_width;
+		uint32_t		width_;
 	};
 
 	/*****************************************************************************
@@ -527,15 +527,15 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE SurfCube(std::nullptr_t) : SurfCube<const Type>(nullptr) {}
 
 		//!	@brief		Constructor with cudaSurfaceObject_t.
-		NS_CUDA_CALLABLE explicit SurfCube(cudaSurfaceObject_t hSurface, uint32_t width) : SurfCube<const Type>(hSurface, width) {}
+		NS_CUDA_CALLABLE explicit SurfCube(cudaSurfaceObject_t surface, uint32_t width) : SurfCube<const Type>(surface, width) {}
 
 		//!	@brief		Write method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ void write(Type value, int x, int y, int face, int boundaryMode = 2) const;
+		__device__ void write(Type value, int x, int y, int face, int boundary_mode = 2) const;
 	#else
-		__device__ void write(Type value, int x, int y, int face, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
+		__device__ void write(Type value, int x, int y, int face, cudaSurfaceBoundaryMode boundary_mode = cudaBoundaryModeTrap) const
 		{
-			surfCubemapwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, y, face, boundaryMode);
+			surfCubemapwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::surface_, sizeof(Type) * x, y, face, boundary_mode);
 		}
 	#endif
 	};
@@ -556,26 +556,26 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE SurfCubeLayered() {}
 
 		//!	@brief		Constructor with nullptr.
-		NS_CUDA_CALLABLE SurfCubeLayered(std::nullptr_t) : Surface(nullptr), m_width(0), m_numLayers(0) {}
+		NS_CUDA_CALLABLE SurfCubeLayered(std::nullptr_t) : Surface(nullptr), width_(0), num_layers_(0) {}
 
 		//!	@brief		Constructor with cudaSurfaceObject_t.
-		NS_CUDA_CALLABLE explicit SurfCubeLayered(cudaSurfaceObject_t hSurface, uint32_t width, uint32_t numLayers) : Surface(hSurface), m_width(width), m_numLayers(numLayers) {}
+		NS_CUDA_CALLABLE explicit SurfCubeLayered(cudaSurfaceObject_t surface, uint32_t width, uint32_t num_layers) : Surface(surface), width_(width), num_layers_(num_layers) {}
 
 		//!	@brief		Return the number of layers.
-		NS_CUDA_CALLABLE uint32_t numLayers() const { return m_numLayers; }
+		NS_CUDA_CALLABLE uint32_t num_layers() const { return num_layers_; }
 
 		//!	@brief		Return width of the buffer.
-		NS_CUDA_CALLABLE uint32_t width() const { return m_width; }
+		NS_CUDA_CALLABLE uint32_t width() const { return width_; }
 
 		//!	@brief		Read method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ Type read(int x, int y, int face, int layer, int boundaryMode = 2) const;
+		__device__ Type read(int x, int y, int face, int layer, int boundary_mode = 2) const;
 	#else
-		__device__ Type read(int x, int y, int face, int layer, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
+		__device__ Type read(int x, int y, int face, int layer, cudaSurfaceBoundaryMode boundary_mode = cudaBoundaryModeTrap) const
 		{
 			CudaTexelType_t<Type> value;
 
-			surfCubemapLayeredread<decltype(value)>(&value, Surface::m_hSurface, sizeof(Type) * x, y, 6 * layer + face, boundaryMode);
+			surfCubemapLayeredread<decltype(value)>(&value, Surface::surface_, sizeof(Type) * x, y, 6 * layer + face, boundary_mode);
 
 			return reinterpret_cast<Type&>(value);
 		}
@@ -583,8 +583,8 @@ namespace NS_NAMESPACE::dev
 
 	protected:
 
-		uint32_t		m_width;
-		uint32_t		m_numLayers;
+		uint32_t		width_;
+		uint32_t		num_layers_;
 	};
 
 	/*****************************************************************************
@@ -606,15 +606,15 @@ namespace NS_NAMESPACE::dev
 		NS_CUDA_CALLABLE SurfCubeLayered(std::nullptr_t) : SurfCubeLayered<const Type>(nullptr) {}
 
 		//!	@brief		Constructor with cudaSurfaceObject_t.
-		NS_CUDA_CALLABLE explicit SurfCubeLayered(cudaSurfaceObject_t hSurface, uint32_t width, uint32_t numLayers) : SurfCubeLayered<const Type>(hSurface, width, numLayers) {}
+		NS_CUDA_CALLABLE explicit SurfCubeLayered(cudaSurfaceObject_t surface, uint32_t width, uint32_t num_layers) : SurfCubeLayered<const Type>(surface, width, num_layers) {}
 
 		//!	@brief		Write method for CUDA surface object.
 	#ifndef __CUDACC__
-		__device__ void write(Type value, int x, int y, int face, int layer, int boundaryMode = 2) const;
+		__device__ void write(Type value, int x, int y, int face, int layer, int boundary_mode = 2) const;
 	#else
-		__device__ void write(Type value, int x, int y, int face, int layer, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap) const
+		__device__ void write(Type value, int x, int y, int face, int layer, cudaSurfaceBoundaryMode boundary_mode = cudaBoundaryModeTrap) const
 		{
-			surfCubemapLayeredwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::m_hSurface, sizeof(Type) * x, y, 6 * layer + face, boundaryMode);
+			surfCubemapLayeredwrite<CudaTexelType_t<Type>>(reinterpret_cast<CudaTexelType_t<Type>&>(value), Surface::surface_, sizeof(Type) * x, y, 6 * layer + face, boundary_mode);
 		}
 	#endif
 	};

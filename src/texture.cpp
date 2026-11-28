@@ -44,78 +44,78 @@ static_assert(static_cast<int>(AddressMode::Border) == cudaAddressModeBorder);
 *******************************    TextureBase    ********************************
 *********************************************************************************/
 
-TextureBase::TextureBase(std::shared_ptr<ImageBase> image, Sampler sampler, Format viewFormat) : m_hTexture(0)
+TextureBase::TextureBase(std::shared_ptr<ImageBase> source_image, Sampler sampler, Format view_format) : texture_(0)
 {
-	auto pImage = std::dynamic_pointer_cast<Image>(image);
-	auto pImageLod = std::dynamic_pointer_cast<ImageLod>(image);
+	auto image = std::dynamic_pointer_cast<Image>(source_image);
+	auto image_lod = std::dynamic_pointer_cast<ImageLod>(source_image);
 
-	NS_ASSERT(pImage || pImageLod);
+	NS_ASSERT(image || image_lod);
 	{
-		cudaResourceDesc resDesc = {};
+		cudaResourceDesc res_desc = {};
 
 		Format format = Format::Char;
 
-		if (pImage != nullptr)
+		if (image != nullptr)
 		{
-			format = pImage->format();
+			format = image->format();
 
-			resDesc.resType = cudaResourceTypeArray;
-			resDesc.res.array.array = pImage->data().handle;
+			res_desc.resType = cudaResourceTypeArray;
+			res_desc.res.array.array = image->data().handle;
 
-			if (!std::dynamic_pointer_cast<ImageCube<void>>(pImage) &&
-				!std::dynamic_pointer_cast<ImageCubeLayered<void>>(pImage))
+			if (!std::dynamic_pointer_cast<ImageCube<void>>(image) &&
+				!std::dynamic_pointer_cast<ImageCubeLayered<void>>(image))
 			{
-				sampler.seamlessCubemap = false;	//	avoid error
+				sampler.seamless_cubemap = false;	//	avoid error
 			}
 		}
-		else if (pImageLod != nullptr)
+		else if (image_lod != nullptr)
 		{
-			format = pImageLod->format();
+			format = image_lod->format();
 
-			resDesc.resType = cudaResourceTypeMipmappedArray;
-			resDesc.res.mipmap.mipmap = pImageLod->handle();
+			res_desc.resType = cudaResourceTypeMipmappedArray;
+			res_desc.res.mipmap.mipmap = image_lod->handle();
 
-			if (!std::dynamic_pointer_cast<ImageCubeLod<void>>(pImageLod) &&
-				!std::dynamic_pointer_cast<ImageCubeLayeredLod<void>>(pImageLod))
+			if (!std::dynamic_pointer_cast<ImageCubeLod<void>>(image_lod) &&
+				!std::dynamic_pointer_cast<ImageCubeLayeredLod<void>>(image_lod))
 			{
-				sampler.seamlessCubemap = false;	//	avoid error
+				sampler.seamless_cubemap = false;	//	avoid error
 			}
 		}
 
-		if ((viewFormat != Format::Float) && (viewFormat != Format::Float2) && (viewFormat != Format::Float4))
+		if ((view_format != Format::Float) && (view_format != Format::Float2) && (view_format != Format::Float4))
 		{
-			sampler.mipmapFilterMode = FilterMode::Nearest;
+			sampler.mipmap_filter_mode = FilterMode::Nearest;
 
-			sampler.filterMode = FilterMode::Nearest;
+			sampler.filter_mode = FilterMode::Nearest;
 		}
 
-		cudaTextureDesc								textureDesc = {};
-		textureDesc.addressMode[0]					= static_cast<cudaTextureAddressMode>(sampler.addressMode[0]);
-		textureDesc.addressMode[1]					= static_cast<cudaTextureAddressMode>(sampler.addressMode[1]);
-		textureDesc.addressMode[2]					= static_cast<cudaTextureAddressMode>(sampler.addressMode[2]);
-		textureDesc.filterMode						= static_cast<cudaTextureFilterMode>(sampler.filterMode);
-		textureDesc.readMode						= (format == viewFormat) ? cudaReadModeElementType : cudaReadModeNormalizedFloat;
-		textureDesc.sRGB							= sampler.sRGB;
-		textureDesc.borderColor[0]					= sampler.borderColor[0];
-		textureDesc.borderColor[1]					= sampler.borderColor[1];
-		textureDesc.borderColor[2]					= sampler.borderColor[2];
-		textureDesc.borderColor[3]					= sampler.borderColor[3];
-		textureDesc.normalizedCoords				= sampler.normalizedCoords;
-		textureDesc.maxAnisotropy					= sampler.maxAnisotropy;
-		textureDesc.mipmapFilterMode				= static_cast<cudaTextureFilterMode>(sampler.mipmapFilterMode);
-		textureDesc.mipmapLevelBias					= sampler.mipmapLevelBias;
-		textureDesc.minMipmapLevelClamp				= sampler.minMipmapLevelClamp;
-		textureDesc.maxMipmapLevelClamp				= sampler.maxMipmapLevelClamp;
-		textureDesc.disableTrilinearOptimization	= sampler.disableTrilinearOptimization;
-		textureDesc.seamlessCubemap					= sampler.seamlessCubemap;
+		cudaTextureDesc								texture_desc = {};
+		texture_desc.addressMode[0]					= static_cast<cudaTextureAddressMode>(sampler.address_mode[0]);
+		texture_desc.addressMode[1]					= static_cast<cudaTextureAddressMode>(sampler.address_mode[1]);
+		texture_desc.addressMode[2]					= static_cast<cudaTextureAddressMode>(sampler.address_mode[2]);
+		texture_desc.filterMode						= static_cast<cudaTextureFilterMode>(sampler.filter_mode);
+		texture_desc.readMode						= (format == view_format) ? cudaReadModeElementType : cudaReadModeNormalizedFloat;
+		texture_desc.sRGB							= sampler.s_rgb;
+		texture_desc.borderColor[0]					= sampler.border_color[0];
+		texture_desc.borderColor[1]					= sampler.border_color[1];
+		texture_desc.borderColor[2]					= sampler.border_color[2];
+		texture_desc.borderColor[3]					= sampler.border_color[3];
+		texture_desc.normalizedCoords				= sampler.normalized_coords;
+		texture_desc.maxAnisotropy					= sampler.max_anisotropy;
+		texture_desc.mipmapFilterMode				= static_cast<cudaTextureFilterMode>(sampler.mipmap_filter_mode);
+		texture_desc.mipmapLevelBias					= sampler.mipmap_level_bias;
+		texture_desc.minMipmapLevelClamp				= sampler.min_mipmap_level_clamp;
+		texture_desc.maxMipmapLevelClamp				= sampler.max_mipmap_level_clamp;
+		texture_desc.disableTrilinearOptimization	= sampler.disable_trilinear_optimization;
+		texture_desc.seamlessCubemap					= sampler.seamless_cubemap;
 
-		cudaError_t err = cudaCreateTextureObject(&m_hTexture, &resDesc, &textureDesc, nullptr);
+		cudaError_t err = cudaCreateTextureObject(&texture_, &res_desc, &texture_desc, nullptr);
 
 		if (err == cudaSuccess)
 		{
-			m_sampler = sampler;
+			sampler_ = sampler;
 
-			m_image = image;
+			image_ = source_image;
 		}
 		else
 		{
@@ -131,9 +131,9 @@ TextureBase::TextureBase(std::shared_ptr<ImageBase> image, Sampler sampler, Form
 
 TextureBase::~TextureBase()
 {
-	if (m_hTexture != 0)
+	if (texture_ != 0)
 	{
-		cudaError_t err = cudaDestroyTextureObject(m_hTexture);
+		cudaError_t err = cudaDestroyTextureObject(texture_);
 
 		if (err != cudaSuccess)
 		{
