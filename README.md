@@ -272,7 +272,7 @@ stream.memcpy(dst_host, src_device, count);
 stream.sync();
 
 // Non-blocking completion query
-bool done = stream.is_complete();
+bool done = stream.is_idle();
 ```
 
 ### `ns::Array<T>` / `ns::Array2D<T>` / `ns::Array3D<T>`

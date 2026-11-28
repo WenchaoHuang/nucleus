@@ -55,7 +55,7 @@ void test_stream()
 	auto & stream = device->default_stream();
 
 	stream.sync();
-	stream.is_complete();
+	stream.is_idle();
 	stream.set_force_sync(true);
 	stream.set_force_sync(false);
 	assert(stream.device() == device);

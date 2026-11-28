@@ -75,10 +75,10 @@ namespace NS_NAMESPACE
 
 
 		/**
-		 *	@brief		Query an asynchronous stream for completion status.
+		 *	@brief		Query whether all previously submitted stream operations have completed without blocking.
 		 *	@retval		True - If all operations in this stream have completed.
 		 */
-		NS_API bool is_complete() const;
+		NS_API bool is_idle() const;
 
 
 		/**

@@ -344,7 +344,7 @@ void Stream::set_force_sync(bool enable)
 }
 
 
-bool Stream::is_complete() const
+bool Stream::is_idle() const
 {
 	this->acquire_device_context();
 
