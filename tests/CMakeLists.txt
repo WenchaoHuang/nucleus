@@ -33,6 +33,13 @@ add_executable(${TARGET_NAME} ${TEST_CPP_SOURCES} ${TEST_CUDA_SOURCES})
 # Link directories
 target_link_libraries(${TARGET_NAME} PRIVATE Nucleus::nucleus)
 
+# Link CUDA runtime library
+if(NUCLEUS_CUDA_RUNTIME_STATIC)
+	target_link_libraries(${TARGET_NAME} PRIVATE CUDA::cudart_static)
+else()
+	target_link_libraries(${TARGET_NAME} PRIVATE CUDA::cudart)
+endif()
+
 # MSVC settings
 if(MSVC)
 	target_compile_options(${TARGET_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/MP /W3 /WX /utf-8>)
